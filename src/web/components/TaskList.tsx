@@ -612,7 +612,7 @@ const TaskList: React.FC<TaskListProps> = ({
 	}, [currentCount]);
 
 	return (
-		<div className="container mx-auto px-4 py-8 transition-colors duration-200">
+		<div className="w-full px-6 py-8 transition-colors duration-200">
 			<div className="flex flex-col gap-4 mb-6">
 				<div className="flex items-center justify-between gap-3">
 						<h1 className="text-2xl font-bold text-gray-900 dark:text-white">All Tasks</h1>
@@ -731,7 +731,7 @@ const TaskList: React.FC<TaskListProps> = ({
 			) : (
 				<div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
 					<div className="sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/95 backdrop-blur supports-[backdrop-filter]:bg-gray-50/90 supports-[backdrop-filter]:dark:bg-gray-700/85">
-						<div ref={tableHeaderScrollRef} className="overflow-x-auto" style={{ overflowY: "hidden" }}>
+						<div ref={tableHeaderScrollRef} className="overflow-x-auto scrollbar-hide" style={{ overflowY: "hidden" }}>
 							<table className="w-full min-w-[1100px] table-fixed border-collapse">
 								{renderColumnGroup()}
 								<thead>
