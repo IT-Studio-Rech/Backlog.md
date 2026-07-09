@@ -1,5 +1,6 @@
 import React from 'react';
 import ThemeToggle from './ThemeToggle';
+import RechLogo from './RechLogo';
 
 interface NavigationProps {
     projectName: string;
@@ -13,12 +14,13 @@ const Navigation: React.FC<NavigationProps> = ({projectName}) => {
                     <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{projectName || 'Loading...'}</h1>
                     <span className="text-sm text-gray-500 dark:text-gray-400">powered by</span>
                     <a
-                        href="https://backlog.md"
+                        href="https://rech.studio"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-stone-600 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300 hover:underline transition-colors duration-200"
+                        aria-label="rech.studio"
+                        className="inline-flex items-center text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors duration-200"
                     >
-                        Backlog.md
+                        <RechLogo className="h-4 w-auto" />
                     </a>
                 </div>
                 <ThemeToggle />
