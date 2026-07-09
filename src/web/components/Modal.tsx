@@ -8,9 +8,10 @@ interface ModalProps {
 	maxWidthClass?: string; // e.g., "max-w-4xl"
 	disableEscapeClose?: boolean; // when true, Escape and backdrop click won't close (child can handle it)
 	actions?: React.ReactNode; // optional actions rendered in header before close
+	showCloseButton?: boolean; // hide when actions already provide an explicit close (e.g. Cancel)
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, maxWidthClass = "max-w-2xl", disableEscapeClose, actions }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, maxWidthClass = "max-w-2xl", disableEscapeClose, actions, showCloseButton = true }) => {
 	useEffect(() => {
 		const handleEscape = (e: KeyboardEvent) => {
 			if (e.key === 'Escape' && !disableEscapeClose) {
@@ -52,6 +53,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, maxWidt
 					<h2 id="modal-title" className="text-base font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
 					<div className="flex items-center gap-2">
 						{actions}
+						{showCloseButton && (
 							<button
 								onClick={onClose}
 								className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded p-1 transition-colors duration-200 text-2xl leading-none w-8 h-8 flex items-center justify-center"
@@ -59,6 +61,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, maxWidt
 							>
 								×
 							</button>
+						)}
 					</div>
 				</div>
 				<div className="px-6 pt-4 pb-6">

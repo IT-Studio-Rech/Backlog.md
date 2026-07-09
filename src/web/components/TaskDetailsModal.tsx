@@ -772,8 +772,9 @@ export const TaskDetailsModal: React.FC<Props> = ({
         onClose();
       }}
       title={isCreateMode ? (isDraftMode ? "Create New Draft" : "Create New Task") : `${displayId} — ${task.title}`}
-      maxWidthClass="max-w-5xl"
+      maxWidthClass={isCreateMode ? "max-w-2xl" : "max-w-5xl"}
       disableEscapeClose={mode === "edit" || mode === "create"}
+      showCloseButton={mode === "preview"}
       actions={
         <div className="flex items-center gap-2">
 		          {isDoneStatus && mode === "preview" && !isCreateMode && !isFromOtherBranch && (
@@ -841,22 +842,87 @@ export const TaskDetailsModal: React.FC<Props> = ({
         </div>
       )}
 
+      {isCreateMode && (
+        <div className="space-y-5">
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-gray-900 dark:text-gray-100">Title</label>
+            <input
+              type="text"
+              autoFocus
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="What needs to be done?"
+              className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors duration-200"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-gray-900 dark:text-gray-100">Description</label>
+            <div className="border border-gray-200 dark:border-gray-700 rounded-md">
+              <MDEditor
+                value={description}
+                onChange={(val) => setDescription(val || "")}
+                preview="edit"
+                height={160}
+                data-color-mode={theme}
+                textareaProps={{ placeholder: "Optional — add context now, or later" }}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold text-gray-900 dark:text-gray-100">Status</label>
+              <StatusSelect current={status} onChange={(val) => handleInlineMetaUpdate({ status: val })} />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold text-gray-900 dark:text-gray-100">Priority</label>
+              <select
+                className="w-full h-10 px-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors duration-200"
+                value={priority}
+                onChange={(e) => handleInlineMetaUpdate({ priority: e.target.value as any })}
+              >
+                <option value="">No Priority</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold text-gray-900 dark:text-gray-100">Labels</label>
+              <ChipInput
+                name="labels"
+                label=""
+                value={labels}
+                onChange={(value) => handleInlineMetaUpdate({ labels: value })}
+                placeholder="Type and press Enter"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold text-gray-900 dark:text-gray-100">Assignee</label>
+              <ChipInput
+                name="assignee"
+                label=""
+                value={assignee}
+                onChange={(value) => handleInlineMetaUpdate({ assignee: value })}
+                placeholder="Type and press Enter"
+              />
+            </div>
+          </div>
+
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Acceptance criteria, plan, notes, milestone and dependencies can be added after creating the task.
+          </p>
+        </div>
+      )}
+
+      {!isCreateMode && (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Main content */}
         <div className="md:col-span-2 space-y-6">
-          {/* Title field for create mode */}
-          {isCreateMode && (
-            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
-              <SectionHeader title="Title" />
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter task title"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors duration-200"
-              />
-            </div>
-          )}
           {/* Description */}
           <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
             <SectionHeader title="Description" />
@@ -1321,6 +1387,7 @@ export const TaskDetailsModal: React.FC<Props> = ({
           )}
         </div>
       </div>
+      )}
     </Modal>
   );
 };
