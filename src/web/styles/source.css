@@ -8,6 +8,38 @@
 
 @theme {
     --radius-circle: 9999px;
+
+    /* rech.studio brand: retint Tailwind's default "blue" (primary accent) and
+       "stone" (secondary accent) ramps so every existing utility class across
+       the app picks up the brand teal without touching each call site. */
+    --color-blue-50: #eef6f7;
+    --color-blue-100: #d9ecee;
+    --color-blue-200: #bae8e8;
+    --color-blue-300: #9ad4d9;
+    --color-blue-400: #78b3bb;
+    --color-blue-500: #5b969e;
+    --color-blue-600: #4a7d84;
+    --color-blue-700: #3a636a;
+    --color-blue-800: #2a4a4f;
+    --color-blue-900: #1c3236;
+    --color-blue-950: #101f21;
+
+    --color-stone-50: #f4f7f7;
+    --color-stone-100: #e6eded;
+    --color-stone-200: #cfdcdd;
+    --color-stone-300: #adc3c5;
+    --color-stone-400: #85a5a8;
+    --color-stone-500: #5b969e;
+    --color-stone-600: #4a7d84;
+    --color-stone-700: #3a636a;
+    --color-stone-800: #2a4a4f;
+    --color-stone-900: #1c3236;
+    --color-stone-950: #101f21;
+
+    /* Brand CTA accent, reserved for primary calls-to-action (not the default
+       blue/stone accent above, which covers everyday links and active states). */
+    --color-brand-yellow: #ffd60a;
+    --color-brand-yellow-text: #141414;
 }
 
 @layer base {
@@ -17,6 +49,46 @@
 
     button:disabled {
         cursor: not-allowed;
+    }
+
+    /* Branded scrollbars everywhere (board columns, sidebar, modals, ...)
+       instead of the raw OS scrollbar, which reads as a stark white bar
+       against the dark theme. */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-stone-300) transparent;
+    }
+
+    .dark * {
+        scrollbar-color: var(--color-stone-700) transparent;
+    }
+
+    *::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    *::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background-color: var(--color-stone-300);
+        border-radius: var(--radius-circle);
+        border: 2px solid transparent;
+        background-clip: content-box;
+    }
+
+    *::-webkit-scrollbar-thumb:hover {
+        background-color: var(--color-stone-400);
+    }
+
+    .dark *::-webkit-scrollbar-thumb {
+        background-color: var(--color-stone-700);
+    }
+
+    .dark *::-webkit-scrollbar-thumb:hover {
+        background-color: var(--color-stone-600);
     }
 }
 
@@ -182,6 +254,32 @@
     }
     .wmde-markdown ul ul ul {
         list-style: square !important;
+    }
+
+    /* MDEditor's default toolbar renders tiny 12px icons in a lot of empty
+       padding, which reads as visually "lost" against the editor body. Give
+       the toolbar a defined background and bump icon/button size up. */
+    .w-md-editor-toolbar {
+        padding: 6px 8px;
+        background-color: var(--color-gray-50);
+    }
+
+    .dark .w-md-editor-toolbar {
+        background-color: var(--color-gray-800);
+    }
+
+    .w-md-editor-toolbar li > button {
+        height: 26px;
+        width: 26px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px;
+    }
+
+    .w-md-editor-toolbar li > button svg {
+        width: 15px !important;
+        height: 15px !important;
     }
 
     /* Fix for inline code that might be too long */
