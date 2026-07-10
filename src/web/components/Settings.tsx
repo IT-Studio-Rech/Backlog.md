@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { apiClient } from '../lib/api';
 import { SuccessToast } from './SuccessToast';
+import Select from './Select';
 import type { BacklogConfig } from '../../types';
 
 const Settings: React.FC = () => {
@@ -174,16 +175,16 @@ const Settings: React.FC = () => {
 								<label htmlFor="dateFormat" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
 									{t('settings:project.dateFormat.label')}
 								</label>
-								<select
+								<Select
 									id="dateFormat"
 									value={config.dateFormat}
 									onChange={(e) => handleInputChange('dateFormat', e.target.value)}
-									className="w-full h-10 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200"
+									uiSize="md"
 								>
 									<option value="yyyy-mm-dd">yyyy-mm-dd</option>
 									<option value="dd/mm/yyyy">dd/mm/yyyy</option>
 									<option value="mm/dd/yyyy">mm/dd/yyyy</option>
-								</select>
+								</Select>
 								<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
 									{t('settings:project.dateFormat.help')}
 								</p>
@@ -235,16 +236,16 @@ const Settings: React.FC = () => {
 								<label htmlFor="defaultStatus" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
 									{t('settings:workflow.defaultStatus.label')}
 								</label>
-								<select
+								<Select
 									id="defaultStatus"
 									value={config.defaultStatus}
 									onChange={(e) => handleInputChange('defaultStatus', e.target.value)}
-									className="w-full h-10 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200"
+									uiSize="md"
 								>
 									{statuses.map(status => (
 										<option key={status} value={status}>{status}</option>
 									))}
-								</select>
+								</Select>
 								<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
 									{t('settings:workflow.defaultStatus.help')}
 								</p>
@@ -401,15 +402,15 @@ const Settings: React.FC = () => {
 								<label htmlFor="taskResolutionStrategy" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
 									{t('settings:advanced.taskResolutionStrategy.label')}
 								</label>
-								<select
+								<Select
 									id="taskResolutionStrategy"
 									value={config.taskResolutionStrategy}
 									onChange={(e) => handleInputChange('taskResolutionStrategy', e.target.value as 'most_recent' | 'most_progressed')}
-									className="w-full h-10 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200"
+									uiSize="md"
 								>
 									<option value="most_recent">{t('settings:advanced.taskResolutionStrategy.mostRecent')}</option>
 									<option value="most_progressed">{t('settings:advanced.taskResolutionStrategy.mostProgressed')}</option>
-								</select>
+								</Select>
 								<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
 									{t('settings:advanced.taskResolutionStrategy.help')}
 								</p>

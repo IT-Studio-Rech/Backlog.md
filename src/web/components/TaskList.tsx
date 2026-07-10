@@ -14,6 +14,7 @@ import { collectArchivedMilestoneKeys, getMilestoneLabel, milestoneKey } from ".
 import { formatStoredUtcDateForCompactDisplay, parseStoredUtcDate } from "../utils/date-display";
 import CleanupModal from "./CleanupModal";
 import LabelFilterDropdown from "./LabelFilterDropdown";
+import Select from "./Select";
 import { SuccessToast } from "./SuccessToast";
 
 interface TaskListProps {
@@ -631,10 +632,10 @@ const TaskList: React.FC<TaskListProps> = ({
 
 				<div className="flex flex-wrap items-center gap-3 justify-between">
 					<div className="flex flex-wrap items-center gap-3 flex-1 min-w-0">
-						<select
+						<Select
 							value={statusFilter}
 							onChange={(event) => handleStatusChange(event.target.value)}
-							className="min-w-[140px] h-10 py-2 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200"
+							wrapperClassName="min-w-[140px]"
 						>
 							<option value="">{t("tasks:allStatuses")}</option>
 							{availableStatuses.map((status) => (
@@ -642,24 +643,24 @@ const TaskList: React.FC<TaskListProps> = ({
 									{status}
 								</option>
 							))}
-						</select>
+						</Select>
 
-						<select
+						<Select
 							value={priorityFilter}
 							onChange={(event) => handlePriorityChange(event.target.value as "" | SearchPriorityFilter)}
-							className="min-w-[140px] h-10 py-2 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200"
+							wrapperClassName="min-w-[140px]"
 						>
 							{PRIORITY_OPTIONS.map((option) => (
 								<option key={option.value || "all"} value={option.value}>
 									{option.label}
 								</option>
 							))}
-						</select>
+						</Select>
 
-						<select
+						<Select
 							value={milestoneFilter}
 							onChange={(event) => handleMilestoneChange(event.target.value)}
-							className="min-w-[160px] h-10 py-2 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200"
+							wrapperClassName="min-w-[160px]"
 						>
 							<option value="">{t("tasks:allMilestones")}</option>
 							<option value="__none">{t("tasks:noMilestone")}</option>
@@ -668,13 +669,14 @@ const TaskList: React.FC<TaskListProps> = ({
 									{getMilestoneLabel(milestone, milestoneEntities)}
 								</option>
 							))}
-						</select>
+						</Select>
 
 						<LabelFilterDropdown
 							availableLabels={mergedAvailableLabels}
 							selectedLabels={labelFilter}
 							onChange={handleLabelChange}
 							menuId="task-list-labels-menu"
+							className="min-w-[160px]"
 						/>
 
 					</div>
