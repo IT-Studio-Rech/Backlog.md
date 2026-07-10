@@ -11,6 +11,7 @@ import Settings from './components/Settings';
 import Statistics from './components/Statistics';
 import MilestonesPage from './components/MilestonesPage';
 import TaskDetailsModal from './components/TaskDetailsModal';
+import CommandPalette from './components/CommandPalette';
 import InitializationScreen from './components/InitializationScreen';
 import { SuccessToast } from './components/SuccessToast';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -561,6 +562,8 @@ function App() {
             <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>
+
+        <CommandPalette onNewTask={handleNewTask} />
 
         <TaskDetailsModal
           task={editingTask || undefined}

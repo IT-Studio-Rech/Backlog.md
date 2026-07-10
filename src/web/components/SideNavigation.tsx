@@ -15,6 +15,7 @@ import {
 import ErrorBoundary from './ErrorBoundary';
 import { SidebarSkeleton } from './LoadingSpinner';
 import { sanitizeUrlTitle } from '../utils/urlHelpers';
+import { getSearchShortcutHint } from '../utils/platform';
 import { getWebVersion } from '../utils/version';
 import { apiClient } from '../lib/api';
 import { parseSearchCommandQuery } from '../utils/search-command-query';
@@ -324,24 +325,6 @@ const SideNavigation = memo(function SideNavigation({
 		}
 	}, [decisions.length]);
 
-	// Add keyboard shortcut for search
-	useEffect(() => {
-		const handleKeyDown = (e: KeyboardEvent) => {
-			if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-				e.preventDefault();
-				if (isCollapsed) {
-					// Expand sidebar first, then focus will happen on next render
-					setIsCollapsed(false);
-				} else if (searchInputRef) {
-					searchInputRef.focus();
-				}
-			}
-		};
-
-		document.addEventListener('keydown', handleKeyDown);
-		return () => document.removeEventListener('keydown', handleKeyDown);
-	}, [searchInputRef, isCollapsed]);
-
 	// Auto-focus search input when sidebar expands
 	useEffect(() => {
 		if (!isCollapsed && searchInputRef) {
@@ -454,9 +437,9 @@ const SideNavigation = memo(function SideNavigation({
 								placeholder={t('nav:searchPlaceholder')}
 								value={searchQuery}
 								onChange={(e) => setSearchQuery(e.target.value)}
-								className="w-full pl-10 pr-8 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 focus:border-transparent transition-colors duration-200"
+								className={`w-full pl-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 focus:border-transparent transition-colors duration-200 ${searchQuery ? 'pr-8' : 'pr-14'}`}
 							/>
-								{searchQuery && (
+								{searchQuery ? (
 									<button
 										onClick={() => setSearchQuery('')}
 										aria-label={t('nav:clearSearch')}
@@ -466,6 +449,12 @@ const SideNavigation = memo(function SideNavigation({
 											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
 									</svg>
 								</button>
+							) : (
+								<span className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+									<kbd className="text-[10px] font-mono text-gray-400 dark:text-gray-500 border border-gray-300 dark:border-white/10 rounded px-1.5 py-0.5">
+										{getSearchShortcutHint()}
+									</kbd>
+								</span>
 							)}
 						</div>
 					</div>
@@ -474,7 +463,7 @@ const SideNavigation = memo(function SideNavigation({
 							<button
 								onClick={() => setIsCollapsed(false)}
 								className="flex items-center justify-center p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200"
-								title={t('nav:searchShortcut')}
+								title={`${t('nav:searchShortcut')} (${getSearchShortcutHint()})`}
 							>
 								<Icons.Search />
 						</button>
