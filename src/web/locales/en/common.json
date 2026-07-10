@@ -21,7 +21,6 @@
 		"clear": "Clear label filter"
 	},
 	"acceptanceCriteriaEditor": {
-		"defaultLabel": "Acceptance Criteria",
 		"newItemPlaceholder": "New criterion"
 	},
 	"dependencyInput": {
@@ -33,7 +32,7 @@
 		"high": "High",
 		"medium": "Medium",
 		"low": "Low",
-		"none": "No Priority"
+		"none": "None"
 	},
 	"priorityBadge": {
 		"high": "High",

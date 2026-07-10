@@ -7,7 +7,7 @@
 	"failedToSaveTask": "Failed to save task",
 	"completeConfirm": "Complete this task? It will be moved to the completed folder.",
 	"archiveConfirm": "Are you sure you want to archive \"{{title}}\"? This will move the task to the archive folder.",
-	"markAsCompleted": "Mark as completed",
+	"markAsCompleted": "Done",
 	"markAsCompletedTooltip": "Move to completed folder (removes from board)",
 	"edit": "Edit",
 	"readOnlyLabel": "Read-only:",
@@ -29,6 +29,7 @@
 		"noMilestone": "No milestone",
 		"dependencies": "Dependencies"
 	},
+	"addMilestoneOrDependency": "Add milestone or dependency",
 	"createModeHint": "Acceptance criteria, plan, notes, milestone and dependencies can be added after creating the task.",
 	"noDescription": "No description",
 	"references": "References",
@@ -38,8 +39,9 @@
 	"add": "Add",
 	"documentation": "Documentation",
 	"acceptanceCriteria": "Acceptance Criteria",
+	"acceptanceCriteriaSubtitle": "Specific to this task",
 	"definitionOfDone": "Definition of Done",
-	"toggleToUpdate": "Toggle to update",
+	"definitionOfDoneSubtitle": "Project-wide standard, applies to every task",
 	"noAcceptanceCriteria": "No acceptance criteria",
 	"noDefinitionOfDoneItems": "No Definition of Done items",
 	"implementationPlan": "Implementation Plan",
@@ -55,9 +57,10 @@
 	"adding": "Adding...",
 	"addComment": "Add comment",
 	"finalSummary": "Final Summary",
-	"completionSummary": "Completion summary",
+	"finalSummaryTab": "Summary",
+	"noFinalSummary": "No final summary yet",
 	"finalSummaryPlaceholder": "PR-style summary of what was implemented (write when task is complete)",
-	"created": "Created:",
-	"updated": "Updated:",
-	"archiveTask": "Archive Task"
+	"created": "Created",
+	"updated": "Updated",
+	"archiveTask": "Archive"
 }

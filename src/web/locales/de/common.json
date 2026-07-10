@@ -21,7 +21,6 @@
 		"clear": "Label-Filter zurücksetzen"
 	},
 	"acceptanceCriteriaEditor": {
-		"defaultLabel": "Akzeptanzkriterien",
 		"newItemPlaceholder": "Neues Kriterium"
 	},
 	"dependencyInput": {
@@ -33,7 +32,7 @@
 		"high": "Hoch",
 		"medium": "Mittel",
 		"low": "Niedrig",
-		"none": "Keine Priorität"
+		"none": "Keine"
 	},
 	"priorityBadge": {
 		"high": "Hoch",

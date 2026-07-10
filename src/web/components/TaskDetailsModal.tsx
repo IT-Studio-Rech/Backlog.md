@@ -8,8 +8,11 @@ import MDEditor from "@uiw/react-md-editor";
 import AcceptanceCriteriaEditor from "./AcceptanceCriteriaEditor";
 import MermaidMarkdown from './MermaidMarkdown';
 import ChipInput from "./ChipInput";
+import { resolveLabelColor } from "../utils/labelColors";
 import DependencyInput from "./DependencyInput";
 import { formatStoredUtcDateForDisplay } from "../utils/date-display";
+import { useConfirm } from "../hooks/useConfirm";
+import Select from "./Select";
 
 interface Props {
   task?: Task; // Optional for create mode
@@ -25,6 +28,8 @@ interface Props {
   archivedMilestoneEntities?: Milestone[];
   definitionOfDoneDefaults?: string[];
   dateFormat?: string;
+  labelColors?: Record<string, string>;
+  availableAssignees?: string[];
 }
 
 type Mode = "preview" | "edit" | "create";
@@ -102,12 +107,61 @@ const buildTaskDetailsFormState = ({
   milestone: task?.milestone || "",
 });
 
-const SectionHeader: React.FC<{ title: string; right?: React.ReactNode }> = ({ title, right }) => (
-  <div className="flex items-center justify-between mb-3">
-    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 tracking-tight transition-colors duration-200">
-      {title}
-    </h3>
-    {right ? <div className="ml-2 text-xs text-gray-500 dark:text-gray-400">{right}</div> : null}
+const SectionHeader: React.FC<{ title: string; subtitle?: string; right?: React.ReactNode }> = ({ title, subtitle, right }) => (
+  <div className="mb-3">
+    <div className="flex items-center justify-between">
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 tracking-tight transition-colors duration-200">
+        {title}
+      </h3>
+      {right ? <div className="ml-2 text-xs text-gray-500 dark:text-gray-400">{right}</div> : null}
+    </div>
+    {subtitle ? (
+      <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">{subtitle}</p>
+    ) : null}
+  </div>
+);
+
+// Compact label+control row for the metadata sidebar - several of these share one
+// bordered panel (divide-y) instead of each field getting its own card, so the
+// sidebar reads as one property list rather than a stack of boxes.
+const MetaRow: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
+  <div className="px-3 py-2.5">
+    <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+      {label}
+    </label>
+    {children}
+  </div>
+);
+
+// Empty-state text for the markdown tabs, with an inline edit shortcut so
+// switching to edit mode doesn't require scrolling back up to the modal header.
+const EmptyContentHint: React.FC<{ text: string; editLabel: string; onEdit: () => void; showEdit: boolean }> = ({
+  text,
+  editLabel,
+  onEdit,
+  showEdit,
+}) => (
+  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+    <span>{text}</span>
+    {showEdit && (
+      <button
+        type="button"
+        onClick={onEdit}
+        aria-label={editLabel}
+        data-tooltip-id="app-tooltip"
+        data-tooltip-content={editLabel}
+        className="p-1 text-gray-400 dark:text-gray-500 hover:text-stone-600 dark:hover:text-stone-400 rounded-md hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:focus-visible:ring-stone-400"
+      >
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+          />
+        </svg>
+      </button>
+    )}
   </div>
 );
 
@@ -125,9 +179,12 @@ export const TaskDetailsModal: React.FC<Props> = ({
   isDraftMode,
   definitionOfDoneDefaults,
   dateFormat,
+  labelColors,
+  availableAssignees,
 }) => {
   const { theme } = useTheme();
   const { t } = useTranslation(["taskModal", "common"]);
+  const { confirm, confirmDialog } = useConfirm();
   const isCreateMode = !task;
   const isFromOtherBranch = Boolean(task?.branch);
   const [mode, setMode] = useState<Mode>(isCreateMode ? "create" : "preview");
@@ -136,6 +193,8 @@ export const TaskDetailsModal: React.FC<Props> = ({
   const previousIsOpen = useRef(isOpen);
   const formBaselineRef = useRef<TaskDetailsFormState | null>(null);
   const [saving, setSaving] = useState(false);
+  const [completing, setCompleting] = useState(false);
+  const [archiving, setArchiving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Title field for create mode
@@ -152,6 +211,25 @@ export const TaskDetailsModal: React.FC<Props> = ({
   const [commentsChanged, setCommentsChanged] = useState(false);
   const preserveEditModeAfterCommentRefresh = useRef(false);
   const [finalSummary, setFinalSummary] = useState(task?.finalSummary || "");
+  // Description/Plan/Notes/Final Summary share one tabbed card instead of stacking
+  // four separate scroll-heavy sections - reset to the first tab per task.
+  type ContentTab = "description" | "plan" | "notes" | "finalSummary";
+  const [contentTab, setContentTab] = useState<ContentTab>("description");
+  useEffect(() => {
+    setContentTab("description");
+  }, [task?.id]);
+  // Milestone/Dependencies are edited rarely - collapse them behind a "show more"
+  // toggle when both are empty, but never hide them once either has a value.
+  const [planningExpanded, setPlanningExpanded] = useState(false);
+  // Acceptance Criteria / Definition of Done share one tabbed card, same pattern
+  // as the Description/Plan/Notes/Summary tabs above.
+  const [checklistTab, setChecklistTab] = useState<"criteria" | "definitionOfDone">("criteria");
+  useEffect(() => {
+    setChecklistTab("criteria");
+  }, [task?.id]);
+  // Set by the tab's "+" shortcut so the editor that mounts right after
+  // switching to edit mode scrolls to and focuses its "add new" row.
+  const [autoFocusNewChecklistItem, setAutoFocusNewChecklistItem] = useState(false);
   const [criteria, setCriteria] = useState<AcceptanceCriterion[]>(task?.acceptanceCriteriaItems || []);
   const defaultDefinitionOfDone = useMemo(
     () => (definitionOfDoneDefaults ?? []).map((text, index) => ({ index: index + 1, text, checked: false })),
@@ -334,6 +412,11 @@ export const TaskDetailsModal: React.FC<Props> = ({
 
   // Intercept Escape to cancel edit (not close modal) when in edit mode
   useEffect(() => {
+    const isTypingTarget = (target: EventTarget | null): boolean => {
+      if (!(target instanceof HTMLElement)) return false;
+      const tag = target.tagName;
+      return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable;
+    };
     const onKey = (e: KeyboardEvent) => {
       if (mode === "edit" && (e.key === "Escape")) {
         e.preventDefault();
@@ -345,12 +428,12 @@ export const TaskDetailsModal: React.FC<Props> = ({
         e.stopPropagation();
         void handleSave();
       }
-      if (mode === "preview" && (e.key.toLowerCase() === "e") && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      if (mode === "preview" && !isTypingTarget(e.target) && (e.key.toLowerCase() === "e") && !e.metaKey && !e.ctrlKey && !e.altKey) {
         e.preventDefault();
         e.stopPropagation();
         setMode("edit");
       }
-      if (mode === "preview" && isDoneStatus && (e.key.toLowerCase() === "c") && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      if (mode === "preview" && !isTypingTarget(e.target) && isDoneStatus && (e.key.toLowerCase() === "c") && !e.metaKey && !e.ctrlKey && !e.altKey) {
         e.preventDefault();
         e.stopPropagation();
         void handleComplete();
@@ -464,9 +547,9 @@ export const TaskDetailsModal: React.FC<Props> = ({
     if (onSaved) void onSaved();
   }, [commentsChanged, onSaved]);
 
-  const handleCancelEdit = () => {
+  const handleCancelEdit = async () => {
     if (isDirty) {
-      const confirmDiscard = window.confirm(t("taskModal:discardUnsavedChanges"));
+      const confirmDiscard = await confirm({ message: t("taskModal:discardUnsavedChanges"), tone: "danger" });
       if (!confirmDiscard) return;
     }
     if (isCreateMode) {
@@ -734,20 +817,24 @@ export const TaskDetailsModal: React.FC<Props> = ({
   // labels handled via ChipInput; no textarea parsing
 
 	const handleComplete = async () => {
-		if (!task) return;
-		if (!window.confirm(t("taskModal:completeConfirm"))) return;
+		if (!task || completing) return;
+		if (!(await confirm({ message: t("taskModal:completeConfirm") }))) return;
+		setCompleting(true);
 		try {
 			await apiClient.completeTask(task.id);
 			if (onSaved) await onSaved();
 			onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setCompleting(false);
     }
   };
 
   const handleArchive = async () => {
-    if (!task || !onArchive) return;
-    if (!window.confirm(t("taskModal:archiveConfirm", { title: task.title }))) return;
+    if (!task || !onArchive || archiving) return;
+    if (!(await confirm({ message: t("taskModal:archiveConfirm", { title: task.title }), tone: "danger" }))) return;
+    setArchiving(true);
     onArchive();
     onClose();
   };
@@ -763,12 +850,13 @@ export const TaskDetailsModal: React.FC<Props> = ({
   const documentation = task?.documentation ?? [];
 
   return (
+    <>
     <Modal
       isOpen={isOpen}
-      onClose={() => {
+      onClose={async () => {
         // When in edit mode, confirm closing if dirty
         if (mode === "edit" && isDirty) {
-          if (!window.confirm(t("taskModal:discardUnsavedChangesAndClose"))) return;
+          if (!(await confirm({ message: t("taskModal:discardUnsavedChangesAndClose"), tone: "danger" }))) return;
         }
         refreshAfterCommentChange();
         onClose();
@@ -779,26 +867,60 @@ export const TaskDetailsModal: React.FC<Props> = ({
       showCloseButton={mode === "preview"}
       actions={
         <div className="flex items-center gap-2">
+		          {mode === "preview" && !isCreateMode && !isFromOtherBranch && task && onArchive && (
+		            <button
+		              onClick={handleArchive}
+		              disabled={archiving}
+		              className="inline-flex items-center px-3 py-2 mr-2 border border-transparent rounded-lg text-sm font-medium text-white bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors duration-200 disabled:opacity-50"
+		              title={t("taskModal:archiveTask")}
+		            >
+		              {archiving ? (
+		                <svg className="animate-spin w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+		                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+		                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+		                </svg>
+		              ) : (
+		                <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+		                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+		                </svg>
+		              )}
+		              {t("taskModal:archiveTask")}
+		            </button>
+		          )}
 		          {isDoneStatus && mode === "preview" && !isCreateMode && !isFromOtherBranch && (
 		            <button
 		              onClick={handleComplete}
-		              className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-emerald-600 dark:bg-emerald-700 hover:bg-emerald-700 dark:hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors duration-200"
+		              disabled={completing}
+		              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white bg-emerald-600 dark:bg-emerald-700 hover:bg-emerald-700 dark:hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors duration-200 disabled:opacity-50"
 		              title={t("taskModal:markAsCompletedTooltip")}
 		            >
+		              {completing ? (
+		                <svg className="animate-spin w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+		                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+		                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+		                </svg>
+		              ) : (
+		                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+		                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+		                </svg>
+		              )}
 		              {t("taskModal:markAsCompleted")}
 		            </button>
 		          )}
 		          {mode === "preview" && !isCreateMode && !isFromOtherBranch ? (
 		            <button
 		              onClick={() => setMode("edit")}
-		              className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors duration-200"
+		              aria-label={t("taskModal:edit")}
+		              className={`inline-flex items-center border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors duration-200 ${
+		                isDoneStatus ? 'p-2' : 'gap-2 px-4 py-2'
+		              }`}
 		              title={t("taskModal:edit")}
 		            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                       d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
-              {t("taskModal:edit")}
+              {!isDoneStatus && t("taskModal:edit")}
             </button>
           ) : (mode === "edit" || mode === "create") ? (
             <div className="flex items-center gap-2">
@@ -886,8 +1008,8 @@ export const TaskDetailsModal: React.FC<Props> = ({
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-gray-900 dark:text-gray-100">{t("taskModal:fields.priority")}</label>
-              <select
-                className="w-full h-10 px-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors duration-200"
+              <Select
+                uiSize="md"
                 value={priority}
                 onChange={(e) => handleInlineMetaUpdate({ priority: e.target.value as any })}
               >
@@ -895,7 +1017,7 @@ export const TaskDetailsModal: React.FC<Props> = ({
                 <option value="low">{t("common:priority.low")}</option>
                 <option value="medium">{t("common:priority.medium")}</option>
                 <option value="high">{t("common:priority.high")}</option>
-              </select>
+              </Select>
             </div>
           </div>
 
@@ -908,6 +1030,7 @@ export const TaskDetailsModal: React.FC<Props> = ({
                 value={labels}
                 onChange={(value) => handleInlineMetaUpdate({ labels: value })}
                 placeholder={t("taskModal:fields.labelsPlaceholderShort")}
+                chipColor={(l) => resolveLabelColor(l, labelColors)}
               />
             </div>
             <div>
@@ -918,6 +1041,7 @@ export const TaskDetailsModal: React.FC<Props> = ({
                 value={assignee}
                 onChange={(value) => handleInlineMetaUpdate({ assignee: value })}
                 placeholder={t("taskModal:fields.assigneePlaceholderShort")}
+                suggestions={availableAssignees}
               />
             </div>
           </div>
@@ -932,31 +1056,143 @@ export const TaskDetailsModal: React.FC<Props> = ({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Main content */}
         <div className="md:col-span-2 space-y-6">
-          {/* Description */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
-            <SectionHeader title={t("taskModal:fields.description")} />
-            {mode === "preview" ? (
-              description ? (
-                <div className="prose prose-sm !max-w-none wmde-markdown" data-color-mode={theme}>
-                  <MermaidMarkdown source={description} />
-                </div>
-              ) : (
-                <div className="text-sm text-gray-500 dark:text-gray-400">{t("taskModal:noDescription")}</div>
-              )
-            ) : (
-              <div className="border border-gray-200 dark:border-gray-700 rounded-md">
-                <MDEditor
-                  value={description}
-                  onChange={(val) => setDescription(val || "")}
-                  preview="edit"
-                  height={320}
-                  data-color-mode={theme}
-                />
-              </div>
-            )}
+          {/* Description / Plan / Notes / Final Summary share one tabbed card instead
+              of stacking four scroll-heavy markdown sections */}
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+            <div className="grid grid-cols-4 px-3 pt-2 border-b border-gray-200 dark:border-gray-700">
+              {([
+                { key: "description" as const, label: t("taskModal:fields.description") },
+                { key: "plan" as const, label: t("taskModal:implementationPlan") },
+                { key: "notes" as const, label: t("taskModal:implementationNotes") },
+                { key: "finalSummary" as const, label: t("taskModal:finalSummaryTab") },
+              ]).map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setContentTab(tab.key)}
+                  className={`px-2 py-2 text-sm font-medium text-center truncate border-b-2 -mb-px transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:focus-visible:ring-stone-400 rounded-t-md ${
+                    contentTab === tab.key
+                      ? "border-stone-500 dark:border-stone-400 text-gray-900 dark:text-gray-100"
+                      : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <div className="p-4">
+              {contentTab === "description" && (
+                mode === "preview" ? (
+                  description ? (
+                    <div className="prose prose-sm !max-w-none wmde-markdown" data-color-mode={theme}>
+                      <MermaidMarkdown source={description} />
+                    </div>
+                  ) : (
+                    <EmptyContentHint
+                      text={t("taskModal:noDescription")}
+                      editLabel={t("taskModal:edit")}
+                      onEdit={() => setMode("edit")}
+                      showEdit={!isFromOtherBranch}
+                    />
+                  )
+                ) : (
+                  <div className="rounded-md overflow-hidden">
+                    <MDEditor
+                      value={description}
+                      onChange={(val) => setDescription(val || "")}
+                      preview="edit"
+                      height={320}
+                      data-color-mode={theme}
+                    />
+                  </div>
+                )
+              )}
+              {contentTab === "plan" && (
+                mode === "preview" ? (
+                  plan ? (
+                    <div className="prose prose-sm !max-w-none wmde-markdown" data-color-mode={theme}>
+                      <MermaidMarkdown source={plan} />
+                    </div>
+                  ) : (
+                    <EmptyContentHint
+                      text={t("taskModal:noPlan")}
+                      editLabel={t("taskModal:edit")}
+                      onEdit={() => setMode("edit")}
+                      showEdit={!isFromOtherBranch}
+                    />
+                  )
+                ) : (
+                  <div className="rounded-md overflow-hidden">
+                    <MDEditor
+                      value={plan}
+                      onChange={(val) => setPlan(val || "")}
+                      preview="edit"
+                      height={280}
+                      data-color-mode={theme}
+                    />
+                  </div>
+                )
+              )}
+              {contentTab === "notes" && (
+                mode === "preview" ? (
+                  notes ? (
+                    <div className="prose prose-sm !max-w-none wmde-markdown" data-color-mode={theme}>
+                      <MermaidMarkdown source={notes} />
+                    </div>
+                  ) : (
+                    <EmptyContentHint
+                      text={t("taskModal:noNotes")}
+                      editLabel={t("taskModal:edit")}
+                      onEdit={() => setMode("edit")}
+                      showEdit={!isFromOtherBranch}
+                    />
+                  )
+                ) : (
+                  <div className="rounded-md overflow-hidden">
+                    <MDEditor
+                      value={notes}
+                      onChange={(val) => setNotes(val || "")}
+                      preview="edit"
+                      height={280}
+                      data-color-mode={theme}
+                    />
+                  </div>
+                )
+              )}
+              {contentTab === "finalSummary" && (
+                mode === "preview" ? (
+                  finalSummary ? (
+                    <div className="prose prose-sm !max-w-none wmde-markdown" data-color-mode={theme}>
+                      <MermaidMarkdown source={finalSummary} />
+                    </div>
+                  ) : (
+                    <EmptyContentHint
+                      text={t("taskModal:noFinalSummary")}
+                      editLabel={t("taskModal:edit")}
+                      onEdit={() => setMode("edit")}
+                      showEdit={!isFromOtherBranch}
+                    />
+                  )
+                ) : (
+                  <div className="rounded-md overflow-hidden">
+                    <MDEditor
+                      value={finalSummary}
+                      onChange={(val) => setFinalSummary(val || "")}
+                      preview="edit"
+                      height={220}
+                      data-color-mode={theme}
+                      textareaProps={{
+                        placeholder: t("taskModal:finalSummaryPlaceholder"),
+                      }}
+                    />
+                  </div>
+                )
+              )}
+            </div>
           </div>
 
-          {/* References */}
+          {/* References - collapsed when empty in preview, same pattern as Final Summary below */}
+          {(mode !== "preview" || references.length > 0) && (
           <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
             <SectionHeader title={t("taskModal:references")} />
             <div className="space-y-3">
@@ -986,8 +1222,9 @@ export const TaskDetailsModal: React.FC<Props> = ({
                             const newRefs = references.filter((_, i) => i !== idx);
                             handleInlineMetaUpdate({ references: newRefs });
                           }}
-                          className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all flex-shrink-0"
+                          className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 text-gray-400 hover:text-red-500 transition-all flex-shrink-0 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:focus-visible:ring-stone-400"
                           title={t("taskModal:removeReference")}
+                          aria-label={t("taskModal:removeReference")}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1029,6 +1266,7 @@ export const TaskDetailsModal: React.FC<Props> = ({
               )}
             </div>
           </div>
+          )}
 
           {/* Documentation */}
           {documentation.length > 0 && (
@@ -1061,125 +1299,141 @@ export const TaskDetailsModal: React.FC<Props> = ({
             </div>
           )}
 
-          {/* Acceptance Criteria */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
-            <SectionHeader
-              title={`${t("taskModal:acceptanceCriteria")} ${totalCount ? `(${checkedCount}/${totalCount})` : ""}`}
-              right={mode === "preview" ? (
-                <span>{t("taskModal:toggleToUpdate")}</span>
-              ) : null}
-            />
-            {mode === "preview" ? (
-              <ul className="space-y-2">
-                {(criteria || []).map((c) => (
-                  <li key={c.index} className="flex items-start gap-2 rounded-md px-2 py-1">
-                    <input
-                      type="checkbox"
-                      checked={c.checked}
-                      onChange={(e) => void handleToggleCriterion(c.index, e.target.checked)}
-                      className="mt-0.5 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          {/* Acceptance Criteria / Definition of Done share one tabbed card - both
+              are core checklists, tabs keep both reachable without doubling
+              vertical space (same pattern as the markdown tabs above) */}
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+            <div className="grid grid-cols-2 px-3 pt-2 border-b border-gray-200 dark:border-gray-700">
+              <button
+                type="button"
+                onClick={() => setChecklistTab("criteria")}
+                className={`px-2 py-2 text-sm font-medium text-center truncate border-b-2 -mb-px transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:focus-visible:ring-stone-400 rounded-t-md ${
+                  checklistTab === "criteria"
+                    ? "border-stone-500 dark:border-stone-400 text-gray-900 dark:text-gray-100"
+                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                }`}
+              >
+                {t("taskModal:acceptanceCriteria")}{totalCount ? ` (${checkedCount}/${totalCount})` : ""}
+              </button>
+              <button
+                type="button"
+                onClick={() => setChecklistTab("definitionOfDone")}
+                className={`px-2 py-2 text-sm font-medium text-center truncate border-b-2 -mb-px transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:focus-visible:ring-stone-400 rounded-t-md ${
+                  checklistTab === "definitionOfDone"
+                    ? "border-stone-500 dark:border-stone-400 text-gray-900 dark:text-gray-100"
+                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                }`}
+              >
+                {t("taskModal:definitionOfDone")}{definitionTotalCount ? ` (${definitionCheckedCount}/${definitionTotalCount})` : ""}
+              </button>
+            </div>
+            <div className="p-4">
+              {checklistTab === "criteria" && (
+                <>
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{t("taskModal:acceptanceCriteriaSubtitle")}</p>
+                    {mode === "preview" && !isFromOtherBranch && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMode("edit");
+                          setAutoFocusNewChecklistItem(true);
+                        }}
+                        title={t("taskModal:edit")}
+                        aria-label={t("taskModal:edit")}
+                        className="p-1 text-gray-400 dark:text-gray-500 hover:text-stone-600 dark:hover:text-stone-400 rounded-md hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:focus-visible:ring-stone-400 shrink-0"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                  {mode === "preview" ? (
+                    <ul className="space-y-2">
+                      {(criteria || []).map((c) => (
+                        <li key={c.index} className="flex items-start gap-2 rounded-md px-2 py-1">
+                          <span className="mt-0.5 inline-flex items-center justify-center min-w-[1.125rem] h-[1.125rem] shrink-0 rounded-full bg-gray-100 dark:bg-white/10 px-1 font-mono text-[10px] tabular-nums text-gray-500 dark:text-gray-400">
+                            {c.index}
+                          </span>
+                          <input
+                            type="checkbox"
+                            checked={c.checked}
+                            onChange={(e) => void handleToggleCriterion(c.index, e.target.checked)}
+                            className="mt-0.5 h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                          <div className="text-sm text-gray-800 dark:text-gray-100">{c.text}</div>
+                        </li>
+                      ))}
+                      {totalCount === 0 && (
+                        <li className="text-sm text-gray-500 dark:text-gray-400">{t("taskModal:noAcceptanceCriteria")}</li>
+                      )}
+                    </ul>
+                  ) : (
+                    <AcceptanceCriteriaEditor
+                      criteria={criteria}
+                      onChange={setCriteria}
+                      autoFocusNew={autoFocusNewChecklistItem}
+                      onAutoFocused={() => setAutoFocusNewChecklistItem(false)}
                     />
-                    <span className="mt-0.5 w-8 shrink-0 text-right font-mono text-xs font-semibold text-gray-500 dark:text-gray-400">
-                      {`#${c.index}`}
-                    </span>
-                    <div className="text-sm text-gray-800 dark:text-gray-100">{c.text}</div>
-                  </li>
-                ))}
-                {totalCount === 0 && (
-                  <li className="text-sm text-gray-500 dark:text-gray-400">{t("taskModal:noAcceptanceCriteria")}</li>
-                )}
-              </ul>
-            ) : (
-              <AcceptanceCriteriaEditor criteria={criteria} onChange={setCriteria} />
-            )}
-          </div>
-
-          {/* Definition of Done */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
-            <SectionHeader
-              title={`${t("taskModal:definitionOfDone")} ${definitionTotalCount ? `(${definitionCheckedCount}/${definitionTotalCount})` : ""}`}
-              right={mode === "preview" ? (
-                <span>{t("taskModal:toggleToUpdate")}</span>
-              ) : null}
-            />
-            {mode === "preview" ? (
-              <ul className="space-y-2">
-                {(definitionOfDone || []).map((item) => (
-                  <li key={item.index} className="flex items-start gap-2 rounded-md px-2 py-1">
-                    <input
-                      type="checkbox"
-                      checked={item.checked}
-                      onChange={(e) => void handleToggleDefinitionOfDone(item.index, e.target.checked)}
-                      className="mt-0.5 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  )}
+                </>
+              )}
+              {checklistTab === "definitionOfDone" && (
+                <>
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{t("taskModal:definitionOfDoneSubtitle")}</p>
+                    {mode === "preview" && !isFromOtherBranch && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMode("edit");
+                          setAutoFocusNewChecklistItem(true);
+                        }}
+                        title={t("taskModal:edit")}
+                        aria-label={t("taskModal:edit")}
+                        className="p-1 text-gray-400 dark:text-gray-500 hover:text-stone-600 dark:hover:text-stone-400 rounded-md hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:focus-visible:ring-stone-400 shrink-0"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                  {mode === "preview" ? (
+                    <ul className="space-y-2">
+                      {(definitionOfDone || []).map((item) => (
+                        <li key={item.index} className="flex items-start gap-2 rounded-md px-2 py-1">
+                          <input
+                            type="checkbox"
+                            checked={item.checked}
+                            onChange={(e) => void handleToggleDefinitionOfDone(item.index, e.target.checked)}
+                            className="mt-0.5 h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                          <div className="text-sm text-gray-800 dark:text-gray-100">{item.text}</div>
+                        </li>
+                      ))}
+                      {definitionTotalCount === 0 && (
+                        <li className="text-sm text-gray-500 dark:text-gray-400">{t("taskModal:noDefinitionOfDoneItems")}</li>
+                      )}
+                    </ul>
+                  ) : (
+                    <AcceptanceCriteriaEditor
+                      criteria={definitionOfDone}
+                      onChange={setDefinitionOfDone}
+                      preserveIndices
+                      disableToggle={isCreateMode}
+                      autoFocusNew={autoFocusNewChecklistItem}
+                      onAutoFocused={() => setAutoFocusNewChecklistItem(false)}
                     />
-                    <div className="text-sm text-gray-800 dark:text-gray-100">{item.text}</div>
-                  </li>
-                ))}
-                {definitionTotalCount === 0 && (
-                  <li className="text-sm text-gray-500 dark:text-gray-400">{t("taskModal:noDefinitionOfDoneItems")}</li>
-                )}
-              </ul>
-            ) : (
-              <AcceptanceCriteriaEditor
-                criteria={definitionOfDone}
-                onChange={setDefinitionOfDone}
-                label={t("taskModal:definitionOfDone")}
-                preserveIndices
-                disableToggle={isCreateMode}
-              />
-            )}
+                  )}
+                </>
+              )}
+            </div>
           </div>
 
-          {/* Implementation Plan */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
-            <SectionHeader title={t("taskModal:implementationPlan")} />
-            {mode === "preview" ? (
-              plan ? (
-                <div className="prose prose-sm !max-w-none wmde-markdown" data-color-mode={theme}>
-                  <MermaidMarkdown source={plan} />
-                </div>
-              ) : (
-                <div className="text-sm text-gray-500 dark:text-gray-400">{t("taskModal:noPlan")}</div>
-              )
-            ) : (
-              <div className="border border-gray-200 dark:border-gray-700 rounded-md">
-                <MDEditor
-                  value={plan}
-                  onChange={(val) => setPlan(val || "")}
-                  preview="edit"
-                  height={280}
-                  data-color-mode={theme}
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Implementation Notes */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
-            <SectionHeader title={t("taskModal:implementationNotes")} />
-            {mode === "preview" ? (
-              notes ? (
-                <div className="prose prose-sm !max-w-none wmde-markdown" data-color-mode={theme}>
-                  <MermaidMarkdown source={notes} />
-                </div>
-              ) : (
-                <div className="text-sm text-gray-500 dark:text-gray-400">{t("taskModal:noNotes")}</div>
-              )
-            ) : (
-              <div className="border border-gray-200 dark:border-gray-700 rounded-md">
-                <MDEditor
-                  value={notes}
-                  onChange={(val) => setNotes(val || "")}
-                  preview="edit"
-                  height={280}
-                  data-color-mode={theme}
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Comments */}
-          {!isCreateMode && (
+          {/* Comments - collapsed when empty in preview (the add-comment form only shows in edit mode anyway) */}
+          {!isCreateMode && (comments.length > 0 || mode === "edit") && (
             <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
               <SectionHeader title={comments.length ? t("taskModal:comments", { count: comments.length }) : t("taskModal:commentsNoCount")} />
               {comments.length > 0 ? (
@@ -1237,173 +1491,173 @@ export const TaskDetailsModal: React.FC<Props> = ({
             </div>
           )}
 
-          {/* Final Summary */}
-          {(mode !== "preview" || finalSummary.trim().length > 0) && (
-            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
-              <SectionHeader title={t("taskModal:finalSummary")} right={t("taskModal:completionSummary")} />
-              {mode === "preview" ? (
-                <div className="prose prose-sm !max-w-none wmde-markdown" data-color-mode={theme}>
-                  <MermaidMarkdown source={finalSummary} />
-                </div>
-              ) : (
-                <div className="border border-gray-200 dark:border-gray-700 rounded-md">
-                  <MDEditor
-                    value={finalSummary}
-                    onChange={(val) => setFinalSummary(val || "")}
-                    preview="edit"
-                    height={220}
-                    data-color-mode={theme}
-                    textareaProps={{
-                      placeholder: t("taskModal:finalSummaryPlaceholder"),
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
-        {/* Sidebar */}
-        <div className="md:col-span-1 space-y-4">
-          {/* Dates */}
-	          {task && (
-	            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 text-xs text-gray-600 dark:text-gray-300 space-y-1">
-	              <div><span className="font-semibold text-gray-800 dark:text-gray-100">{t("taskModal:created")}</span> <span className="text-gray-700 dark:text-gray-200">{formatStoredUtcDateForDisplay(task.createdDate, dateFormat)}</span></div>
-	              {task.updatedDate && (
-	                <div><span className="font-semibold text-gray-800 dark:text-gray-100">{t("taskModal:updated")}</span> <span className="text-gray-700 dark:text-gray-200">{formatStoredUtcDateForDisplay(task.updatedDate, dateFormat)}</span></div>
-	              )}
-	            </div>
-	          )}
-          {/* Title (editable for existing tasks) */}
-          {task && (
-            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
-              <SectionHeader title={t("taskModal:fields.title")} />
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                }}
-                onBlur={() => {
-                  if (title.trim() && title !== task.title) {
-                    void handleInlineMetaUpdate({ title: title.trim() });
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.currentTarget.blur();
-                  }
-                }}
+        {/* Sidebar - grouped into Identity / Workflow / Planning instead of one
+            flat list of 8 fields, so related fields read together at a glance */}
+        <div className="md:col-span-1 space-y-3">
+          {/* Identity: title + read-only dates */}
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700/60">
+            {task && (
+              <MetaRow label={t("taskModal:fields.title")}>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                  }}
+                  onBlur={() => {
+                    if (title.trim() && title !== task.title) {
+                      void handleInlineMetaUpdate({ title: title.trim() });
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  disabled={isFromOtherBranch}
+                  className={`w-full h-9 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 focus:border-transparent transition-colors duration-200 ${isFromOtherBranch ? 'opacity-60 cursor-not-allowed' : ''}`}
+                />
+              </MetaRow>
+            )}
+
+            {task && (
+              <div className="grid grid-cols-2 gap-3 px-3 py-2.5">
+                <div>
+                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                    {t("taskModal:created")}
+                  </div>
+                  <div className="text-sm tabular-nums text-gray-700 dark:text-gray-300">
+                    {formatStoredUtcDateForDisplay(task.createdDate, dateFormat)}
+                  </div>
+                </div>
+                {task.updatedDate && (
+                  <div>
+                    <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                      {t("taskModal:updated")}
+                    </div>
+                    <div className="text-sm tabular-nums text-gray-700 dark:text-gray-300">
+                      {formatStoredUtcDateForDisplay(task.updatedDate, dateFormat)}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Workflow: the fields you touch constantly while triaging a task */}
+          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700/60">
+            <div className="grid grid-cols-2 gap-3 px-3 py-2.5">
+              <div>
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                  {t("taskModal:fields.status")}
+                </label>
+                <StatusSelect current={status} onChange={(val) => handleInlineMetaUpdate({ status: val })} disabled={isFromOtherBranch} />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                  {t("taskModal:fields.priority")}
+                </label>
+                <Select
+                  uiSize="md"
+                  value={priority}
+                  onChange={(e) => handleInlineMetaUpdate({ priority: e.target.value as any })}
+                  disabled={isFromOtherBranch}
+                >
+                  <option value="">{t("common:priority.none")}</option>
+                  <option value="low">{t("common:priority.low")}</option>
+                  <option value="medium">{t("common:priority.medium")}</option>
+                  <option value="high">{t("common:priority.high")}</option>
+                </Select>
+              </div>
+            </div>
+
+            <MetaRow label={t("taskModal:fields.assignee")}>
+              <ChipInput
+                name="assignee"
+                label=""
+                value={assignee}
+                onChange={(value) => handleInlineMetaUpdate({ assignee: value })}
+                placeholder={t("taskModal:fields.assigneePlaceholder")}
                 disabled={isFromOtherBranch}
-                className={`w-full h-10 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 focus:border-transparent transition-colors duration-200 ${isFromOtherBranch ? 'opacity-60 cursor-not-allowed' : ''}`}
+                suggestions={availableAssignees}
               />
+            </MetaRow>
+
+            <MetaRow label={t("taskModal:fields.labels")}>
+              <ChipInput
+                name="labels"
+                label=""
+                value={labels}
+                onChange={(value) => handleInlineMetaUpdate({ labels: value })}
+                placeholder={t("taskModal:fields.labelsPlaceholder")}
+                disabled={isFromOtherBranch}
+                chipColor={(l) => resolveLabelColor(l, labelColors)}
+              />
+            </MetaRow>
+          </div>
+
+          {/* Planning: structural relationships to other tasks/milestones - collapsed
+              behind a "show more" toggle when both are empty, since these are edited
+              far less often than Status/Priority/Assignee/Labels above */}
+          {(planningExpanded || Boolean(milestoneSelectionValue) || dependencies.length > 0) ? (
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700/60">
+              <MetaRow label={t("taskModal:fields.milestone")}>
+                <Select
+                  uiSize="md"
+                  value={milestoneSelectionValue}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setMilestone(value);
+                    handleInlineMetaUpdate({ milestone: value.trim().length > 0 ? value : null });
+                  }}
+                  disabled={isFromOtherBranch}
+                >
+                  <option value="">{t("taskModal:fields.noMilestone")}</option>
+                  {!hasMilestoneSelection && milestoneSelectionValue ? (
+                    <option value={milestoneSelectionValue}>{resolveMilestoneLabel(milestoneSelectionValue)}</option>
+                  ) : null}
+                  {(milestoneEntities ?? []).map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.title}
+                    </option>
+                  ))}
+                </Select>
+              </MetaRow>
+
+              <MetaRow label={t("taskModal:fields.dependencies")}>
+                <DependencyInput
+                  value={dependencies}
+                  onChange={(value) => handleInlineMetaUpdate({ dependencies: value })}
+                  availableTasks={availableTasks}
+                  currentTaskId={task?.id}
+                  label=""
+                  disabled={isFromOtherBranch}
+                />
+              </MetaRow>
             </div>
-          )}
-
-          {/* Status */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
-            <SectionHeader title={t("taskModal:fields.status")} />
-            <StatusSelect current={status} onChange={(val) => handleInlineMetaUpdate({ status: val })} disabled={isFromOtherBranch} />
-          </div>
-
-          {/* Assignee */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
-            <SectionHeader title={t("taskModal:fields.assignee")} />
-            <ChipInput
-              name="assignee"
-              label=""
-              value={assignee}
-              onChange={(value) => handleInlineMetaUpdate({ assignee: value })}
-              placeholder={t("taskModal:fields.assigneePlaceholder")}
-              disabled={isFromOtherBranch}
-            />
-          </div>
-
-          {/* Labels */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
-            <SectionHeader title={t("taskModal:fields.labels")} />
-            <ChipInput
-              name="labels"
-              label=""
-              value={labels}
-              onChange={(value) => handleInlineMetaUpdate({ labels: value })}
-              placeholder={t("taskModal:fields.labelsPlaceholder")}
-              disabled={isFromOtherBranch}
-            />
-          </div>
-
-          {/* Priority */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
-            <SectionHeader title={t("taskModal:fields.priority")} />
-            <select
-              className={`w-full h-10 px-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 focus:border-transparent transition-colors duration-200 ${isFromOtherBranch ? 'opacity-60 cursor-not-allowed' : ''}`}
-              value={priority}
-              onChange={(e) => handleInlineMetaUpdate({ priority: e.target.value as any })}
-              disabled={isFromOtherBranch}
-            >
-              <option value="">{t("common:priority.none")}</option>
-              <option value="low">{t("common:priority.low")}</option>
-              <option value="medium">{t("common:priority.medium")}</option>
-              <option value="high">{t("common:priority.high")}</option>
-            </select>
-          </div>
-
-          {/* Milestone */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
-            <SectionHeader title={t("taskModal:fields.milestone")} />
-            <select
-              className={`w-full h-10 px-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 focus:border-transparent transition-colors duration-200 ${isFromOtherBranch ? 'opacity-60 cursor-not-allowed' : ''}`}
-              value={milestoneSelectionValue}
-				onChange={(e) => {
-					const value = e.target.value;
-					setMilestone(value);
-					handleInlineMetaUpdate({ milestone: value.trim().length > 0 ? value : null });
-				}}
-              disabled={isFromOtherBranch}
-            >
-              <option value="">{t("taskModal:fields.noMilestone")}</option>
-              {!hasMilestoneSelection && milestoneSelectionValue ? (
-                <option value={milestoneSelectionValue}>{resolveMilestoneLabel(milestoneSelectionValue)}</option>
-              ) : null}
-              {(milestoneEntities ?? []).map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.title}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Dependencies */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
-            <SectionHeader title={t("taskModal:fields.dependencies")} />
-            <DependencyInput
-              value={dependencies}
-              onChange={(value) => handleInlineMetaUpdate({ dependencies: value })}
-              availableTasks={availableTasks}
-              currentTaskId={task?.id}
-              label=""
-              disabled={isFromOtherBranch}
-            />
-          </div>
-
-          {/* Archive button at bottom of sidebar */}
-		          {task && onArchive && !isFromOtherBranch && (
-		            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3">
-		              <button
-		                onClick={handleArchive}
-		                className="w-full inline-flex items-center justify-center px-4 py-2 bg-red-500 dark:bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-600 dark:hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-red-400 dark:focus:ring-red-500 transition-colors duration-200"
-		              >
-		                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-		                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+          ) : (
+            !isFromOtherBranch && (
+              <button
+                type="button"
+                onClick={() => setPlanningExpanded(true)}
+                className="w-full flex items-center gap-2 text-left px-3 py-2.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:focus-visible:ring-stone-400"
+              >
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                 </svg>
-                {t("taskModal:archiveTask")}
+                {t("taskModal:addMilestoneOrDependency")}
               </button>
-            </div>
+            )
           )}
+
         </div>
       </div>
       )}
     </Modal>
+    {confirmDialog}
+    </>
   );
 };
 
@@ -1413,16 +1667,11 @@ const StatusSelect: React.FC<{ current: string; onChange: (v: string) => void; d
     apiClient.fetchStatuses().then(setStatuses).catch(() => setStatuses(["To Do", "In Progress", "Done"]));
   }, []);
   return (
-    <select
-      className={`w-full h-10 px-3 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 focus:border-transparent transition-colors duration-200 ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
-      value={current}
-      onChange={(e) => onChange(e.target.value)}
-      disabled={disabled}
-    >
+    <Select uiSize="md" value={current} onChange={(e) => onChange(e.target.value)} disabled={disabled}>
       {statuses.map((s) => (
         <option key={s} value={s}>{s}</option>
       ))}
-    </select>
+    </Select>
   );
 };
 

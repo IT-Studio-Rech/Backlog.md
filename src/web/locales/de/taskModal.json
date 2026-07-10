@@ -7,7 +7,7 @@
 	"failedToSaveTask": "Aufgabe konnte nicht gespeichert werden",
 	"completeConfirm": "Diese Aufgabe abschließen? Sie wird in den Ordner \"Erledigt\" verschoben.",
 	"archiveConfirm": "\"{{title}}\" wirklich archivieren? Die Aufgabe wird in den Archiv-Ordner verschoben.",
-	"markAsCompleted": "Als erledigt markieren",
+	"markAsCompleted": "Erledigt",
 	"markAsCompletedTooltip": "In den Ordner \"Erledigt\" verschieben (entfernt vom Board)",
 	"edit": "Bearbeiten",
 	"readOnlyLabel": "Nur lesbar:",
@@ -29,6 +29,7 @@
 		"noMilestone": "Kein Meilenstein",
 		"dependencies": "Abhängigkeiten"
 	},
+	"addMilestoneOrDependency": "Meilenstein oder Abhängigkeit hinzufügen",
 	"createModeHint": "Akzeptanzkriterien, Plan, Notizen, Meilenstein und Abhängigkeiten können nach dem Erstellen der Aufgabe ergänzt werden.",
 	"noDescription": "Keine Beschreibung",
 	"references": "Referenzen",
@@ -38,8 +39,9 @@
 	"add": "Hinzufügen",
 	"documentation": "Dokumentation",
 	"acceptanceCriteria": "Akzeptanzkriterien",
+	"acceptanceCriteriaSubtitle": "Spezifisch für diese Aufgabe",
 	"definitionOfDone": "Definition of Done",
-	"toggleToUpdate": "Zum Aktualisieren umschalten",
+	"definitionOfDoneSubtitle": "Projektweiter Standard, gilt für jede Aufgabe",
 	"noAcceptanceCriteria": "Keine Akzeptanzkriterien",
 	"noDefinitionOfDoneItems": "Keine Definition-of-Done-Einträge",
 	"implementationPlan": "Umsetzungsplan",
@@ -55,9 +57,10 @@
 	"adding": "Wird hinzugefügt...",
 	"addComment": "Kommentar hinzufügen",
 	"finalSummary": "Abschlusszusammenfassung",
-	"completionSummary": "Abschluss-Zusammenfassung",
+	"finalSummaryTab": "Zusammenfassung",
+	"noFinalSummary": "Noch keine Abschlusszusammenfassung",
 	"finalSummaryPlaceholder": "PR-artige Zusammenfassung der Umsetzung (schreiben, wenn die Aufgabe fertig ist)",
-	"created": "Erstellt:",
-	"updated": "Aktualisiert:",
-	"archiveTask": "Aufgabe archivieren"
+	"created": "Erstellt",
+	"updated": "Aktualisiert",
+	"archiveTask": "Archivieren"
 }

@@ -120,19 +120,19 @@
         font-family: var(--font-display);
     }
 
-    /* Custom Blue-Dark Theme for MDEditor - moved to utilities for higher precedence */
+    /* Custom Blue-Dark Theme for MDEditor - moved to utilities for higher precedence.
+       --color-canvas-default is intentionally set per-variant below: the editable
+       widget (.wmde-markdown-var, used by <MDEditor>) is recessed one tier below
+       the card since it's an interactive input field; the static preview render
+       (.wmde-markdown, used for read-only rendered markdown) matches the card
+       background exactly, since a recessed box behind plain read-only text has no
+       purpose and just reads as a stray dark rectangle. */
     .wmde-markdown-var[data-color-mode*="dark"],
     .wmde-markdown[data-color-mode*="dark"],
     [data-color-mode*="dark"] .wmde-markdown,
     [data-color-mode*="dark"] .wmde-markdown-var,
     div[data-color-mode*="dark"] .wmde-markdown-var,
     div[data-color-mode*="dark"] .wmde-markdown {
-        /* Base canvas and text colors - matches the app's near-black surface ladder,
-           not a standalone slate/blue palette (that mismatch was the bug: this
-           preview used to sit on a similarly-dark app background, but against the
-           new near-black theme the old slate-blue read as a jarring blue box). */
-        --color-canvas-default: #141414 !important;
-        /* near-black panel surface */
         --color-canvas-subtle: #1e1e1e !important;
         /* near-black hover/active surface */
         --color-fg-default: #f1f5f9 !important;
@@ -166,6 +166,20 @@
         --color-prettylights-syntax-markup-italic: #cbd5e1 !important;
         --color-prettylights-syntax-markup-list: #fbbf24 !important;
         --color-prettylights-syntax-markup-code-bg: #1e1e1e !important;
+    }
+
+    /* Edit-mode widget: recessed one tier below the card (#141414 -> #0f0f0f). */
+    .wmde-markdown-var[data-color-mode*="dark"],
+    [data-color-mode*="dark"] .wmde-markdown-var,
+    div[data-color-mode*="dark"] .wmde-markdown-var {
+        --color-canvas-default: #0f0f0f !important;
+    }
+
+    /* Static read-only preview: matches the card exactly, no recessed box. */
+    .wmde-markdown[data-color-mode*="dark"],
+    [data-color-mode*="dark"] .wmde-markdown,
+    div[data-color-mode*="dark"] .wmde-markdown {
+        --color-canvas-default: #141414 !important;
     }
 }
 
@@ -232,9 +246,26 @@
         animation: slide-in-down 0.3s ease-out;
     }
 
+    @keyframes command-palette-in {
+        from {
+            opacity: 0;
+            transform: translateY(-8px) scale(0.98);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .animate-command-palette-in {
+        animation: command-palette-in 150ms ease-out;
+    }
+
     @media (prefers-reduced-motion: reduce) {
         .animate-slide-in-right,
-        .animate-slide-in-down {
+        .animate-slide-in-down,
+        .animate-command-palette-in {
             animation: none !important;
         }
     }
