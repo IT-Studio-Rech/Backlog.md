@@ -86,7 +86,7 @@ export default function LabelFilterDropdown({
 										type="checkbox"
 										checked={isSelected}
 										onChange={() => toggleLabel(label)}
-										className="h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
+										className="h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
 									/>
 									<span className="truncate">{label}</span>
 								</label>
@@ -96,7 +96,7 @@ export default function LabelFilterDropdown({
 					{selectedLabels.length > 0 && (
 						<button
 							type="button"
-							className="w-full text-left px-3 py-2 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 border-t border-gray-200 dark:border-gray-700"
+							className="w-full text-left px-3 py-2 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 border-t border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
 							onClick={() => {
 								onChange([]);
 								setIsOpen(false);

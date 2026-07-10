@@ -52,7 +52,7 @@
 		"title": "Etwas ist schiefgelaufen",
 		"message": "Ein unerwarteter Fehler ist aufgetreten. Bitte lade die Seite neu.",
 		"technicalDetails": "Technische Details",
-		"tryAgain": "Erneut versuchen"
+		"tryAgain": "Schließen und neu laden"
 	},
 	"cleanupModal": {
 		"title": "Abgeschlossene Aufgaben aufräumen",

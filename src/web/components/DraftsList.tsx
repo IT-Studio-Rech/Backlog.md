@@ -73,11 +73,11 @@ const DraftsList: React.FC<DraftsListProps> = ({ onEditTask, onNewDraft, dateFor
   const getPriorityColor = (priority?: string) => {
     switch (priority?.toLowerCase()) {
       case 'high':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200';
+        return 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200';
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200';
       case 'low':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200';
+        return 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200';
       default:
         return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
     }
@@ -142,7 +142,7 @@ const DraftsList: React.FC<DraftsListProps> = ({ onEditTask, onNewDraft, dateFor
                     <div className="flex items-center space-x-3 mb-2">
                       <h3 className="text-lg font-medium text-gray-900 dark:text-white">{draft.title}</h3>
                       {draft.priority && (
-                        <span className={`px-2 py-1 text-xs font-medium rounded-circle ${getPriorityColor(draft.priority)}`}>
+                        <span className={`px-2 py-1 text-xs font-semibold rounded-circle ${getPriorityColor(draft.priority)}`}>
                           {t(`common:priorityBadge.${draft.priority.toLowerCase()}`)}
                         </span>
                       )}
@@ -169,7 +169,7 @@ const DraftsList: React.FC<DraftsListProps> = ({ onEditTask, onNewDraft, dateFor
                     {draft.labels && draft.labels.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {draft.labels.map((label) => (
-                          <span key={label} className="px-2 py-1 text-xs bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded-circle">
+                          <span key={label} className="px-2 py-0.5 text-[11px] bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded-circle">
                             {label}
                           </span>
                         ))}

@@ -459,7 +459,8 @@ const SideNavigation = memo(function SideNavigation({
 								{searchQuery && (
 									<button
 										onClick={() => setSearchQuery('')}
-										className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+										aria-label={t('nav:clearSearch')}
+										className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 rounded"
 									>
 										<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -680,7 +681,9 @@ const SideNavigation = memo(function SideNavigation({
 											className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 rounded transition-colors duration-200"
 											title={isDocsCollapsed ? t('nav:expandDocuments') : t('nav:collapseDocuments')}
 										>
-											{isDocsCollapsed ? <Icons.ChevronRight /> : <Icons.ChevronDown />}
+											<span className={`inline-flex transition-transform duration-200 ${isDocsCollapsed ? '' : 'rotate-90'}`}>
+												<Icons.ChevronRight />
+											</span>
 									</button>
 									<span className="text-gray-500 dark:text-gray-400"><Icons.Document /></span>
 									<span className="text-sm font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400 whitespace-nowrap">{t('nav:documentsCount', { count: docs.length })}</span>
@@ -739,7 +742,9 @@ const SideNavigation = memo(function SideNavigation({
 											className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 rounded transition-colors duration-200"
 											title={isDecisionsCollapsed ? t('nav:expandDecisions') : t('nav:collapseDecisions')}
 										>
-											{isDecisionsCollapsed ? <Icons.ChevronRight /> : <Icons.ChevronDown />}
+											<span className={`inline-flex transition-transform duration-200 ${isDecisionsCollapsed ? '' : 'rotate-90'}`}>
+												<Icons.ChevronRight />
+											</span>
 									</button>
 									<span className="text-gray-500 dark:text-gray-400"><Icons.Decision /></span>
 									<span className="text-sm font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400 whitespace-nowrap">{t('nav:decisionsCount', { count: decisions.length })}</span>
@@ -794,6 +799,7 @@ const SideNavigation = memo(function SideNavigation({
 							to="/"
 							data-tooltip-id="sidebar-tooltip"
 							data-tooltip-content={t('nav:kanbanBoard')}
+							aria-label={t('nav:kanbanBoard')}
 							className={({ isActive }) =>
 								`flex items-center justify-center p-3 rounded-md transition-colors duration-200 ${
 									isActive
@@ -810,6 +816,7 @@ const SideNavigation = memo(function SideNavigation({
 							to="/tasks"
 							data-tooltip-id="sidebar-tooltip"
 							data-tooltip-content={t('nav:allTasks')}
+							aria-label={t('nav:allTasks')}
 							className={({ isActive }) =>
 								`flex items-center justify-center p-3 rounded-md transition-colors duration-200 ${
 									isActive
@@ -827,6 +834,7 @@ const SideNavigation = memo(function SideNavigation({
 							to="/drafts"
 							data-tooltip-id="sidebar-tooltip"
 							data-tooltip-content={t('nav:drafts')}
+							aria-label={t('nav:drafts')}
 							className={({ isActive }) =>
 								`flex items-center justify-center p-3 rounded-md transition-colors duration-200 ${
 									isActive
@@ -844,6 +852,7 @@ const SideNavigation = memo(function SideNavigation({
 							to="/milestones"
 							data-tooltip-id="sidebar-tooltip"
 							data-tooltip-content={t('nav:milestones')}
+							aria-label={t('nav:milestones')}
 							className={({ isActive }) =>
 								`flex items-center justify-center p-3 rounded-md transition-colors duration-200 ${
 									isActive
@@ -861,6 +870,7 @@ const SideNavigation = memo(function SideNavigation({
 							to="/statistics"
 							data-tooltip-id="sidebar-tooltip"
 							data-tooltip-content={t('nav:statistics')}
+							aria-label={t('nav:statistics')}
 							className={({ isActive }) =>
 								`flex items-center justify-center p-3 rounded-md transition-colors duration-200 ${
 									isActive

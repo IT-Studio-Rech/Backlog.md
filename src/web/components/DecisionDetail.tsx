@@ -87,8 +87,9 @@ export default function DecisionDetail({ decisions, onRefreshData, dateFormat }:
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSaving, setIsSaving] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
-	
-	
+	const [saveError, setSaveError] = useState<Error | null>(null);
+
+
 	const [isNewDecision, setIsNewDecision] = useState(false);
 	const [showSaveSuccess, setShowSaveSuccess] = useState(false);
 
@@ -160,13 +161,14 @@ export default function DecisionDetail({ decisions, onRefreshData, dateFormat }:
 
 	const handleSave = async () => {
 		if (!decisionTitle.trim()) {
-			console.error('Decision title is required');
+			setSaveError(new Error(t('decisions:titleRequired')));
 			return;
 		}
 
 		try {
 			setIsSaving(true);
-			
+			setSaveError(null);
+
 			if (isNewDecision) {
 				// Create new decision
 				const decision = await apiClient.createDecision(decisionTitle);
@@ -193,7 +195,9 @@ export default function DecisionDetail({ decisions, onRefreshData, dateFormat }:
 				setIsEditing(false);
 				navigate(`/decisions/${id}/${sanitizeUrlTitle(decisionTitle)}`);
 			}
-		} catch (error) {
+		} catch (err) {
+			const error = err instanceof Error ? err : new Error('Failed to save decision');
+			setSaveError(error);
 			console.error('Failed to save decision:', error);
 		} finally {
 			setIsSaving(false);
@@ -367,8 +371,30 @@ export default function DecisionDetail({ decisions, onRefreshData, dateFormat }:
 					/>
 				</div>
 			</div>
+
+			{/* Save Error Alert */}
+			{saveError && (
+				<div className="border-t border-red-200 bg-red-50 px-8 py-3">
+					<div className="flex items-center space-x-3">
+						<svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+								  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+						</svg>
+						<span className="text-sm text-red-700">{t('decisions:failedToSave', { message: saveError.message })}</span>
+						<button
+							onClick={() => setSaveError(null)}
+							className="ml-auto text-red-700 hover:text-red-900"
+						>
+							<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+									  d="M6 18L18 6M6 6l12 12"/>
+							</svg>
+						</button>
+					</div>
+				</div>
+			)}
 			</div>
-			
+
 		{/* Save Success Toast */}
 		{showSaveSuccess && (
 			<SuccessToast

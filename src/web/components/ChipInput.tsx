@@ -69,7 +69,7 @@ const ChipInput: React.FC<ChipInputProps> = ({ value, onChange, placeholder, lab
 	                <button
 	                  type="button"
 	                  onClick={() => removeChip(index)}
-	                  className="hover:bg-blue-200 dark:hover:bg-blue-800 rounded-sm p-0.5 transition-colors duration-200"
+	                  className="hover:bg-blue-200 dark:hover:bg-blue-800 rounded-sm p-0.5 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
 	                  aria-label={t('common:removeItem', { item })}
 	                >
 	                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">

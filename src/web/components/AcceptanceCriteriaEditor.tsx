@@ -89,7 +89,7 @@ const AcceptanceCriteriaEditor: React.FC<Props> = ({
           <li key={c.index} className="flex items-center gap-2">
             <input
               type="checkbox"
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
               checked={c.checked}
               onChange={(e) => handleToggle(c.index, e.target.checked)}
               disabled={disableToggle}
@@ -105,7 +105,7 @@ const AcceptanceCriteriaEditor: React.FC<Props> = ({
             <button
               type="button"
               onClick={() => handleRemove(c.index)}
-              className="px-2 py-1 text-sm text-red-600 dark:text-red-400 hover:underline"
+              className="px-2 py-1 text-sm text-red-600 dark:text-red-400 hover:underline focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 rounded"
             >
               {t("common:remove")}
             </button>

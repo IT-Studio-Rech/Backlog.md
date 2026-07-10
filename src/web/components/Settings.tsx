@@ -147,7 +147,7 @@ const Settings: React.FC = () => {
 
 				<div className="space-y-8">
 					{/* Project Settings */}
-					<div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+					<div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
 						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('settings:project.title')}</h2>
 						<div className="space-y-4">
 							<div>
@@ -192,17 +192,12 @@ const Settings: React.FC = () => {
 					</div>
 
 					{/* Workflow Settings */}
-					<div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+					<div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
 						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('settings:workflow.title')}</h2>
 						<div className="space-y-4">
 							<div>
 								<label className="flex items-center justify-between">
-									<div>
-										<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('settings:workflow.autoCommit.label')}</span>
-										<p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-											{t('settings:workflow.autoCommit.help')}
-										</p>
-									</div>
+									<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('settings:workflow.autoCommit.label')}</span>
 									<div className="relative inline-flex items-center cursor-pointer">
 										<input
 											type="checkbox"
@@ -210,19 +205,17 @@ const Settings: React.FC = () => {
 											onChange={(e) => handleInputChange('autoCommit', e.target.checked)}
 											className="sr-only peer"
 										/>
-										<div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-circle peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-circle after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+										<div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-circle peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-circle after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
 									</div>
 								</label>
+								<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+									{t('settings:workflow.autoCommit.help')}
+								</p>
 							</div>
 
 							<div>
 								<label className="flex items-center justify-between">
-									<div>
-										<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('settings:workflow.remoteOperations.label')}</span>
-										<p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-											{t('settings:workflow.remoteOperations.help')}
-										</p>
-									</div>
+									<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('settings:workflow.remoteOperations.label')}</span>
 									<div className="relative inline-flex items-center cursor-pointer">
 										<input
 											type="checkbox"
@@ -230,9 +223,12 @@ const Settings: React.FC = () => {
 											onChange={(e) => handleInputChange('remoteOperations', e.target.checked)}
 											className="sr-only peer"
 										/>
-										<div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-circle peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-circle after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+										<div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-circle peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-circle after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
 									</div>
 								</label>
+								<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+									{t('settings:workflow.remoteOperations.help')}
+								</p>
 							</div>
 
 							<div>
@@ -274,7 +270,7 @@ const Settings: React.FC = () => {
 					</div>
 
 					{/* Definition of Done Defaults */}
-					<div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+					<div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
 						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('settings:definitionOfDone.title')}</h2>
 						<p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
 							{t('settings:definitionOfDone.description')}
@@ -316,7 +312,7 @@ const Settings: React.FC = () => {
 					</div>
 
 					{/* Web UI Settings */}
-					<div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+					<div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
 						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('settings:webUi.title')}</h2>
 						<div className="space-y-4">
 							<div>
@@ -343,12 +339,7 @@ const Settings: React.FC = () => {
 
 							<div>
 								<label className="flex items-center justify-between">
-									<div>
-										<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('settings:webUi.autoOpenBrowser.label')}</span>
-										<p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-											{t('settings:webUi.autoOpenBrowser.help')}
-										</p>
-									</div>
+									<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('settings:webUi.autoOpenBrowser.label')}</span>
 									<div className="relative inline-flex items-center cursor-pointer">
 										<input
 											type="checkbox"
@@ -356,19 +347,17 @@ const Settings: React.FC = () => {
 											onChange={(e) => handleInputChange('autoOpenBrowser', e.target.checked)}
 											className="sr-only peer"
 										/>
-										<div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-circle peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-circle after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+										<div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-circle peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-circle after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
 									</div>
 								</label>
+								<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+									{t('settings:webUi.autoOpenBrowser.help')}
+								</p>
 							</div>
 
 							<div>
 								<label className="flex items-center justify-between">
-									<div>
-										<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('settings:webUi.hideEmptyColumns.label')}</span>
-										<p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-											{t('settings:webUi.hideEmptyColumns.help')}
-										</p>
-									</div>
+									<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('settings:webUi.hideEmptyColumns.label')}</span>
 									<div className="relative inline-flex items-center cursor-pointer">
 										<input
 											type="checkbox"
@@ -376,15 +365,18 @@ const Settings: React.FC = () => {
 											onChange={(e) => handleInputChange('hideEmptyColumns', e.target.checked)}
 											className="sr-only peer"
 										/>
-										<div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-circle peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-circle after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+										<div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-circle peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-circle after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
 									</div>
 								</label>
+								<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+									{t('settings:webUi.hideEmptyColumns.help')}
+								</p>
 							</div>
 						</div>
 					</div>
 
 					{/* Advanced Settings */}
-					<div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+					<div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
 						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('settings:advanced.title')}</h2>
 						<div className="space-y-4">
 							<div>

@@ -455,11 +455,11 @@ const TaskList: React.FC<TaskListProps> = ({
 	const getPriorityColor = (priority?: string) => {
 		switch (priority?.toLowerCase()) {
 			case "high":
-				return "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200";
+				return "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200";
 			case "medium":
-				return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200";
+				return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200";
 			case "low":
-				return "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200";
+				return "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200";
 			default:
 				return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200";
 		}
@@ -501,7 +501,7 @@ const TaskList: React.FC<TaskListProps> = ({
 			<button
 				type="button"
 				onClick={() => handleSortChange(column)}
-				className="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-100"
+				className="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
 			>
 				{label}
 				{renderSortIcon(column)}
@@ -684,7 +684,7 @@ const TaskList: React.FC<TaskListProps> = ({
 								<button
 									type="button"
 									onClick={() => setShowCleanupModal(true)}
-									className="py-2 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2 whitespace-nowrap"
+									className="py-2 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
 									title={t("tasks:cleanUpTooltip")}
 								>
 									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -698,7 +698,7 @@ const TaskList: React.FC<TaskListProps> = ({
 								<button
 									type="button"
 									onClick={hasActiveFilters ? handleClearFilters : undefined}
-									className="py-2 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg whitespace-nowrap transition-colors duration-200 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+									className="py-2 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg whitespace-nowrap transition-colors duration-200 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
 									style={{ visibility: hasActiveFilters ? "visible" : "hidden" }}
 									aria-hidden={!hasActiveFilters}
 								>
@@ -809,7 +809,7 @@ const TaskList: React.FC<TaskListProps> = ({
 											<td className="px-3 py-2.5">
 												{task.priority ? (
 													<span
-														className={`inline-flex rounded-circle px-2 py-0.5 text-[11px] font-medium ${getPriorityColor(task.priority)}`}
+														className={`inline-flex rounded-circle px-2 py-0.5 text-[11px] font-semibold ${getPriorityColor(task.priority)}`}
 													>
 														{t(`common:priorityBadge.${task.priority.toLowerCase()}`)}
 													</span>
@@ -817,7 +817,7 @@ const TaskList: React.FC<TaskListProps> = ({
 													<span className="text-xs text-gray-300 dark:text-gray-600">—</span>
 												)}
 											</td>
-											<td className="px-3 py-2.5 text-xs font-mono text-gray-500 dark:text-gray-400 whitespace-nowrap">
+											<td className="px-3 py-2.5 text-xs font-mono tabular-nums text-gray-500 dark:text-gray-400 whitespace-nowrap">
 												{task.ordinal !== undefined ? task.ordinal : <span className="text-gray-300 dark:text-gray-600">—</span>}
 											</td>
 											<td className="px-3 py-2.5">
@@ -863,7 +863,7 @@ const TaskList: React.FC<TaskListProps> = ({
 											<td className="px-3 py-2.5 text-xs text-gray-600 dark:text-gray-300 truncate" title={milestoneLabel}>
 												{milestoneLabel}
 											</td>
-											<td className="px-3 py-2.5 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+											<td className="px-3 py-2.5 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap tabular-nums">
 												{createdLabel}
 											</td>
 										</tr>

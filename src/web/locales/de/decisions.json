@@ -10,6 +10,8 @@
 		"titlePlaceholder": "Titel der Entscheidung"
 	},
 	"editorPlaceholder": "Schreibe hier die Dokumentation der Entscheidung...",
+	"titleRequired": "Titel der Entscheidung ist erforderlich",
+	"failedToSave": "Speichern fehlgeschlagen: {{message}}",
 	"saveSuccess": "Entscheidung \"{{title}}\" erfolgreich gespeichert!",
 	"status": {
 		"proposed": "Vorgeschlagen",

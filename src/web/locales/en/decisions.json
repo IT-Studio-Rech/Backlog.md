@@ -10,6 +10,8 @@
 		"titlePlaceholder": "Decision title"
 	},
 	"editorPlaceholder": "Write your decision documentation here...",
+	"titleRequired": "Decision title is required",
+	"failedToSave": "Failed to save: {{message}}",
 	"saveSuccess": "Decision \"{{title}}\" saved successfully!",
 	"status": {
 		"proposed": "Proposed",

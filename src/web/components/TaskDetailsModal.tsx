@@ -818,9 +818,16 @@ export const TaskDetailsModal: React.FC<Props> = ({
 		                className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors duration-200 disabled:opacity-50"
 		                title={t("common:save")}
 		              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
+                {saving ? (
+                  <svg className="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
                 {saving ? t("common:saving") : (isCreateMode ? t("common:create") : t("common:save"))}
               </button>
             </div>
@@ -872,7 +879,7 @@ export const TaskDetailsModal: React.FC<Props> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-gray-900 dark:text-gray-100">{t("taskModal:fields.status")}</label>
               <StatusSelect current={status} onChange={(val) => handleInlineMetaUpdate({ status: val })} />
@@ -892,7 +899,7 @@ export const TaskDetailsModal: React.FC<Props> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-gray-900 dark:text-gray-100">{t("taskModal:fields.labels")}</label>
               <ChipInput
@@ -1214,8 +1221,14 @@ export const TaskDetailsModal: React.FC<Props> = ({
                       type="button"
                       onClick={() => void handleAddComment()}
                       disabled={commentSaving || commentBody.trim().length === 0}
-                      className="px-4 py-2 text-sm font-medium bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50"
+                      className="inline-flex items-center px-4 py-2 text-sm font-medium bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50"
                     >
+                      {commentSaving && (
+                        <svg className="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                      )}
                       {commentSaving ? t("taskModal:adding") : t("taskModal:addComment")}
                     </button>
                   </div>

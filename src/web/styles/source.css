@@ -206,6 +206,13 @@
         animation: slide-in-down 0.3s ease-out;
     }
 
+    @media (prefers-reduced-motion: reduce) {
+        .animate-slide-in-right,
+        .animate-slide-in-down {
+            animation: none !important;
+        }
+    }
+
     /* Avoid forcing internal editor heights; use component props instead */
 
     /* Fix for long content in markdown preview - scope to preview containers only */

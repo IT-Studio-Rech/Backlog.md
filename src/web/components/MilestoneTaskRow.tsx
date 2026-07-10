@@ -65,7 +65,7 @@ const MilestoneTaskRow: React.FC<MilestoneTaskRowProps> = ({
 
 		<div className="w-20 flex justify-center">
 			{task.priority ? (
-				<span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${priorityBadgeClass}`}>
+				<span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${priorityBadgeClass}`}>
 					{t(`priorityBadge.${task.priority}`)}
 				</span>
 			) : (

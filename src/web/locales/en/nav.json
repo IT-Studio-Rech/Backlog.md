@@ -2,6 +2,7 @@
 	"poweredBy": "powered by",
 	"searchPlaceholder": "Search (⌘K)...",
 	"searchShortcut": "Search (⌘K)",
+	"clearSearch": "Clear search",
 	"searchResults": "Search Results",
 	"searching": "Searching…",
 	"noMatchingResults": "No matching results",

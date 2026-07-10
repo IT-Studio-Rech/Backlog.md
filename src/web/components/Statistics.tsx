@@ -237,6 +237,25 @@ const Statistics: React.FC<StatisticsProps> = ({
 		}
 	};
 
+	// Same semantic hue as the badges above, but a solid -500 fill: the pale
+	// badge tone reads as washed-out when used as a full progress-bar fill.
+	const getStatusBarColor = (status: string) => {
+		switch (status.toLowerCase()) {
+			case 'in progress': return 'bg-blue-500';
+			case 'done': return 'bg-green-500';
+			default: return 'bg-gray-400 dark:bg-gray-500';
+		}
+	};
+
+	const getPriorityBarColor = (priority: string) => {
+		switch (priority.toLowerCase()) {
+			case 'high': return 'bg-red-500';
+			case 'medium': return 'bg-yellow-500';
+			case 'low': return 'bg-blue-500';
+			default: return 'bg-gray-400 dark:bg-gray-500';
+		}
+	};
+
 	return (
 		<div className="max-w-7xl mx-auto p-6 space-y-8">
 			{/* Header */}
@@ -260,7 +279,7 @@ const Statistics: React.FC<StatisticsProps> = ({
 							</svg>
 						</div>
 						<div className="ml-4">
-							<p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{statistics.totalTasks}</p>
+							<p className="text-2xl font-bold text-gray-900 dark:text-gray-100 tabular-nums">{statistics.totalTasks}</p>
 							<p className="text-gray-600 dark:text-gray-400 text-sm">{t('statistics:metrics.totalTasks')}</p>
 						</div>
 					</div>
@@ -275,7 +294,7 @@ const Statistics: React.FC<StatisticsProps> = ({
 							</svg>
 						</div>
 						<div className="ml-4">
-							<p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{statistics.completedTasks}</p>
+							<p className="text-2xl font-bold text-gray-900 dark:text-gray-100 tabular-nums">{statistics.completedTasks}</p>
 							<p className="text-gray-600 dark:text-gray-400 text-sm">{t('statistics:metrics.completed')}</p>
 						</div>
 					</div>
@@ -290,7 +309,7 @@ const Statistics: React.FC<StatisticsProps> = ({
 							</svg>
 						</div>
 						<div className="ml-4">
-							<p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{statistics.completionPercentage}%</p>
+							<p className="text-2xl font-bold text-gray-900 dark:text-gray-100 tabular-nums">{statistics.completionPercentage}%</p>
 							<p className="text-gray-600 dark:text-gray-400 text-sm">{t('statistics:metrics.completion')}</p>
 						</div>
 					</div>
@@ -305,7 +324,7 @@ const Statistics: React.FC<StatisticsProps> = ({
 							</svg>
 						</div>
 						<div className="ml-4">
-							<p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{statistics.draftCount}</p>
+							<p className="text-2xl font-bold text-gray-900 dark:text-gray-100 tabular-nums">{statistics.draftCount}</p>
 							<p className="text-gray-600 dark:text-gray-400 text-sm">{t('statistics:metrics.drafts')}</p>
 						</div>
 					</div>
@@ -317,7 +336,7 @@ const Statistics: React.FC<StatisticsProps> = ({
 				<h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('statistics:progress.heading')}</h3>
 				<div className="w-full bg-gray-200 dark:bg-gray-700 rounded-circle h-4 mb-2">
 					<div
-						className="bg-gradient-to-r from-blue-500 to-green-500 h-4 rounded-circle transition-all duration-300"
+						className="bg-green-500 h-4 rounded-circle transition-all duration-300"
 						style={{ width: `${statistics.completionPercentage}%` }}
 					></div>
 				</div>
@@ -345,14 +364,14 @@ const Statistics: React.FC<StatisticsProps> = ({
 								</div>
 								<div className="flex items-center space-x-3">
 									<div className="text-right">
-										<div className="text-lg font-semibold text-gray-900 dark:text-gray-100">{count}</div>
+										<div className="text-lg font-semibold text-gray-900 dark:text-gray-100 tabular-nums">{count}</div>
 										<div className="text-xs text-gray-500 dark:text-gray-400">
 											{Math.round((count / statistics.totalTasks) * 100)}%
 										</div>
 									</div>
 									<div className="w-16 bg-gray-200 dark:bg-gray-700 rounded-circle h-2">
-										<div 
-											className="bg-blue-500 h-2 rounded-circle transition-all duration-300"
+										<div
+											className={`${getStatusBarColor(status)} h-2 rounded-circle transition-all duration-300`}
 											style={{ width: `${(count / statistics.totalTasks) * 100}%` }}
 										></div>
 									</div>
@@ -378,14 +397,14 @@ const Statistics: React.FC<StatisticsProps> = ({
 								</div>
 								<div className="flex items-center space-x-3">
 									<div className="text-right">
-										<div className="text-lg font-semibold text-gray-900 dark:text-gray-100">{count}</div>
+										<div className="text-lg font-semibold text-gray-900 dark:text-gray-100 tabular-nums">{count}</div>
 										<div className="text-xs text-gray-500 dark:text-gray-400">
 											{Math.round((count / statistics.totalTasks) * 100)}%
 										</div>
 									</div>
 									<div className="w-16 bg-gray-200 dark:bg-gray-700 rounded-circle h-2">
-										<div 
-											className="bg-yellow-500 h-2 rounded-circle transition-all duration-300"
+										<div
+											className={`${getPriorityBarColor(priority)} h-2 rounded-circle transition-all duration-300`}
 											style={{ width: `${(count / statistics.totalTasks) * 100}%` }}
 										></div>
 									</div>

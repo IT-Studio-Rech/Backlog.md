@@ -427,10 +427,10 @@ const MilestonesPage: React.FC<MilestonesPageProps> = ({
 	const getStatusBadgeClass = (status?: string | null) => {
 		const normalized = (status ?? "").toLowerCase();
 		if (normalized.includes("done") || normalized.includes("complete")) {
-			return "bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300";
+			return "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200";
 		}
 		if (normalized.includes("progress")) {
-			return "bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300";
+			return "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200";
 		}
 		return "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300";
 	};
@@ -438,11 +438,11 @@ const MilestonesPage: React.FC<MilestonesPageProps> = ({
 	const getPriorityBadgeClass = (priority?: string) => {
 		switch (priority?.toLowerCase()) {
 			case "high":
-				return "bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300";
+				return "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300";
 			case "medium":
-				return "bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300";
+				return "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300";
 			case "low":
-				return "bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300";
+				return "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300";
 			default:
 				return "";
 		}
@@ -495,7 +495,7 @@ const MilestonesPage: React.FC<MilestonesPageProps> = ({
 				key={bucket.key}
 				className={`rounded-lg border-2 transition-all duration-200 ${
 					isDropTarget
-						? "border-blue-400 dark:border-blue-500 bg-blue-50 dark:bg-blue-900/20 scale-[1.01]"
+						? "border-green-400 dark:border-green-500 border-dashed bg-green-50 dark:bg-green-900/20 scale-[1.01]"
 						: isDragging
 						? "border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
 						: "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
