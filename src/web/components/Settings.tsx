@@ -4,6 +4,7 @@ import { apiClient } from '../lib/api';
 import { SuccessToast } from './SuccessToast';
 import Select from './Select';
 import type { BacklogConfig } from '../../types';
+import { pickDefaultLabelColor } from '../utils/labelColors';
 
 const Settings: React.FC = () => {
 	const { t } = useTranslation(['settings', 'common']);
@@ -308,6 +309,74 @@ const Settings: React.FC = () => {
 								className="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
 							>
 								{t('settings:definitionOfDone.addItem')}
+							</button>
+						</div>
+					</div>
+
+					{/* Labels & Colors */}
+					<div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
+						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('settings:labels.title')}</h2>
+						<p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+							{t('settings:labels.description')}
+						</p>
+						<div className="space-y-3">
+							{config.labels.map((label, index) => {
+								const color = config.labelColors?.[label] ?? pickDefaultLabelColor(label || `label-${index}`);
+								return (
+									<div key={`label-${index}`} className="flex items-center gap-2">
+										<input
+											type="color"
+											value={color}
+											onChange={(e) => {
+												const nextColors = { ...(config.labelColors ?? {}) };
+												nextColors[label] = e.target.value;
+												handleInputChange('labelColors', nextColors);
+											}}
+											className="h-9 w-10 shrink-0 rounded border border-gray-300 dark:border-gray-600 bg-transparent cursor-pointer"
+											title={t('settings:labels.colorPickerTitle')}
+										/>
+										<input
+											type="text"
+											value={label}
+											onChange={(e) => {
+												const newName = e.target.value;
+												const nextLabels = [...config.labels];
+												nextLabels[index] = newName;
+												const nextColors = { ...(config.labelColors ?? {}) };
+												if (label !== newName && label in nextColors) {
+													nextColors[newName] = nextColors[label] as string;
+													delete nextColors[label];
+												}
+												setConfig({ ...config, labels: nextLabels, labelColors: nextColors });
+											}}
+											className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200"
+											placeholder={t('settings:labels.itemPlaceholder')}
+										/>
+										<button
+											type="button"
+											onClick={() => {
+												const nextLabels = config.labels.filter((_, idx) => idx !== index);
+												const nextColors = { ...(config.labelColors ?? {}) };
+												delete nextColors[label];
+												setConfig({ ...config, labels: nextLabels, labelColors: nextColors });
+											}}
+											className="px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:underline"
+										>
+											{t('common:remove')}
+										</button>
+									</div>
+								);
+							})}
+							<button
+								type="button"
+								onClick={() => handleInputChange('labels', [...config.labels, ""])}
+								className="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+							>
+								{t('settings:labels.addItem')}
+							</button>
+						</div>
+					</div>
+
 							</button>
 						</div>
 					</div>

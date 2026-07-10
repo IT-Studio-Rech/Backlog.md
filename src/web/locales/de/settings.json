@@ -41,6 +41,13 @@
 		"itemPlaceholder": "Checklisten-Punkt",
 		"addItem": "+ Punkt hinzufügen"
 	},
+	"labels": {
+		"title": "Labels",
+		"description": "Verwalte die feste Label-Liste und vergib pro Label eine eigene Farbe.",
+		"itemPlaceholder": "Label-Name",
+		"addItem": "+ Label hinzufügen",
+		"colorPickerTitle": "Label-Farbe"
+	},
 	"webUi": {
 		"title": "Web-UI-Einstellungen",
 		"defaultPort": {

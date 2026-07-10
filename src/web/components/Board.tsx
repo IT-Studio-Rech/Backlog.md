@@ -36,6 +36,7 @@ interface BoardProps {
   onFiltersChange?: (filters: { assignee: string; labels: string[]; priority: string }) => void;
   hideEmptyColumns?: boolean;
   dateFormat?: string;
+  labelColors?: Record<string, string>;
 }
 
 const BOARD_FILTER_WIDTH_CLASS = 'w-[168px]';
@@ -63,6 +64,7 @@ const Board: React.FC<BoardProps> = ({
   onFiltersChange,
   hideEmptyColumns = false,
   dateFormat,
+  labelColors,
 }) => {
   const { t } = useTranslation(['board', 'common']);
   const PRIORITY_OPTIONS = useMemo(
@@ -572,6 +574,7 @@ const Board: React.FC<BoardProps> = ({
                   onChange={labels => onFiltersChange({ assignee: filterAssignee, labels, priority: filterPriority })}
                   menuId="board-labels-filter-menu"
                   className={BOARD_FILTER_WIDTH_CLASS}
+                  labelColors={labelColors}
                 />
 
                 <Select
@@ -670,6 +673,7 @@ const Board: React.FC<BoardProps> = ({
                             dragSourceLane={dragSourceLane}
                             laneId={lane.key}
                             targetMilestone={lane.milestone ?? null}
+                            labelColors={labelColors}
                             onCardContextMenu={(task, x, y) => setContextMenuTarget({ task, x, y })}
                             onDragStart={({ status: draggedStatus, laneId }) => {
                               setDragSourceStatus(draggedStatus);
@@ -704,6 +708,7 @@ const Board: React.FC<BoardProps> = ({
                   dragSourceStatus={dragSourceStatus}
                   dragSourceLane={dragSourceLane}
                   laneId={DEFAULT_LANE_KEY}
+                  labelColors={labelColors}
                   onCardContextMenu={(task, x, y) => setContextMenuTarget({ task, x, y })}
                   onDragStart={({ status: draggedStatus, laneId }) => {
                     setDragSourceStatus(draggedStatus);

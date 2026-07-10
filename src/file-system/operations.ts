@@ -1428,6 +1428,16 @@ ${description || `Milestone: ${title}`}`,
 							.filter(Boolean);
 					}
 					break;
+				case "label_colors":
+					try {
+						const parsed = JSON.parse(value);
+						if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+							config.labelColors = parsed;
+						}
+					} catch {
+						// Malformed label_colors value, ignore and keep default
+					}
+					break;
 				case "definition_of_done":
 					if (parsedDefinitionOfDone !== undefined) {
 						config.definitionOfDone = parsedDefinitionOfDone;
@@ -1494,6 +1504,7 @@ ${description || `Milestone: ${title}`}`,
 			defaultReporter: config.defaultReporter,
 			statuses: config.statuses || [...DEFAULT_STATUSES],
 			labels: config.labels || [],
+			labelColors: config.labelColors,
 			types: config.types,
 			definitionOfDone: config.definitionOfDone,
 			defaultStatus: config.defaultStatus,
@@ -1525,6 +1536,9 @@ ${description || `Milestone: ${title}`}`,
 			...(config.defaultStatus ? [`default_status: "${config.defaultStatus}"`] : []),
 			`statuses: [${config.statuses.map((s) => `"${s}"`).join(", ")}]`,
 			`labels: [${config.labels.map((l) => `"${l}"`).join(", ")}]`,
+			...(config.labelColors && Object.keys(config.labelColors).length > 0
+				? [`label_colors: ${JSON.stringify(config.labelColors)}`]
+				: []),
 			...(config.types && config.types.length > 0 ? [`types: [${config.types.map((t) => `"${t}"`).join(", ")}]`] : []),
 			...(Array.isArray(normalizedDefinitionOfDone)
 				? [`definition_of_done: [${normalizedDefinitionOfDone.map((item) => JSON.stringify(item)).join(", ")}]`]

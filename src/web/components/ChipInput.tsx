@@ -1,5 +1,6 @@
 import React, { useState, type KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getLabelChipStyle } from '../utils/labelColors';
 
 interface ChipInputProps {
   value: string[];
@@ -8,9 +9,11 @@ interface ChipInputProps {
   label: string;
   name: string;
   disabled?: boolean;
+  /** Resolves a chip's display color (hex), e.g. from configured label colors. Chips without a resolved color keep the default flat style. */
+  chipColor?: (value: string) => string | undefined;
 }
 
-const ChipInput: React.FC<ChipInputProps> = ({ value, onChange, placeholder, label, name, disabled }) => {
+const ChipInput: React.FC<ChipInputProps> = ({ value, onChange, placeholder, label, name, disabled, chipColor }) => {
   const { t } = useTranslation(['common']);
   const [inputValue, setInputValue] = useState('');
   const inputId = `chip-input-${name}`;
@@ -59,32 +62,41 @@ const ChipInput: React.FC<ChipInputProps> = ({ value, onChange, placeholder, lab
       </label>
       <div className={`relative w-full min-h-10 px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-md focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-400 focus-within:border-transparent transition-colors duration-200 pr-2 ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}>
         <div className="flex flex-wrap gap-2 items-center w-full">
-          {value.map((item, index) => (
-            <span
-              key={index}
-              className="inline-flex items-center gap-1 px-2 py-0.5 text-sm bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 rounded-md flex-shrink-0 min-w-0 max-w-full transition-colors duration-200"
-            >
-              <span className="truncate max-w-[16rem] sm:max-w-[20rem] md:max-w-[24rem]">{item}</span>
-              {!disabled && (
-                <button
-                  type="button"
-                  onClick={() => removeChip(index)}
-                  className="hover:bg-blue-200 dark:hover:bg-blue-800 rounded-sm p-0.5 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
-                  aria-label={t('common:removeItem', { item })}
-                  data-tooltip-id="app-tooltip"
-                  data-tooltip-content={t('common:removeItem', { item })}
-                >
-                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-              )}
-            </span>
-          ))}
+          {value.map((item, index) => {
+            const color = chipColor?.(item);
+            const style = getLabelChipStyle(color);
+            return (
+              <span
+                key={index}
+                style={style}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 text-sm rounded-md flex-shrink-0 min-w-0 max-w-full transition-colors duration-200 ${
+                  style ? '' : 'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200'
+                }`}
+              >
+                <span className="truncate max-w-[16rem] sm:max-w-[20rem] md:max-w-[24rem]">{item}</span>
+                {!disabled && (
+                  <button
+                    type="button"
+                    onClick={() => removeChip(index)}
+                    className={`rounded-sm p-0.5 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 ${
+                      style ? 'hover:bg-black/10 dark:hover:bg-white/10' : 'hover:bg-blue-200 dark:hover:bg-blue-800'
+                    }`}
+                    aria-label={t('common:removeItem', { item })}
+                    data-tooltip-id="app-tooltip"
+                    data-tooltip-content={t('common:removeItem', { item })}
+                  >
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                )}
+              </span>
+            );
+          })}
           <input
             id={inputId}
             type="text"

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { resolveLabelColor } from "../utils/labelColors";
 
 interface LabelFilterDropdownProps {
 	availableLabels: string[];
@@ -7,6 +8,7 @@ interface LabelFilterDropdownProps {
 	onChange: (labels: string[]) => void;
 	menuId: string;
 	className?: string;
+	labelColors?: Record<string, string>;
 }
 
 export default function LabelFilterDropdown({
@@ -15,6 +17,7 @@ export default function LabelFilterDropdown({
 	onChange,
 	menuId,
 	className = "min-w-[200px]",
+	labelColors,
 }: LabelFilterDropdownProps) {
 	const { t } = useTranslation(["common"]);
 	const [isOpen, setIsOpen] = useState(false);
@@ -72,39 +75,47 @@ export default function LabelFilterDropdown({
 					ref={menuRef}
 					className="absolute z-50 mt-2 w-[220px] max-h-56 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg"
 				>
-					{availableLabels.length === 0 ? (
-						<div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{t("common:labelFilter.noLabels")}</div>
-					) : (
-						availableLabels.map((label) => {
-							const isSelected = selectedLabels.includes(label);
-							return (
-								<label
-									key={label}
-									className="flex items-center gap-2 px-3 py-2 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-								>
-									<input
-										type="checkbox"
-										checked={isSelected}
-										onChange={() => toggleLabel(label)}
-										className="h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
-									/>
-									<span className="truncate">{label}</span>
-								</label>
-							);
-						})
-					)}
-					{selectedLabels.length > 0 && (
-						<button
-							type="button"
-							className="w-full text-left px-3 py-2 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 border-t border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
-							onClick={() => {
-								onChange([]);
-								setIsOpen(false);
-							}}
-						>
-							{t("common:labelFilter.clear")}
-						</button>
-					)}
+						{availableLabels.length === 0 ? (
+							<div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{t("common:labelFilter.noLabels")}</div>
+						) : (
+							availableLabels.map((label) => {
+								const isSelected = selectedLabels.includes(label);
+								const color = resolveLabelColor(label, labelColors);
+								return (
+									<label
+										key={label}
+										className="flex items-center gap-2 px-3 py-2 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+									>
+										<input
+											type="checkbox"
+											checked={isSelected}
+											onChange={() => toggleLabel(label)}
+											className="h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
+										/>
+										{color && (
+											<span
+												className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
+												style={{ backgroundColor: color }}
+												aria-hidden="true"
+											/>
+										)}
+										<span className="truncate">{label}</span>
+									</label>
+								);
+							})
+						)}
+						{selectedLabels.length > 0 && (
+							<button
+								type="button"
+								className="w-full text-left px-3 py-2 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 border-t border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
+								onClick={() => {
+									onChange([]);
+									setIsOpen(false);
+								}}
+							>
+								{t("common:labelFilter.clear")}
+							</button>
+						)}
 				</div>
 			)}
 		</div>

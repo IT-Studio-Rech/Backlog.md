@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Task } from '../../types';
+import { getLabelChipStyle, resolveLabelColor } from '../utils/labelColors';
 
 interface TaskCardProps {
   task: Task;
@@ -13,9 +14,10 @@ interface TaskCardProps {
   // id -> title, so the dependencies tooltip can show real titles instead of bare IDs
   taskTitleById?: Record<string, string>;
   onContextMenu?: (task: Task, x: number, y: number) => void;
+  labelColors?: Record<string, string>;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEnd, status, laneId, taskTitleById, onContextMenu }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEnd, status, laneId, taskTitleById, onContextMenu, labelColors }) => {
   const { t } = useTranslation(['board', 'common']);
   const [isDragging, setIsDragging] = React.useState(false);
   const [showBranchTooltip, setShowBranchTooltip] = React.useState(false);

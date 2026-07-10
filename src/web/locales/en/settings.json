@@ -41,6 +41,13 @@
 		"itemPlaceholder": "Checklist item",
 		"addItem": "+ Add item"
 	},
+	"labels": {
+		"title": "Labels",
+		"description": "Manage the fixed label list and give each one a custom color.",
+		"itemPlaceholder": "Label name",
+		"addItem": "+ Add label",
+		"colorPickerTitle": "Label color"
+	},
 	"webUi": {
 		"title": "Web UI Settings",
 		"defaultPort": {

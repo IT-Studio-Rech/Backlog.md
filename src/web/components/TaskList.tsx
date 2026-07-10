@@ -9,6 +9,7 @@ import type {
 	TaskSearchResult,
 } from "../../types";
 import { collectAvailableLabels } from "../../utils/label-filter.ts";
+import { getLabelChipStyle, resolveLabelColor } from "../utils/labelColors";
 import { isTerminalStatus } from "../../utils/terminal-status.ts";
 import { collectArchivedMilestoneKeys, getMilestoneLabel, milestoneKey } from "../utils/milestones";
 import { formatStoredUtcDateForCompactDisplay, parseStoredUtcDate } from "../utils/date-display";
@@ -28,6 +29,7 @@ interface TaskListProps {
 	archivedMilestones: Milestone[];
 	onRefreshData?: () => Promise<void>;
 	dateFormat?: string;
+	labelColors?: Record<string, string>;
 }
 
 type TaskSortColumn = "id" | "title" | "status" | "priority" | "ordinal" | "milestone" | "created";
@@ -86,6 +88,7 @@ const TaskList: React.FC<TaskListProps> = ({
 	archivedMilestones,
 	onRefreshData,
 	dateFormat,
+	labelColors,
 }) => {
 	const { t } = useTranslation(["tasks", "common"]);
 	const PRIORITY_OPTIONS = useMemo<Array<{ label: string; value: "" | SearchPriorityFilter }>>(
@@ -677,6 +680,7 @@ const TaskList: React.FC<TaskListProps> = ({
 							onChange={handleLabelChange}
 							menuId="task-list-labels-menu"
 							className="min-w-[160px]"
+							labelColors={labelColors}
 						/>
 
 					</div>
@@ -825,15 +829,21 @@ const TaskList: React.FC<TaskListProps> = ({
 											<td className="px-3 py-2.5">
 												{visibleLabels.length > 0 ? (
 													<div className="flex items-center gap-1 min-w-0">
-														{visibleLabels.map((label) => (
-															<span
-																key={label}
-																className="inline-flex max-w-[7rem] truncate rounded-circle bg-gray-100 px-2 py-0.5 text-[11px] text-gray-700 dark:bg-gray-700 dark:text-gray-200"
-																title={label}
-															>
-																{label}
-															</span>
-														))}
+														{visibleLabels.map((label) => {
+															const style = getLabelChipStyle(resolveLabelColor(label, labelColors));
+															return (
+																<span
+																	key={label}
+																	style={style}
+																	className={`inline-flex max-w-[7rem] truncate rounded-circle px-2 py-0.5 text-[11px] ${
+																		style ? "" : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200"
+																	}`}
+																	title={label}
+																>
+																	{label}
+																</span>
+															);
+														})}
 														{labelOverflow > 0 && (
 															<span className="text-[11px] text-gray-500 dark:text-gray-400">+{labelOverflow}</span>
 														)}

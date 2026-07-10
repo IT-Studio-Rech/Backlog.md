@@ -518,6 +518,7 @@ function App() {
                 isLoading={isLoading}
                 hideEmptyColumns={config?.hideEmptyColumns ?? false}
                 dateFormat={config?.dateFormat}
+                labelColors={config?.labelColors}
               />
             }
           />
@@ -535,6 +536,7 @@ function App() {
 	                  archivedMilestones={archivedMilestones}
 	                  onRefreshData={refreshData}
 	                  dateFormat={config?.dateFormat}
+	                  labelColors={config?.labelColors}
 	                />
 	              }
 	            />
@@ -579,6 +581,7 @@ function App() {
           isDraftMode={isDraftMode}
           definitionOfDoneDefaults={config?.definitionOfDone ?? []}
           dateFormat={config?.dateFormat}
+          labelColors={config?.labelColors}
         />
 
         {/* Task Creation Confirmation Toast */}
