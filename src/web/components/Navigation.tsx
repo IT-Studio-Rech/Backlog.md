@@ -16,7 +16,8 @@ const LanguageToggle: React.FC = () => {
             onClick={toggleLanguage}
             className="px-2.5 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2 dark:focus:ring-stone-400 dark:focus:ring-offset-gray-900"
             aria-label={language === 'de' ? 'Switch to English' : 'Auf Deutsch wechseln'}
-            title={language === 'de' ? 'Switch to English' : 'Auf Deutsch wechseln'}
+            data-tooltip-id="app-tooltip"
+            data-tooltip-content={language === 'de' ? 'Switch to English' : 'Auf Deutsch wechseln'}
         >
             {language === 'de' ? 'DE' : 'EN'}
         </button>

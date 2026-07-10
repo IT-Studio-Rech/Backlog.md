@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Tooltip } from 'react-tooltip';
 import Layout from './components/Layout';
 import BoardPage from './components/BoardPage';
 import DocumentationDetail from './components/DocumentationDetail';
@@ -589,6 +590,8 @@ function App() {
             }
           />
         )}
+
+        <Tooltip id="app-tooltip" place="top" />
       </BrowserRouter>
     </ThemeProvider>
     </LanguageProvider>

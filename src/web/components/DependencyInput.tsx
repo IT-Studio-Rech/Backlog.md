@@ -127,6 +127,8 @@ const DependencyInput: React.FC<DependencyInputProps> = ({ value, onChange, avai
 	                      onClick={() => removeDependency(index)}
 	                      className="hover:bg-blue-200 dark:hover:bg-blue-800 rounded-sm p-0.5 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
 	                      aria-label={t('common:removeItem', { item: taskId })}
+	                      data-tooltip-id="app-tooltip"
+	                      data-tooltip-content={t('common:removeItem', { item: taskId })}
 	                    >
 	                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path
