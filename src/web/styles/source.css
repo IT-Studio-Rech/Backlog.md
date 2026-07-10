@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 @import '@uiw/react-md-editor/markdown-editor.css';
 @import '@uiw/react-markdown-preview/markdown.css';
@@ -40,6 +41,24 @@
        blue/stone accent above, which covers everyday links and active states). */
     --color-brand-yellow: #ffd60a;
     --color-brand-yellow-text: #141414;
+
+    --font-display: "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* "Nocturne" dark-mode elevation: true near-black surfaces instead of Tailwind's
+   default blue-grey scale, plus JetBrains Mono for IDs/dates/numbers. Scoped to
+   .dark so light mode is completely untouched pending its own pass. Overrides
+   only the tiers actually used as backgrounds/borders (600-950) — light-mode text
+   colors reusing these same tokens (e.g. dark:text-gray-300) are unaffected since
+   they already sit outside this range. */
+.dark {
+    --color-gray-600: #2a2a2a;
+    --color-gray-700: #1e1e1e;
+    --color-gray-800: #141414;
+    --color-gray-900: #0f0f0f;
+    --color-gray-950: #0a0a0a;
+
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 @layer base {
@@ -97,6 +116,10 @@
         border-radius: var(--radius-circle);
     }
 
+    .font-display {
+        font-family: var(--font-display);
+    }
+
     /* Custom Blue-Dark Theme for MDEditor - moved to utilities for higher precedence */
     .wmde-markdown-var[data-color-mode*="dark"],
     .wmde-markdown[data-color-mode*="dark"],
@@ -104,23 +127,26 @@
     [data-color-mode*="dark"] .wmde-markdown-var,
     div[data-color-mode*="dark"] .wmde-markdown-var,
     div[data-color-mode*="dark"] .wmde-markdown {
-        /* Base canvas and text colors */
-        --color-canvas-default: #1e293b !important;
-        /* slate-800 - main background */
-        --color-canvas-subtle: #334155 !important;
-        /* slate-700 - subtle background */
+        /* Base canvas and text colors - matches the app's near-black surface ladder,
+           not a standalone slate/blue palette (that mismatch was the bug: this
+           preview used to sit on a similarly-dark app background, but against the
+           new near-black theme the old slate-blue read as a jarring blue box). */
+        --color-canvas-default: #141414 !important;
+        /* near-black panel surface */
+        --color-canvas-subtle: #1e1e1e !important;
+        /* near-black hover/active surface */
         --color-fg-default: #f1f5f9 !important;
-        /* slate-100 - primary text */
-        --color-fg-muted: #94a3b8 !important;
-        /* slate-400 - muted text */
-        --color-fg-subtle: #64748b !important;
-        /* slate-500 - subtle text */
+        /* primary text */
+        --color-fg-muted: #9ca3af !important;
+        /* neutral gray-400 - muted text */
+        --color-fg-subtle: #6b7280 !important;
+        /* neutral gray-500 - subtle text */
 
         /* Borders */
-        --color-border-default: #475569 !important;
-        /* slate-600 - borders */
-        --color-border-muted: #334155 !important;
-        /* slate-700 - muted borders */
+        --color-border-default: #2a2a2a !important;
+        /* near-black border */
+        --color-border-muted: #1e1e1e !important;
+        /* near-black muted border */
 
         /* Syntax highlighting with blue theme */
         --color-prettylights-syntax-comment: #94a3b8 !important;
@@ -139,7 +165,7 @@
         --color-prettylights-syntax-markup-bold: #f1f5f9 !important;
         --color-prettylights-syntax-markup-italic: #cbd5e1 !important;
         --color-prettylights-syntax-markup-list: #fbbf24 !important;
-        --color-prettylights-syntax-markup-code-bg: #334155 !important;
+        --color-prettylights-syntax-markup-code-bg: #1e1e1e !important;
     }
 }
 
