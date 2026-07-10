@@ -1,0 +1,62 @@
+{
+	"loading": {
+		"building": "Statistiken werden erstellt...",
+		"loadingLocalTasks": "Lokale Aufgaben werden geladen...",
+		"loadingCompletedTasks": "Erledigte Aufgaben werden geladen...",
+		"mergingTasks": "Aufgaben werden zusammengeführt...",
+		"checkingTaskStates": "Aufgabenstatus wird über Branches hinweg geprüft...",
+		"loadingDrafts": "Entwürfe werden geladen...",
+		"calculatingStatistics": "Statistiken werden berechnet...",
+		"loadingStatistics": "Statistiken werden geladen...",
+		"pleaseWait": "Das könnte einen Moment dauern..."
+	},
+	"error": {
+		"heading": "Fehler beim Laden der Statistiken",
+		"loadFailed": "Statistiken konnten nicht geladen werden"
+	},
+	"noStatisticsAvailable": "Keine Statistiken verfügbar",
+	"taskPreview": {
+		"created": "Erstellt",
+		"updated": "Aktualisiert"
+	},
+	"header": {
+		"titleWithProject": "{{projectName}} Statistiken",
+		"titleDefault": "Projektstatistiken",
+		"subtitle": "Überblick über die Aufgaben-Kennzahlen und Aktivitäten deines Projekts"
+	},
+	"metrics": {
+		"totalTasks": "Aufgaben gesamt",
+		"completed": "Erledigt",
+		"completion": "Abschlussquote",
+		"drafts": "Entwürfe"
+	},
+	"progress": {
+		"heading": "Gesamtfortschritt",
+		"completed": "{{count}} erledigt",
+		"remaining": "{{count}} verbleibend"
+	},
+	"statusDistribution": "Statusverteilung",
+	"priorityDistribution": "Prioritätsverteilung",
+	"recentActivity": {
+		"createdHeading": "Kürzlich erstellt",
+		"updatedHeading": "Kürzlich aktualisiert",
+		"noRecentlyCreated": "Keine kürzlich erstellten Aufgaben",
+		"noRecentlyUpdated": "Keine kürzlich aktualisierten Aufgaben"
+	},
+	"projectHealth": {
+		"heading": "Projektzustand",
+		"avgAge": "Ø Alter:",
+		"ageUnit": "{{count}} T",
+		"staleCount": "{{count}} veraltet",
+		"blockedCount": "{{count}} blockiert",
+		"allGood": "Alles in Ordnung!",
+		"staleTasksHeading": "Veraltete Aufgaben (>30 Tage)",
+		"staleTasksDescription": "Aufgaben, die seit über 30 Tagen nicht aktualisiert wurden und möglicherweise Aufmerksamkeit oder Archivierung benötigen",
+		"moreStaleTasks_one": "+{{count}} weitere veraltete Aufgabe",
+		"moreStaleTasks_other": "+{{count}} weitere veraltete Aufgaben",
+		"blockedTasksHeading": "Blockierte Aufgaben",
+		"blockedTasksDescription": "Aufgaben, die nicht vorankommen können, weil ihre Abhängigkeiten noch nicht abgeschlossen sind",
+		"moreBlockedTasks_one": "+{{count}} weitere blockierte Aufgabe",
+		"moreBlockedTasks_other": "+{{count}} weitere blockierte Aufgaben"
+	}
+}

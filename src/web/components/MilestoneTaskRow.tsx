@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import type { Task } from "../../types";
 
 interface MilestoneTaskRowProps {
@@ -30,7 +31,9 @@ const MilestoneTaskRow: React.FC<MilestoneTaskRowProps> = ({
 	onEditTask,
 	onDragStart,
 	onDragEnd,
-}) => (
+}) => {
+	const { t } = useTranslation('common');
+	return (
 	<div
 		draggable
 		onDragStart={(event) => onDragStart(event, task)}
@@ -63,13 +66,14 @@ const MilestoneTaskRow: React.FC<MilestoneTaskRowProps> = ({
 		<div className="w-20 flex justify-center">
 			{task.priority ? (
 				<span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${priorityBadgeClass}`}>
-					{task.priority}
+					{t(`priorityBadge.${task.priority}`)}
 				</span>
 			) : (
 				<span className="text-xs text-gray-300 dark:text-gray-600">—</span>
 			)}
 		</div>
 	</div>
-);
+	);
+};
 
 export default MilestoneTaskRow;

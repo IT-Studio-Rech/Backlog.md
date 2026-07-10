@@ -1,0 +1,17 @@
+{
+	"noDocumentSelected": "Kein Dokument ausgewählt",
+	"noDocumentSelectedHint": "Wähle ein Dokument aus der Seitenleiste aus, um den Inhalt anzuzeigen.",
+	"typeLabel": "Dokumentation",
+	"idLabel": "ID:",
+	"createdLabel": "Erstellt:",
+	"edit": "Bearbeiten",
+	"fallbackTitle": "Dokument {{id}}",
+	"fields": {
+		"titlePlaceholder": "Dokumenttitel",
+		"pathPlaceholder": "guides/setup"
+	},
+	"editorPlaceholder": "Schreibe hier deine Dokumentation...",
+	"titleRequired": "Dokumenttitel ist erforderlich",
+	"failedToSave": "Speichern fehlgeschlagen: {{message}}",
+	"saveSuccess": "Dokument \"{{title}}\" erfolgreich gespeichert!"
+}

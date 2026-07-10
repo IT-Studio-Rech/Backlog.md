@@ -1,0 +1,111 @@
+{
+	"loading": "Lädt...",
+	"retry": "Wiederholen",
+	"cancel": "Abbrechen",
+	"create": "Erstellen",
+	"save": "Speichern",
+	"saving": "Speichert…",
+	"add": "Hinzufügen",
+	"remove": "Entfernen",
+	"removeItem": "{{item}} entfernen",
+	"closeModal": "Fenster schließen",
+	"labelFilter": {
+		"label": "Labels",
+		"all": "Alle",
+		"selectedCount": "{{count}} ausgewählt",
+		"noLabels": "Keine Labels",
+		"clear": "Label-Filter zurücksetzen"
+	},
+	"acceptanceCriteriaEditor": {
+		"defaultLabel": "Akzeptanzkriterien",
+		"newItemPlaceholder": "Neues Kriterium"
+	},
+	"dependencyInput": {
+		"defaultLabel": "Abhängigkeiten",
+		"placeholderEmpty": "Task-ID oder Titel eingeben, dann Enter oder Komma drücken",
+		"placeholderFilled": "Weitere Abhängigkeiten hinzufügen..."
+	},
+	"priority": {
+		"high": "Hoch",
+		"medium": "Mittel",
+		"low": "Niedrig",
+		"none": "Keine Priorität"
+	},
+	"priorityBadge": {
+		"high": "Hoch",
+		"medium": "Mittel",
+		"low": "Niedrig"
+	},
+	"relativeDate": {
+		"today": "heute",
+		"yesterday": "gestern",
+		"daysAgo_one": "vor {{count}} Tag",
+		"daysAgo_other": "vor {{count}} Tagen",
+		"weeksAgo_one": "vor {{count}} Woche",
+		"weeksAgo_other": "vor {{count}} Wochen",
+		"monthsAgo_one": "vor {{count}} Monat",
+		"monthsAgo_other": "vor {{count}} Monaten",
+		"yearsAgo_one": "vor {{count}} Jahr",
+		"yearsAgo_other": "vor {{count}} Jahren"
+	},
+	"errorBoundary": {
+		"title": "Etwas ist schiefgelaufen",
+		"message": "Ein unerwarteter Fehler ist aufgetreten. Bitte lade die Seite neu.",
+		"technicalDetails": "Technische Details",
+		"tryAgain": "Erneut versuchen"
+	},
+	"cleanupModal": {
+		"title": "Abgeschlossene Aufgaben aufräumen",
+		"ageLabel": "Aufgaben ins Archiv verschieben, wenn sie älter sind als:",
+		"ageUnit": {
+			"day_one": "{{count}} Tag",
+			"day_other": "{{count}} Tage",
+			"week_one": "{{count}} Woche",
+			"week_other": "{{count}} Wochen",
+			"month_one": "{{count}} Monat",
+			"month_other": "{{count}} Monate",
+			"year_one": "{{count}} Jahr",
+			"year_other": "{{count}} Jahre"
+		},
+		"helpText": "Aufgaben werden in den Ordner backlog/completed/ verschoben und vom Board entfernt",
+		"loadingPreview": "Vorschau wird geladen...",
+		"noTasksFound": "Keine Aufgaben gefunden, die älter als {{age}} sind.",
+		"foundTasks_one": "{{count}} Aufgabe zum Aufräumen gefunden:",
+		"foundTasks_other": "{{count}} Aufgaben zum Aufräumen gefunden:",
+		"moreTasks": "... und {{count}} weitere",
+		"confirmTitle": "Aufräumen bestätigen",
+		"confirmMessage_one": "Möchtest du wirklich {{count}} Aufgabe in den Ordner „completed“ verschieben? Diese Aufgabe wird nach backlog/completed/ verschoben und vom Board entfernt.",
+		"confirmMessage_other": "Möchtest du wirklich {{count}} Aufgaben in den Ordner „completed“ verschieben? Diese Aufgaben werden nach backlog/completed/ verschoben und vom Board entfernt.",
+		"continue": "Weiter",
+		"movingTasks": "Aufgaben werden verschoben...",
+		"moveTasks_one": "{{count}} Aufgabe verschieben",
+		"moveTasks_other": "{{count}} Aufgaben verschieben",
+		"failedToLoadPreview": "Vorschau konnte nicht geladen werden",
+		"cleanupFailed": "Aufräumen fehlgeschlagen",
+		"failedToExecute": "Aufräumen konnte nicht ausgeführt werden"
+	},
+	"duplicateWarning": {
+		"titleShort": "Doppelte IDs",
+		"titleFull": "Doppelte Task-IDs müssen repariert werden",
+		"groupsSummary_one": "{{count}} Gruppe · {{taskCount}} Aufgaben",
+		"groupsSummary_other": "{{count}} Gruppen · {{taskCount}} Aufgaben",
+		"groupsSummaryMobile_one": "{{count}} Gruppe",
+		"groupsSummaryMobile_other": "{{count}} Gruppen",
+		"description": "Zusammengeführte Task-Dateien teilen sich IDs, daher kann in kombinierten Ansichten eine Aufgabe pro doppelter ID verborgen bleiben, bis die IDs eindeutig sind.",
+		"duplicateTasksCount_one": "{{count}} doppelte Aufgabe",
+		"duplicateTasksCount_other": "{{count}} doppelte Aufgaben",
+		"untitledTask": "Unbenannte Aufgabe",
+		"moreTasksInGroup_one": "+{{count}} weitere Aufgabe in dieser ID",
+		"moreTasksInGroup_other": "+{{count}} weitere Aufgaben in dieser ID",
+		"moreGroupsIncluded_one": "+{{count}} weitere doppelte Gruppe in den kopierten Anweisungen enthalten.",
+		"moreGroupsIncluded_other": "+{{count}} weitere doppelte Gruppen in den kopierten Anweisungen enthalten.",
+		"copyInstructions": "Reparaturanweisungen kopieren",
+		"copied": "Kopiert",
+		"copyFailed": "Kopieren fehlgeschlagen",
+		"dismiss": "Warnung zu doppelten Task-IDs schließen"
+	},
+	"healthCheck": {
+		"serverDisconnected": "Server-Verbindung getrennt",
+		"connectionRestored": "Verbindung wiederhergestellt!"
+	}
+}

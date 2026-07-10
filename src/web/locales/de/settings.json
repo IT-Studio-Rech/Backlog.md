@@ -1,0 +1,84 @@
+{
+	"title": "Einstellungen",
+	"loadingSettings": "Einstellungen werden geladen...",
+	"loadError": "Konfiguration konnte nicht geladen werden",
+	"saveError": "Konfiguration konnte nicht gespeichert werden",
+	"saveSuccess": "Einstellungen erfolgreich gespeichert!",
+	"project": {
+		"title": "Projekteinstellungen",
+		"projectName": {
+			"label": "Projektname",
+			"error": "Projektname ist erforderlich"
+		},
+		"dateFormat": {
+			"label": "Datumsformat",
+			"help": "Legt fest, wie Datumsangaben in der Web-UI und im TUI angezeigt werden. In Markdown-Dateien werden Daten immer als yyyy-mm-dd gespeichert."
+		}
+	},
+	"workflow": {
+		"title": "Workflow-Einstellungen",
+		"autoCommit": {
+			"label": "Auto-Commit",
+			"help": "Änderungen nach Task-Operationen automatisch in Git committen"
+		},
+		"remoteOperations": {
+			"label": "Remote-Operationen",
+			"help": "Task-Informationen von Remote-Branches abrufen"
+		},
+		"defaultStatus": {
+			"label": "Standard-Status",
+			"help": "Standard-Status für neue Tasks"
+		},
+		"defaultEditor": {
+			"label": "Standard-Editor",
+			"placeholder": "z. B. vim, nano, code",
+			"help": "Editor-Befehl zum Bearbeiten von Tasks (überschreibt die Umgebungsvariable EDITOR)"
+		}
+	},
+	"definitionOfDone": {
+		"title": "Definition of Done — Standardwerte",
+		"description": "Diese Checklisten-Punkte werden neuen Tasks standardmäßig hinzugefügt.",
+		"itemPlaceholder": "Checklisten-Punkt",
+		"addItem": "+ Punkt hinzufügen"
+	},
+	"webUi": {
+		"title": "Web-UI-Einstellungen",
+		"defaultPort": {
+			"label": "Standard-Port",
+			"error": "Port muss zwischen 1 und 65535 liegen"
+		},
+		"autoOpenBrowser": {
+			"label": "Browser automatisch öffnen",
+			"help": "Browser beim Start der Web-UI automatisch öffnen"
+		},
+		"hideEmptyColumns": {
+			"label": "Leere Spalten ausblenden",
+			"help": "Board-Spalten ausblenden, deren Status keine Tasks enthält. Spalten erscheinen beim Ziehen eines Tasks wieder, damit sie als gültige Ablageziele erhalten bleiben."
+		}
+	},
+	"advanced": {
+		"title": "Erweiterte Einstellungen",
+		"maxColumnWidth": {
+			"label": "Maximale Spaltenbreite",
+			"help": "Maximale Breite für Textspalten in der CLI-Ausgabe"
+		},
+		"taskResolutionStrategy": {
+			"label": "Task-Konfliktstrategie",
+			"mostRecent": "Zuletzt geändert",
+			"mostProgressed": "Am weitesten fortgeschritten",
+			"help": "Strategie zum Auflösen von Konflikten, wenn Tasks in mehreren Branches existieren"
+		},
+		"zeroPaddedIds": {
+			"label": "Führende Nullen bei IDs",
+			"help": "Anzahl der Stellen für die ID-Auffüllung (0 = deaktiviert, 3 = task-001, 4 = task-0001)"
+		},
+		"taskPrefix": {
+			"label": "Task-Präfix",
+			"readOnly": "(schreibgeschützt)",
+			"help": "Wird bei der Initialisierung festgelegt. Kann nicht geändert werden, um bestehende Task-IDs nicht zu beschädigen."
+		}
+	},
+	"actions": {
+		"saveChanges": "Änderungen speichern"
+	}
+}

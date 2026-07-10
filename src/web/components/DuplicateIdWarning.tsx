@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { DuplicateGroup } from "../../utils/duplicate-detection";
 import { buildDuplicateCleanupPrompt } from "../../utils/duplicate-detection";
 
@@ -55,6 +56,7 @@ async function copyTextToClipboard(text: string): Promise<void> {
 }
 
 export function DuplicateIdWarning({ groups }: DuplicateIdWarningProps) {
+	const { t } = useTranslation(['common']);
 	const [dismissed, setDismissed] = useState(false);
 	const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
 
@@ -65,10 +67,10 @@ export function DuplicateIdWarning({ groups }: DuplicateIdWarningProps) {
 	const hiddenGroupCount = groups.length - visibleGroups.length;
 	const copyLabel =
 		copyState === "copied"
-			? "Copied"
+			? t('common:duplicateWarning.copied')
 			: copyState === "failed"
-				? "Copy failed"
-				: "Copy repair instructions";
+				? t('common:duplicateWarning.copyFailed')
+				: t('common:duplicateWarning.copyInstructions');
 
 	const handleCopyInstructions = async () => {
 		const prompt = buildDuplicateCleanupPrompt(groups);
@@ -100,18 +102,18 @@ export function DuplicateIdWarning({ groups }: DuplicateIdWarningProps) {
 					<div className="min-w-0">
 						<div className="flex flex-wrap items-center gap-x-2 gap-y-1">
 							<h2 className="text-xs font-semibold text-gray-950 dark:text-gray-50 sm:text-sm">
-								<span className="sm:hidden">Duplicate IDs</span>
-								<span className="hidden sm:inline">Duplicate task IDs need repair</span>
+								<span className="sm:hidden">{t('common:duplicateWarning.titleShort')}</span>
+								<span className="hidden sm:inline">{t('common:duplicateWarning.titleFull')}</span>
 							</h2>
 							<span className="hidden rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900 ring-1 ring-amber-200 dark:bg-amber-900 dark:text-amber-100 dark:ring-amber-700 sm:inline-flex">
-								{groups.length} {groups.length === 1 ? "group" : "groups"} · {duplicateTaskCount} tasks
+								{t('common:duplicateWarning.groupsSummary', { count: groups.length, taskCount: duplicateTaskCount })}
 							</span>
 						</div>
 						<p className="mt-0.5 text-xs text-amber-900/90 dark:text-amber-100/90 sm:hidden">
-							{groups.length} {groups.length === 1 ? "group" : "groups"}
+							{t('common:duplicateWarning.groupsSummaryMobile', { count: groups.length })}
 						</p>
 						<p className="mt-1 hidden max-w-4xl text-sm text-amber-900/90 dark:text-amber-100/90 sm:block">
-							Merged task files share IDs, so one task per duplicate ID can be hidden in combined views until the IDs are unique.
+							{t('common:duplicateWarning.description')}
 						</p>
 						<div className="mt-3 hidden gap-2 sm:grid xl:grid-cols-2 2xl:grid-cols-3">
 							{visibleGroups.map((group) => (
@@ -122,7 +124,7 @@ export function DuplicateIdWarning({ groups }: DuplicateIdWarningProps) {
 									<div className="flex items-center gap-2">
 										<span className="font-mono text-xs font-semibold text-amber-800 dark:text-amber-200">{group.id}</span>
 										<span className="text-xs text-amber-700 dark:text-amber-300">
-											{group.tasks.length} duplicate {group.tasks.length === 1 ? "task" : "tasks"}
+											{t('common:duplicateWarning.duplicateTasksCount', { count: group.tasks.length })}
 										</span>
 									</div>
 									<ul className="mt-1.5 space-y-1">
@@ -131,7 +133,7 @@ export function DuplicateIdWarning({ groups }: DuplicateIdWarningProps) {
 											return (
 												<li key={`${group.id}-${task.filePath ?? task.title}`} className="min-w-0">
 													<div className="truncate text-xs font-medium text-gray-900 dark:text-gray-100" title={task.title}>
-														{task.title || "Untitled task"}
+														{task.title || t('common:duplicateWarning.untitledTask')}
 													</div>
 													{location && (
 														<div className="truncate font-mono text-[11px] text-amber-700/80 dark:text-amber-300/80" title={location}>
@@ -143,7 +145,7 @@ export function DuplicateIdWarning({ groups }: DuplicateIdWarningProps) {
 										})}
 										{group.tasks.length > MAX_VISIBLE_TASKS_PER_GROUP && (
 											<li className="text-xs text-amber-700 dark:text-amber-300">
-												+{group.tasks.length - MAX_VISIBLE_TASKS_PER_GROUP} more tasks in this ID
+												{t('common:duplicateWarning.moreTasksInGroup', { count: group.tasks.length - MAX_VISIBLE_TASKS_PER_GROUP })}
 											</li>
 										)}
 									</ul>
@@ -152,7 +154,7 @@ export function DuplicateIdWarning({ groups }: DuplicateIdWarningProps) {
 						</div>
 						{hiddenGroupCount > 0 && (
 							<p className="mt-2 hidden text-xs text-amber-800 dark:text-amber-200 sm:block">
-								+{hiddenGroupCount} more duplicate {hiddenGroupCount === 1 ? "group" : "groups"} included in the copied instructions.
+								{t('common:duplicateWarning.moreGroupsIncluded', { count: hiddenGroupCount })}
 							</p>
 						)}
 					</div>
@@ -175,8 +177,8 @@ export function DuplicateIdWarning({ groups }: DuplicateIdWarningProps) {
 						type="button"
 						onClick={() => setDismissed(true)}
 						className="inline-flex h-8 w-8 items-center justify-center rounded-md text-amber-800 transition-colors duration-200 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-amber-50 dark:text-amber-100 dark:hover:bg-amber-900 dark:focus:ring-amber-300 dark:focus:ring-offset-amber-950"
-						aria-label="Dismiss duplicate task ID warning"
-						title="Dismiss duplicate task ID warning"
+						aria-label={t('common:duplicateWarning.dismiss')}
+						title={t('common:duplicateWarning.dismiss')}
 					>
 						<svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
 							<path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />

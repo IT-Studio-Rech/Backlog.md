@@ -13,6 +13,8 @@ import TaskDetailsModal from './components/TaskDetailsModal';
 import InitializationScreen from './components/InitializationScreen';
 import { SuccessToast } from './components/SuccessToast';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { LanguageProvider } from './contexts/LanguageContext';
+import './i18n';
 import {
 	type Decision,
 	type DecisionSearchResult,
@@ -456,24 +458,29 @@ function App() {
   // Show loading state while checking initialization
   if (isInitialized === null) {
     return (
-      <ThemeProvider>
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-          <div className="text-lg text-gray-600 dark:text-gray-300">Loading...</div>
-        </div>
-      </ThemeProvider>
+      <LanguageProvider>
+        <ThemeProvider>
+          <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+            <div className="text-lg text-gray-600 dark:text-gray-300">Loading...</div>
+          </div>
+        </ThemeProvider>
+      </LanguageProvider>
     );
   }
 
   // Show initialization screen if not initialized
   if (isInitialized === false) {
     return (
-      <ThemeProvider>
-        <InitializationScreen onInitialized={handleInitialized} />
-      </ThemeProvider>
+      <LanguageProvider>
+        <ThemeProvider>
+          <InitializationScreen onInitialized={handleInitialized} />
+        </ThemeProvider>
+      </LanguageProvider>
     );
   }
 
   return (
+    <LanguageProvider>
     <ThemeProvider>
       <BrowserRouter>
         <Routes>
@@ -584,6 +591,7 @@ function App() {
         )}
       </BrowserRouter>
     </ThemeProvider>
+    </LanguageProvider>
   );
 }
 

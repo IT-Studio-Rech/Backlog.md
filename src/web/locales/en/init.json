@@ -1,0 +1,204 @@
+{
+	"header": {
+		"title": "Initialize Backlog.md"
+	},
+	"stepIndicator": {
+		"project": "Project",
+		"integration": "Integration",
+		"setup": "Setup",
+		"config": "Config",
+		"initialize": "Initialize"
+	},
+	"projectName": {
+		"title": "Project Name",
+		"description": "Enter a name for your project. This will be displayed in the UI and used for identification.",
+		"placeholder": "My Awesome Project"
+	},
+	"integrationMode": {
+		"title": "AI Integration Mode",
+		"description": "How would you like your AI tools to connect to Backlog.md?",
+		"mcp": {
+			"label": "MCP Connector (Recommended)",
+			"description": "For Claude Code, Codex, Gemini CLI, Kiro, Cursor, etc. Agents learn the Backlog.md workflow through MCP tools, resources, and prompts."
+		},
+		"cli": {
+			"label": "CLI Commands (Broader Compatibility)",
+			"description": "Agents will use Backlog.md by invoking CLI commands directly. Creates instruction files for various AI tools."
+		},
+		"none": {
+			"label": "Skip for Now",
+			"description": "Continue without setting up AI integration. You can configure this later."
+		}
+	},
+	"mcpClients": {
+		"title": "MCP Client Setup",
+		"description": "Select the AI tools you want to configure for MCP integration. The setup will run automatically.",
+		"clients": {
+			"claude": {
+				"label": "Claude Code",
+				"description": "Anthropic's Claude Code editor"
+			},
+			"codex": {
+				"label": "OpenAI Codex",
+				"description": "OpenAI's Codex CLI"
+			},
+			"gemini": {
+				"label": "Gemini CLI",
+				"description": "Google's Gemini Code Assist CLI"
+			},
+			"guide": {
+				"label": "Manual Setup Guide",
+				"description": "Opens documentation for manual configuration"
+			}
+		},
+		"selectAtLeastOne": "💡 Select at least one option to configure MCP integration, or go back to choose a different mode."
+	},
+	"agentFiles": {
+		"title": "Agent Instruction Files",
+		"description": "Select which instruction files to create for CLI-based AI tools.",
+		"files": {
+			"claudeMd": {
+				"label": "CLAUDE.md",
+				"description": "Claude Code instructions"
+			},
+			"agentsMd": {
+				"label": "AGENTS.md",
+				"description": "Codex, Cursor, Zed, Warp, Aider, RooCode, etc."
+			},
+			"geminiMd": {
+				"label": "GEMINI.md",
+				"description": "Google Gemini Code Assist CLI"
+			},
+			"copilot": {
+				"label": "Copilot Instructions",
+				"description": "GitHub Copilot"
+			}
+		},
+		"installClaudeAgent": {
+			"label": "Install Claude Code Backlog.md Agent",
+			"description": "Adds configuration under .claude/agents/ for enhanced Claude Code integration"
+		}
+	},
+	"advanced": {
+		"title": "Advanced Settings",
+		"backlogFolder": {
+			"title": "Backlog Folder",
+			"options": {
+				"backlog": {
+					"label": "backlog/",
+					"description": "Store tasks and config in backlog/"
+				},
+				"dotBacklog": {
+					"label": ".backlog/",
+					"description": "Store tasks and config in .backlog/"
+				},
+				"custom": {
+					"label": "Custom project-relative path",
+					"descriptionTemplate": "Use {{rootConfigPath}} as the project-root pointer file"
+				}
+			},
+			"customPath": {
+				"label": "Project-relative backlog directory",
+				"placeholder": "e.g. planning/backlog",
+				"help": "This path is stored in {{rootConfigPath}} and resolved from the project root."
+			},
+			"configLocation": {
+				"label": "Config Location",
+				"options": {
+					"folder": {
+						"labelTemplate": "{{backlogDirectory}}/config.yml",
+						"description": "Store config inside the backlog folder"
+					},
+					"root": {
+						"label": "backlog.config.yml",
+						"description": "Store config in the project root and point to the backlog folder there"
+					}
+				}
+			}
+		},
+		"configureNow": "Configure advanced settings now",
+		"branchSettings": {
+			"title": "Branch Settings",
+			"checkActiveBranches": {
+				"label": "Check task states across branches",
+				"description": "Ensures accurate task tracking across branches"
+			},
+			"includeRemoteBranches": {
+				"label": "Include remote branches",
+				"description": "Required for accessing tasks from remote repos"
+			},
+			"activeBranchDaysLabel": "Active branch days"
+		},
+		"gitSettings": {
+			"title": "Git Settings",
+			"autoCommit": {
+				"label": "Auto-commit changes",
+				"description": "Creates commits automatically after CLI changes"
+			},
+			"bypassGitHooks": {
+				"label": "Bypass git hooks",
+				"description": "Use --no-verify flag to skip pre-commit hooks"
+			}
+		},
+		"idFormatting": {
+			"title": "ID Formatting",
+			"zeroPaddedIds": {
+				"label": "Zero-padded IDs",
+				"description": "Example: task-001 instead of task-1"
+			},
+			"digitsLabel": "Number of digits",
+			"taskPrefix": {
+				"label": "Task prefix",
+				"placeholder": "task",
+				"help": "Letters only. Cannot be changed later. Examples: JIRA, BUG, ISSUE"
+			}
+		},
+		"editor": {
+			"title": "Editor",
+			"placeholder": "e.g., code --wait, vim, nano",
+			"help": "Leave blank to use system default"
+		},
+		"webUi": {
+			"title": "Web UI",
+			"portLabel": "Default port",
+			"autoOpenBrowser": "Auto-open browser"
+		}
+	},
+	"summary": {
+		"title": "Ready to Initialize",
+		"description": "Review your configuration before initializing:",
+		"projectName": "Project Name:",
+		"integrationMode": "Integration Mode:",
+		"integrationModeValues": {
+			"mcp": "MCP Connector",
+			"cli": "CLI Commands",
+			"none": "None"
+		},
+		"backlogDirectory": "Backlog Directory:",
+		"configLocation": "Config Location:",
+		"mcpClients": "MCP Clients:",
+		"agentFiles": "Agent Files:",
+		"agentFilesCount_one": "{{count}} file",
+		"agentFilesCount_other": "{{count}} files",
+		"claudeAgent": "Claude Agent:",
+		"claudeAgentInstalled": "Will be installed",
+		"advancedConfig": "Advanced Config:",
+		"advancedConfigValues": {
+			"customized": "Customized",
+			"defaults": "Defaults"
+		},
+		"taskPrefix": "Task Prefix:",
+		"setupProgress": "Setup Progress:"
+	},
+	"errors": {
+		"projectNameRequired": "Project name is required",
+		"integrationModeRequired": "Please select an integration mode",
+		"initializeFailed": "Failed to initialize project"
+	},
+	"actions": {
+		"back": "Back",
+		"next": "Next",
+		"initializeProject": "Initialize Project",
+		"initializing": "Initializing..."
+	}
+}

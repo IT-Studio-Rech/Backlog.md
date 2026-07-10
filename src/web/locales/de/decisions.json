@@ -1,0 +1,20 @@
+{
+	"noDecisionSelected": "Keine Entscheidung ausgewählt",
+	"noDecisionSelectedHint": "Wähle eine Entscheidung aus der Seitenleiste aus, um den Inhalt anzuzeigen.",
+	"typeLabel": "Entscheidung",
+	"idLabel": "ID:",
+	"dateLabel": "Datum:",
+	"edit": "Bearbeiten",
+	"fallbackTitle": "Entscheidung {{id}}",
+	"fields": {
+		"titlePlaceholder": "Titel der Entscheidung"
+	},
+	"editorPlaceholder": "Schreibe hier die Dokumentation der Entscheidung...",
+	"saveSuccess": "Entscheidung \"{{title}}\" erfolgreich gespeichert!",
+	"status": {
+		"proposed": "Vorgeschlagen",
+		"accepted": "Angenommen",
+		"rejected": "Abgelehnt",
+		"superseded": "Ersetzt"
+	}
+}

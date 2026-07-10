@@ -1,7 +1,9 @@
+import { useTranslation } from "react-i18next";
 import { useHealthCheckContext } from "../contexts/HealthCheckContext";
 import { SuccessToast } from "./SuccessToast";
 
 export function HealthIndicator() {
+	const { t } = useTranslation(['common']);
 	const { isOnline, retry } = useHealthCheckContext();
 
 	// Show offline banner when connection is lost
@@ -11,14 +13,14 @@ export function HealthIndicator() {
 				<div className="flex items-center gap-3">
 					<div className="w-2 h-2 bg-white rounded-circle animate-pulse" />
 					<span className="font-medium">
-						Server disconnected
+						{t('common:healthCheck.serverDisconnected')}
 					</span>
 				</div>
 					<button
 						onClick={retry}
 						className="px-3 py-1.5 bg-red-600 dark:bg-red-700 hover:bg-red-700 dark:hover:bg-red-800 rounded text-xs font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-red-400"
 					>
-						Retry
+						{t('common:retry')}
 					</button>
 			</div>
 		);
@@ -29,9 +31,10 @@ export function HealthIndicator() {
 
 // Success toast component for when connection is restored
 export function HealthSuccessToast({ onDismiss }: { onDismiss: () => void }) {
+	const { t } = useTranslation(['common']);
 	return (
-		<SuccessToast 
-			message="Connection restored!" 
+		<SuccessToast
+			message={t('common:healthCheck.connectionRestored')}
 			onDismiss={onDismiss}
 		/>
 	);

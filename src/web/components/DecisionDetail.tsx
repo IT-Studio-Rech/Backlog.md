@@ -1,5 +1,6 @@
 import { useState, useEffect, memo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { apiClient } from '../lib/api';
 import MDEditor from '@uiw/react-md-editor';
 import MermaidMarkdown from './MermaidMarkdown';
@@ -28,6 +29,7 @@ const MarkdownEditor = memo(function MarkdownEditor({
 	isReadonly?: boolean;
 }) {
 	const { theme } = useTheme();
+	const { t } = useTranslation(['decisions', 'common']);
 	if (!isEditing) {
 		// Preview mode - just show the rendered markdown without editor UI
 			return (
@@ -49,7 +51,7 @@ const MarkdownEditor = memo(function MarkdownEditor({
 					hideToolbar={false}
 					data-color-mode={theme}
 					textareaProps={{
-						placeholder: 'Write your decision documentation here...',
+						placeholder: t('decisions:editorPlaceholder'),
 						style: { 
 							fontSize: '14px',
 							resize: 'none'
@@ -73,6 +75,7 @@ interface DecisionDetailProps {
 }
 
 export default function DecisionDetail({ decisions, onRefreshData, dateFormat }: DecisionDetailProps) {
+	const { t } = useTranslation(['decisions', 'common']);
 	const { id, title } = useParams<{ id: string; title: string }>();
 	const navigate = useNavigate();
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -225,6 +228,15 @@ export default function DecisionDetail({ decisions, onRefreshData, dateFormat }:
 		return colors[status.toLowerCase() as keyof typeof colors] || 'bg-gray-50 text-gray-700 border-gray-200';
 	};
 
+	const getStatusLabel = (status: string) => {
+		const knownStatuses = ['proposed', 'accepted', 'rejected', 'superseded'];
+		const key = status.toLowerCase();
+		if (knownStatuses.includes(key)) {
+			return t(`decisions:status.${key}`);
+		}
+		return status.charAt(0).toUpperCase() + status.slice(1);
+	};
+
 	if (!id) {
 		return (
 			<div className="flex-1 flex items-center justify-center p-8">
@@ -232,8 +244,8 @@ export default function DecisionDetail({ decisions, onRefreshData, dateFormat }:
 					<svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
 					</svg>
-					<h3 className="mt-2 text-sm font-medium text-gray-900">No decision selected</h3>
-					<p className="mt-1 text-sm text-gray-500">Select a decision from the sidebar to view its content.</p>
+					<h3 className="mt-2 text-sm font-medium text-gray-900">{t('decisions:noDecisionSelected')}</h3>
+					<p className="mt-1 text-sm text-gray-500">{t('decisions:noDecisionSelectedHint')}</p>
 				</div>
 			</div>
 		);
@@ -242,7 +254,7 @@ export default function DecisionDetail({ decisions, onRefreshData, dateFormat }:
 	if (isLoading) {
 		return (
 			<div className="flex-1 flex items-center justify-center">
-				<div className="text-gray-500">Loading...</div>
+				<div className="text-gray-500">{t('common:loading')}</div>
 			</div>
 		);
 	}
@@ -261,11 +273,11 @@ export default function DecisionDetail({ decisions, onRefreshData, dateFormat }:
 									value={decisionTitle}
 									onChange={(e) => setDecisionTitle(e.target.value)}
 									className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2 w-full bg-transparent border border-gray-300 dark:border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors duration-200"
-									placeholder="Decision title"
+									placeholder={t('decisions:fields.titlePlaceholder')}
 								/>
 							) : (
 								<h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-200">
-									{decisionTitle || decision?.title || (title ? decodeURIComponent(title) : `Decision ${id}`)}
+									{decisionTitle || decision?.title || (title ? decodeURIComponent(title) : t('decisions:fallbackTitle', { id }))}
 								</h1>
 							)}
 							<div className="flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-400 transition-colors duration-200">
@@ -273,20 +285,20 @@ export default function DecisionDetail({ decisions, onRefreshData, dateFormat }:
 									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a.997.997 0 01-1.414 0l-7-7A1.997 1.997 0 013 12V7a4 4 0 014-4z" />
 									</svg>
-									<span>ID: {decision?.id}</span>
+									<span>{t('decisions:idLabel')} {decision?.id}</span>
 								</div>
 								<div className="flex items-center space-x-2">
 									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
 									</svg>
-									<span>Decision</span>
+									<span>{t('decisions:typeLabel')}</span>
 								</div>
 								{decision?.date && (
 									<div className="flex items-center space-x-2">
 										<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
 										</svg>
-										<span>Date: {formatStoredUtcDateForDisplay(decision.date, dateFormat)}</span>
+										<span>{t('decisions:dateLabel')} {formatStoredUtcDateForDisplay(decision.date, dateFormat)}</span>
 									</div>
 								)}
 								{decision?.status && (
@@ -297,7 +309,7 @@ export default function DecisionDetail({ decisions, onRefreshData, dateFormat }:
 										<span 
 											className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border ${getStatusColor(decision.status)}`}
 										>
-											{decision.status.charAt(0).toUpperCase() + decision.status.slice(1)}
+											{getStatusLabel(decision.status)}
 										</span>
 									</div>
 								)}
@@ -313,7 +325,7 @@ export default function DecisionDetail({ decisions, onRefreshData, dateFormat }:
 										<svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
 										</svg>
-										Edit
+										{t('decisions:edit')}
 								</button>
 							) : null}
 							{isEditing && (
@@ -322,7 +334,7 @@ export default function DecisionDetail({ decisions, onRefreshData, dateFormat }:
 											onClick={handleCancelEdit}
 											className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors duration-200"
 										>
-											Cancel
+											{t('common:cancel')}
 										</button>
 									<button
 										onClick={handleSave}
@@ -336,7 +348,7 @@ export default function DecisionDetail({ decisions, onRefreshData, dateFormat }:
 											<svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
 											</svg>
-										{isSaving ? 'Saving...' : 'Save'}
+										{isSaving ? t('common:saving') : t('common:save')}
 									</button>
 								</div>
 							)}
@@ -360,7 +372,7 @@ export default function DecisionDetail({ decisions, onRefreshData, dateFormat }:
 		{/* Save Success Toast */}
 		{showSaveSuccess && (
 			<SuccessToast
-				message={`Decision "${decisionTitle}" saved successfully!`}
+				message={t('decisions:saveSuccess', { title: decisionTitle })}
 				onDismiss={() => setShowSaveSuccess(false)}
 				icon={
 					<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

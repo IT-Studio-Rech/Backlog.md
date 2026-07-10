@@ -1,0 +1,62 @@
+{
+	"loading": {
+		"building": "Building statistics...",
+		"loadingLocalTasks": "Loading local tasks...",
+		"loadingCompletedTasks": "Loading completed tasks...",
+		"mergingTasks": "Merging tasks...",
+		"checkingTaskStates": "Checking task states across branches...",
+		"loadingDrafts": "Loading drafts...",
+		"calculatingStatistics": "Calculating statistics...",
+		"loadingStatistics": "Loading statistics...",
+		"pleaseWait": "This might take a while..."
+	},
+	"error": {
+		"heading": "Error loading statistics",
+		"loadFailed": "Failed to load statistics"
+	},
+	"noStatisticsAvailable": "No statistics available",
+	"taskPreview": {
+		"created": "Created",
+		"updated": "Updated"
+	},
+	"header": {
+		"titleWithProject": "{{projectName}} Statistics",
+		"titleDefault": "Project Statistics",
+		"subtitle": "Overview of your project's task metrics and activity"
+	},
+	"metrics": {
+		"totalTasks": "Total Tasks",
+		"completed": "Completed",
+		"completion": "Completion",
+		"drafts": "Drafts"
+	},
+	"progress": {
+		"heading": "Overall Progress",
+		"completed": "{{count}} completed",
+		"remaining": "{{count}} remaining"
+	},
+	"statusDistribution": "Status Distribution",
+	"priorityDistribution": "Priority Distribution",
+	"recentActivity": {
+		"createdHeading": "Recently Created",
+		"updatedHeading": "Recently Updated",
+		"noRecentlyCreated": "No recently created tasks",
+		"noRecentlyUpdated": "No recently updated tasks"
+	},
+	"projectHealth": {
+		"heading": "Project Health",
+		"avgAge": "Avg age:",
+		"ageUnit": "{{count}}d",
+		"staleCount": "{{count}} stale",
+		"blockedCount": "{{count}} blocked",
+		"allGood": "All good!",
+		"staleTasksHeading": "Stale Tasks (>30 days)",
+		"staleTasksDescription": "Tasks that haven't been updated in over 30 days and may need attention or archiving",
+		"moreStaleTasks_one": "+{{count}} more stale task",
+		"moreStaleTasks_other": "+{{count}} more stale tasks",
+		"blockedTasksHeading": "Blocked Tasks",
+		"blockedTasksDescription": "Tasks that cannot progress because their dependencies are not yet completed",
+		"moreBlockedTasks_one": "+{{count}} more blocked task",
+		"moreBlockedTasks_other": "+{{count}} more blocked tasks"
+	}
+}

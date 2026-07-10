@@ -1,0 +1,111 @@
+{
+	"loading": "Loading...",
+	"retry": "Retry",
+	"cancel": "Cancel",
+	"create": "Create",
+	"save": "Save",
+	"saving": "Saving…",
+	"add": "Add",
+	"remove": "Remove",
+	"removeItem": "Remove {{item}}",
+	"closeModal": "Close modal",
+	"labelFilter": {
+		"label": "Labels",
+		"all": "All",
+		"selectedCount": "{{count}} selected",
+		"noLabels": "No labels",
+		"clear": "Clear label filter"
+	},
+	"acceptanceCriteriaEditor": {
+		"defaultLabel": "Acceptance Criteria",
+		"newItemPlaceholder": "New criterion"
+	},
+	"dependencyInput": {
+		"defaultLabel": "Dependencies",
+		"placeholderEmpty": "Type task ID or title, then press Enter or comma",
+		"placeholderFilled": "Add more dependencies..."
+	},
+	"priority": {
+		"high": "High",
+		"medium": "Medium",
+		"low": "Low",
+		"none": "No Priority"
+	},
+	"priorityBadge": {
+		"high": "High",
+		"medium": "Med",
+		"low": "Low"
+	},
+	"relativeDate": {
+		"today": "today",
+		"yesterday": "yesterday",
+		"daysAgo_one": "{{count}} day ago",
+		"daysAgo_other": "{{count}} days ago",
+		"weeksAgo_one": "{{count}} week ago",
+		"weeksAgo_other": "{{count}} weeks ago",
+		"monthsAgo_one": "{{count}} month ago",
+		"monthsAgo_other": "{{count}} months ago",
+		"yearsAgo_one": "{{count}} year ago",
+		"yearsAgo_other": "{{count}} years ago"
+	},
+	"errorBoundary": {
+		"title": "Something went wrong",
+		"message": "An unexpected error occurred. Please try refreshing the page.",
+		"technicalDetails": "Technical Details",
+		"tryAgain": "Try Again"
+	},
+	"cleanupModal": {
+		"title": "Clean Up Completed Tasks",
+		"ageLabel": "Move tasks to completed folder if they are older than:",
+		"ageUnit": {
+			"day_one": "{{count}} day",
+			"day_other": "{{count}} days",
+			"week_one": "{{count}} week",
+			"week_other": "{{count}} weeks",
+			"month_one": "{{count}} month",
+			"month_other": "{{count}} months",
+			"year_one": "{{count}} year",
+			"year_other": "{{count}} years"
+		},
+		"helpText": "Tasks will be moved to the backlog/completed/ folder and removed from the board",
+		"loadingPreview": "Loading preview...",
+		"noTasksFound": "No tasks found that are older than {{age}}.",
+		"foundTasks_one": "Found {{count}} task to clean up:",
+		"foundTasks_other": "Found {{count}} tasks to clean up:",
+		"moreTasks": "... and {{count}} more",
+		"confirmTitle": "Confirm Cleanup",
+		"confirmMessage_one": "Are you sure you want to move {{count}} task to the completed folder? These tasks will be moved to backlog/completed/ and removed from the board.",
+		"confirmMessage_other": "Are you sure you want to move {{count}} tasks to the completed folder? These tasks will be moved to backlog/completed/ and removed from the board.",
+		"continue": "Continue",
+		"movingTasks": "Moving Tasks...",
+		"moveTasks_one": "Move {{count}} Task",
+		"moveTasks_other": "Move {{count}} Tasks",
+		"failedToLoadPreview": "Failed to load preview",
+		"cleanupFailed": "Cleanup failed",
+		"failedToExecute": "Failed to execute cleanup"
+	},
+	"duplicateWarning": {
+		"titleShort": "Duplicate IDs",
+		"titleFull": "Duplicate task IDs need repair",
+		"groupsSummary_one": "{{count}} group · {{taskCount}} tasks",
+		"groupsSummary_other": "{{count}} groups · {{taskCount}} tasks",
+		"groupsSummaryMobile_one": "{{count}} group",
+		"groupsSummaryMobile_other": "{{count}} groups",
+		"description": "Merged task files share IDs, so one task per duplicate ID can be hidden in combined views until the IDs are unique.",
+		"duplicateTasksCount_one": "{{count}} duplicate task",
+		"duplicateTasksCount_other": "{{count}} duplicate tasks",
+		"untitledTask": "Untitled task",
+		"moreTasksInGroup_one": "+{{count}} more task in this ID",
+		"moreTasksInGroup_other": "+{{count}} more tasks in this ID",
+		"moreGroupsIncluded_one": "+{{count}} more duplicate group included in the copied instructions.",
+		"moreGroupsIncluded_other": "+{{count}} more duplicate groups included in the copied instructions.",
+		"copyInstructions": "Copy repair instructions",
+		"copied": "Copied",
+		"copyFailed": "Copy failed",
+		"dismiss": "Dismiss duplicate task ID warning"
+	},
+	"healthCheck": {
+		"serverDisconnected": "Server disconnected",
+		"connectionRestored": "Connection restored!"
+	}
+}

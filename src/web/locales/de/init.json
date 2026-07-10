@@ -1,0 +1,204 @@
+{
+	"header": {
+		"title": "Backlog.md initialisieren"
+	},
+	"stepIndicator": {
+		"project": "Projekt",
+		"integration": "Integration",
+		"setup": "Setup",
+		"config": "Konfiguration",
+		"initialize": "Initialisieren"
+	},
+	"projectName": {
+		"title": "Projektname",
+		"description": "Gib einen Namen für dein Projekt ein. Er wird in der Oberfläche angezeigt und zur Identifikation verwendet.",
+		"placeholder": "Mein tolles Projekt"
+	},
+	"integrationMode": {
+		"title": "KI-Integrationsmodus",
+		"description": "Wie sollen deine KI-Tools mit Backlog.md verbunden werden?",
+		"mcp": {
+			"label": "MCP-Connector (empfohlen)",
+			"description": "Für Claude Code, Codex, Gemini CLI, Kiro, Cursor usw. Agenten lernen den Backlog.md-Workflow über MCP-Tools, -Ressourcen und -Prompts."
+		},
+		"cli": {
+			"label": "CLI-Befehle (breitere Kompatibilität)",
+			"description": "Agenten verwenden Backlog.md, indem sie CLI-Befehle direkt aufrufen. Erstellt Anweisungsdateien für verschiedene KI-Tools."
+		},
+		"none": {
+			"label": "Vorerst überspringen",
+			"description": "Weiter ohne KI-Integration einzurichten. Du kannst das später konfigurieren."
+		}
+	},
+	"mcpClients": {
+		"title": "MCP-Client-Einrichtung",
+		"description": "Wähle die KI-Tools aus, die du für die MCP-Integration konfigurieren möchtest. Die Einrichtung läuft automatisch.",
+		"clients": {
+			"claude": {
+				"label": "Claude Code",
+				"description": "Anthropics Claude-Code-Editor"
+			},
+			"codex": {
+				"label": "OpenAI Codex",
+				"description": "OpenAIs Codex-CLI"
+			},
+			"gemini": {
+				"label": "Gemini CLI",
+				"description": "Googles Gemini Code Assist CLI"
+			},
+			"guide": {
+				"label": "Manuelle Einrichtungsanleitung",
+				"description": "Öffnet die Dokumentation zur manuellen Konfiguration"
+			}
+		},
+		"selectAtLeastOne": "💡 Wähle mindestens eine Option, um die MCP-Integration einzurichten, oder gehe zurück, um einen anderen Modus zu wählen."
+	},
+	"agentFiles": {
+		"title": "Agenten-Anweisungsdateien",
+		"description": "Wähle aus, welche Anweisungsdateien für CLI-basierte KI-Tools erstellt werden sollen.",
+		"files": {
+			"claudeMd": {
+				"label": "CLAUDE.md",
+				"description": "Anweisungen für Claude Code"
+			},
+			"agentsMd": {
+				"label": "AGENTS.md",
+				"description": "Codex, Cursor, Zed, Warp, Aider, RooCode usw."
+			},
+			"geminiMd": {
+				"label": "GEMINI.md",
+				"description": "Google Gemini Code Assist CLI"
+			},
+			"copilot": {
+				"label": "Copilot-Anweisungen",
+				"description": "GitHub Copilot"
+			}
+		},
+		"installClaudeAgent": {
+			"label": "Claude Code Backlog.md-Agent installieren",
+			"description": "Fügt eine Konfiguration unter .claude/agents/ für eine erweiterte Claude-Code-Integration hinzu"
+		}
+	},
+	"advanced": {
+		"title": "Erweiterte Einstellungen",
+		"backlogFolder": {
+			"title": "Backlog-Ordner",
+			"options": {
+				"backlog": {
+					"label": "backlog/",
+					"description": "Aufgaben und Konfiguration in backlog/ speichern"
+				},
+				"dotBacklog": {
+					"label": ".backlog/",
+					"description": "Aufgaben und Konfiguration in .backlog/ speichern"
+				},
+				"custom": {
+					"label": "Benutzerdefinierter, projektrelativer Pfad",
+					"descriptionTemplate": "{{rootConfigPath}} als Zeigerdatei im Projekt-Root verwenden"
+				}
+			},
+			"customPath": {
+				"label": "Projektrelatives Backlog-Verzeichnis",
+				"placeholder": "z. B. planning/backlog",
+				"help": "Dieser Pfad wird in {{rootConfigPath}} gespeichert und ausgehend vom Projekt-Root aufgelöst."
+			},
+			"configLocation": {
+				"label": "Speicherort der Konfiguration",
+				"options": {
+					"folder": {
+						"labelTemplate": "{{backlogDirectory}}/config.yml",
+						"description": "Konfiguration im Backlog-Ordner speichern"
+					},
+					"root": {
+						"label": "backlog.config.yml",
+						"description": "Konfiguration im Projekt-Root speichern und von dort auf den Backlog-Ordner verweisen"
+					}
+				}
+			}
+		},
+		"configureNow": "Erweiterte Einstellungen jetzt konfigurieren",
+		"branchSettings": {
+			"title": "Branch-Einstellungen",
+			"checkActiveBranches": {
+				"label": "Aufgabenstatus über Branches hinweg prüfen",
+				"description": "Sorgt für eine genaue Aufgabenverfolgung über Branches hinweg"
+			},
+			"includeRemoteBranches": {
+				"label": "Remote-Branches einbeziehen",
+				"description": "Erforderlich für den Zugriff auf Aufgaben aus Remote-Repositories"
+			},
+			"activeBranchDaysLabel": "Aktive Branch-Tage"
+		},
+		"gitSettings": {
+			"title": "Git-Einstellungen",
+			"autoCommit": {
+				"label": "Änderungen automatisch committen",
+				"description": "Erstellt nach CLI-Änderungen automatisch Commits"
+			},
+			"bypassGitHooks": {
+				"label": "Git-Hooks umgehen",
+				"description": "Verwendet das Flag --no-verify, um Pre-Commit-Hooks zu überspringen"
+			}
+		},
+		"idFormatting": {
+			"title": "ID-Formatierung",
+			"zeroPaddedIds": {
+				"label": "IDs mit führenden Nullen",
+				"description": "Beispiel: task-001 statt task-1"
+			},
+			"digitsLabel": "Anzahl der Stellen",
+			"taskPrefix": {
+				"label": "Aufgaben-Präfix",
+				"placeholder": "task",
+				"help": "Nur Buchstaben. Kann später nicht mehr geändert werden. Beispiele: JIRA, BUG, ISSUE"
+			}
+		},
+		"editor": {
+			"title": "Editor",
+			"placeholder": "z. B. code --wait, vim, nano",
+			"help": "Leer lassen, um den Systemstandard zu verwenden"
+		},
+		"webUi": {
+			"title": "Web-UI",
+			"portLabel": "Standardport",
+			"autoOpenBrowser": "Browser automatisch öffnen"
+		}
+	},
+	"summary": {
+		"title": "Bereit zur Initialisierung",
+		"description": "Überprüfe deine Konfiguration vor der Initialisierung:",
+		"projectName": "Projektname:",
+		"integrationMode": "Integrationsmodus:",
+		"integrationModeValues": {
+			"mcp": "MCP-Connector",
+			"cli": "CLI-Befehle",
+			"none": "Keiner"
+		},
+		"backlogDirectory": "Backlog-Verzeichnis:",
+		"configLocation": "Speicherort der Konfiguration:",
+		"mcpClients": "MCP-Clients:",
+		"agentFiles": "Agentendateien:",
+		"agentFilesCount_one": "{{count}} Datei",
+		"agentFilesCount_other": "{{count}} Dateien",
+		"claudeAgent": "Claude-Agent:",
+		"claudeAgentInstalled": "Wird installiert",
+		"advancedConfig": "Erweiterte Konfiguration:",
+		"advancedConfigValues": {
+			"customized": "Angepasst",
+			"defaults": "Standard"
+		},
+		"taskPrefix": "Aufgaben-Präfix:",
+		"setupProgress": "Einrichtungsfortschritt:"
+	},
+	"errors": {
+		"projectNameRequired": "Projektname ist erforderlich",
+		"integrationModeRequired": "Bitte wähle einen Integrationsmodus",
+		"initializeFailed": "Projekt konnte nicht initialisiert werden"
+	},
+	"actions": {
+		"back": "Zurück",
+		"next": "Weiter",
+		"initializeProject": "Projekt initialisieren",
+		"initializing": "Wird initialisiert …"
+	}
+}

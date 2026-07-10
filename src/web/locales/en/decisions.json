@@ -1,0 +1,20 @@
+{
+	"noDecisionSelected": "No decision selected",
+	"noDecisionSelectedHint": "Select a decision from the sidebar to view its content.",
+	"typeLabel": "Decision",
+	"idLabel": "ID:",
+	"dateLabel": "Date:",
+	"edit": "Edit",
+	"fallbackTitle": "Decision {{id}}",
+	"fields": {
+		"titlePlaceholder": "Decision title"
+	},
+	"editorPlaceholder": "Write your decision documentation here...",
+	"saveSuccess": "Decision \"{{title}}\" saved successfully!",
+	"status": {
+		"proposed": "Proposed",
+		"accepted": "Accepted",
+		"rejected": "Rejected",
+		"superseded": "Superseded"
+	}
+}

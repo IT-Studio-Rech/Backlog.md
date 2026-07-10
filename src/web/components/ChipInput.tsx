@@ -1,4 +1,5 @@
 import React, { useState, type KeyboardEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ChipInputProps {
   value: string[];
@@ -10,6 +11,7 @@ interface ChipInputProps {
 }
 
 const ChipInput: React.FC<ChipInputProps> = ({ value, onChange, placeholder, label, name, disabled }) => {
+  const { t } = useTranslation(['common']);
   const [inputValue, setInputValue] = useState('');
   const inputId = `chip-input-${name}`;
 
@@ -68,7 +70,7 @@ const ChipInput: React.FC<ChipInputProps> = ({ value, onChange, placeholder, lab
 	                  type="button"
 	                  onClick={() => removeChip(index)}
 	                  className="hover:bg-blue-200 dark:hover:bg-blue-800 rounded-sm p-0.5 transition-colors duration-200"
-	                  aria-label={`Remove ${item}`}
+	                  aria-label={t('common:removeItem', { item })}
 	                >
 	                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
 	                    <path

@@ -1,0 +1,17 @@
+{
+	"noDocumentSelected": "No document selected",
+	"noDocumentSelectedHint": "Select a document from the sidebar to view its content.",
+	"typeLabel": "Documentation",
+	"idLabel": "ID:",
+	"createdLabel": "Created:",
+	"edit": "Edit",
+	"fallbackTitle": "Document {{id}}",
+	"fields": {
+		"titlePlaceholder": "Document title",
+		"pathPlaceholder": "guides/setup"
+	},
+	"editorPlaceholder": "Write your documentation here...",
+	"titleRequired": "Document title is required",
+	"failedToSave": "Failed to save: {{message}}",
+	"saveSuccess": "Document \"{{title}}\" saved successfully!"
+}

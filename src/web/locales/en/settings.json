@@ -1,0 +1,84 @@
+{
+	"title": "Settings",
+	"loadingSettings": "Loading settings...",
+	"loadError": "Failed to load configuration",
+	"saveError": "Failed to save configuration",
+	"saveSuccess": "Settings saved successfully!",
+	"project": {
+		"title": "Project Settings",
+		"projectName": {
+			"label": "Project Name",
+			"error": "Project name is required"
+		},
+		"dateFormat": {
+			"label": "Date Format",
+			"help": "Controls how dates are displayed in the web UI and TUI. Dates in markdown files are always stored as yyyy-mm-dd."
+		}
+	},
+	"workflow": {
+		"title": "Workflow Settings",
+		"autoCommit": {
+			"label": "Auto Commit",
+			"help": "Automatically commit changes to Git after task operations"
+		},
+		"remoteOperations": {
+			"label": "Remote Operations",
+			"help": "Fetch tasks information from remote branches"
+		},
+		"defaultStatus": {
+			"label": "Default Status",
+			"help": "Default status for new tasks"
+		},
+		"defaultEditor": {
+			"label": "Default Editor",
+			"placeholder": "e.g., vim, nano, code",
+			"help": "Editor command to use for editing tasks (overrides EDITOR environment variable)"
+		}
+	},
+	"definitionOfDone": {
+		"title": "Definition of Done Defaults",
+		"description": "These checklist items are added to new tasks by default.",
+		"itemPlaceholder": "Checklist item",
+		"addItem": "+ Add item"
+	},
+	"webUi": {
+		"title": "Web UI Settings",
+		"defaultPort": {
+			"label": "Default Port",
+			"error": "Port must be between 1 and 65535"
+		},
+		"autoOpenBrowser": {
+			"label": "Auto Open Browser",
+			"help": "Automatically open browser when starting web UI"
+		},
+		"hideEmptyColumns": {
+			"label": "Hide Empty Columns",
+			"help": "Hide board columns whose status has no tasks. Columns reappear while dragging a task so they remain valid drop targets."
+		}
+	},
+	"advanced": {
+		"title": "Advanced Settings",
+		"maxColumnWidth": {
+			"label": "Max Column Width",
+			"help": "Maximum width for text columns in CLI output"
+		},
+		"taskResolutionStrategy": {
+			"label": "Task Resolution Strategy",
+			"mostRecent": "Most Recent",
+			"mostProgressed": "Most Progressed",
+			"help": "Strategy for resolving conflicts when tasks exist in multiple branches"
+		},
+		"zeroPaddedIds": {
+			"label": "Zero-Padded IDs",
+			"help": "Number of digits for ID padding (0 = disabled, 3 = task-001, 4 = task-0001)"
+		},
+		"taskPrefix": {
+			"label": "Task Prefix",
+			"readOnly": "(read-only)",
+			"help": "Set during initialization. Cannot be changed to avoid breaking existing task IDs."
+		}
+	},
+	"actions": {
+		"saveChanges": "Save Changes"
+	}
+}

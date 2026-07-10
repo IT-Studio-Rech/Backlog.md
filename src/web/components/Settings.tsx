@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { apiClient } from '../lib/api';
 import { SuccessToast } from './SuccessToast';
 import type { BacklogConfig } from '../../types';
 
 const Settings: React.FC = () => {
+	const { t } = useTranslation(['settings', 'common']);
 	const [config, setConfig] = useState<BacklogConfig | null>(null);
 	const [originalConfig, setOriginalConfig] = useState<BacklogConfig | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -26,7 +28,7 @@ const Settings: React.FC = () => {
 			setOriginalConfig(data);
 			setError(null);
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Failed to load configuration');
+			setError(err instanceof Error ? err.message : t('settings:loadError'));
 		} finally {
 			setLoading(false);
 		}
@@ -70,12 +72,12 @@ const Settings: React.FC = () => {
 
 		// Validate project name
 		if (!config.projectName.trim()) {
-			errors.projectName = 'Project name is required';
+			errors.projectName = t('settings:project.projectName.error');
 		}
 
 		// Validate port number
 		if (config.defaultPort && (config.defaultPort < 1 || config.defaultPort > 65535)) {
-			errors.defaultPort = 'Port must be between 1 and 65535';
+			errors.defaultPort = t('settings:webUi.defaultPort.error');
 		}
 
 
@@ -99,7 +101,7 @@ const Settings: React.FC = () => {
 			setTimeout(() => setShowSuccess(false), 3000);
 			setError(null);
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Failed to save configuration');
+			setError(err instanceof Error ? err.message : t('settings:saveError'));
 		} finally {
 			setSaving(false);
 		}
@@ -116,7 +118,7 @@ const Settings: React.FC = () => {
 		return (
 			<div className="w-full px-6 py-8">
 				<div className="flex items-center justify-center py-12">
-					<div className="text-lg text-gray-600 dark:text-gray-300">Loading settings...</div>
+					<div className="text-lg text-gray-600 dark:text-gray-300">{t('settings:loadingSettings')}</div>
 				</div>
 			</div>
 		);
@@ -126,7 +128,7 @@ const Settings: React.FC = () => {
 		return (
 			<div className="w-full px-6 py-8">
 				<div className="flex items-center justify-center py-12">
-					<div className="text-red-600 dark:text-red-400">Failed to load configuration</div>
+					<div className="text-red-600 dark:text-red-400">{t('settings:loadError')}</div>
 				</div>
 			</div>
 		);
@@ -135,7 +137,7 @@ const Settings: React.FC = () => {
 	return (
 		<div className="w-full px-6 py-8 transition-colors duration-200">
 			<div className="max-w-4xl mx-auto">
-				<h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">Settings</h1>
+				<h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">{t('settings:title')}</h1>
 
 				{error && (
 					<div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg">
@@ -146,11 +148,11 @@ const Settings: React.FC = () => {
 				<div className="space-y-8">
 					{/* Project Settings */}
 					<div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Project Settings</h2>
+						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('settings:project.title')}</h2>
 						<div className="space-y-4">
 							<div>
 								<label htmlFor="projectName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-									Project Name
+									{t('settings:project.projectName.label')}
 								</label>
 								<input
 									id="projectName"
@@ -170,7 +172,7 @@ const Settings: React.FC = () => {
 
 							<div>
 								<label htmlFor="dateFormat" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-									Date Format
+									{t('settings:project.dateFormat.label')}
 								</label>
 								<select
 									id="dateFormat"
@@ -183,7 +185,7 @@ const Settings: React.FC = () => {
 									<option value="mm/dd/yyyy">mm/dd/yyyy</option>
 								</select>
 								<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-									Controls how dates are displayed in the web UI and TUI. Dates in markdown files are always stored as yyyy-mm-dd.
+									{t('settings:project.dateFormat.help')}
 								</p>
 							</div>
 						</div>
@@ -191,14 +193,14 @@ const Settings: React.FC = () => {
 
 					{/* Workflow Settings */}
 					<div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Workflow Settings</h2>
+						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('settings:workflow.title')}</h2>
 						<div className="space-y-4">
 							<div>
 								<label className="flex items-center justify-between">
 									<div>
-										<span className="text-sm font-medium text-gray-700 dark:text-gray-300">Auto Commit</span>
+										<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('settings:workflow.autoCommit.label')}</span>
 										<p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-											Automatically commit changes to Git after task operations
+											{t('settings:workflow.autoCommit.help')}
 										</p>
 									</div>
 									<div className="relative inline-flex items-center cursor-pointer">
@@ -216,9 +218,9 @@ const Settings: React.FC = () => {
 							<div>
 								<label className="flex items-center justify-between">
 									<div>
-										<span className="text-sm font-medium text-gray-700 dark:text-gray-300">Remote Operations</span>
+										<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('settings:workflow.remoteOperations.label')}</span>
 										<p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-											Fetch tasks information from remote branches
+											{t('settings:workflow.remoteOperations.help')}
 										</p>
 									</div>
 									<div className="relative inline-flex items-center cursor-pointer">
@@ -235,7 +237,7 @@ const Settings: React.FC = () => {
 
 							<div>
 								<label htmlFor="defaultStatus" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-									Default Status
+									{t('settings:workflow.defaultStatus.label')}
 								</label>
 								<select
 									id="defaultStatus"
@@ -248,13 +250,13 @@ const Settings: React.FC = () => {
 									))}
 								</select>
 								<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-									Default status for new tasks
+									{t('settings:workflow.defaultStatus.help')}
 								</p>
 							</div>
 
 							<div>
 								<label htmlFor="defaultEditor" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-									Default Editor
+									{t('settings:workflow.defaultEditor.label')}
 								</label>
 								<input
 									id="defaultEditor"
@@ -262,10 +264,10 @@ const Settings: React.FC = () => {
 									value={config.defaultEditor}
 									onChange={(e) => handleInputChange('defaultEditor', e.target.value)}
 									className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200"
-									placeholder="e.g., vim, nano, code"
+									placeholder={t('settings:workflow.defaultEditor.placeholder')}
 								/>
 								<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-									Editor command to use for editing tasks (overrides EDITOR environment variable)
+									{t('settings:workflow.defaultEditor.help')}
 								</p>
 							</div>
 						</div>
@@ -273,9 +275,9 @@ const Settings: React.FC = () => {
 
 					{/* Definition of Done Defaults */}
 					<div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Definition of Done Defaults</h2>
+						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('settings:definitionOfDone.title')}</h2>
 						<p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-							These checklist items are added to new tasks by default.
+							{t('settings:definitionOfDone.description')}
 						</p>
 						<div className="space-y-3">
 							{(config.definitionOfDone ?? []).map((item, index) => (
@@ -289,7 +291,7 @@ const Settings: React.FC = () => {
 											handleInputChange('definitionOfDone', next);
 										}}
 										className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200"
-										placeholder="Checklist item"
+										placeholder={t('settings:definitionOfDone.itemPlaceholder')}
 									/>
 									<button
 										type="button"
@@ -299,7 +301,7 @@ const Settings: React.FC = () => {
 										}}
 										className="px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:underline"
 									>
-										Remove
+										{t('common:remove')}
 									</button>
 								</div>
 							))}
@@ -308,18 +310,18 @@ const Settings: React.FC = () => {
 								onClick={() => handleInputChange('definitionOfDone', [...(config.definitionOfDone ?? []), ""])}
 								className="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
 							>
-								+ Add item
+								{t('settings:definitionOfDone.addItem')}
 							</button>
 						</div>
 					</div>
 
 					{/* Web UI Settings */}
 					<div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Web UI Settings</h2>
+						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('settings:webUi.title')}</h2>
 						<div className="space-y-4">
 							<div>
 								<label htmlFor="defaultPort" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-									Default Port
+									{t('settings:webUi.defaultPort.label')}
 								</label>
 								<input
 									id="defaultPort"
@@ -342,9 +344,9 @@ const Settings: React.FC = () => {
 							<div>
 								<label className="flex items-center justify-between">
 									<div>
-										<span className="text-sm font-medium text-gray-700 dark:text-gray-300">Auto Open Browser</span>
+										<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('settings:webUi.autoOpenBrowser.label')}</span>
 										<p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-											Automatically open browser when starting web UI
+											{t('settings:webUi.autoOpenBrowser.help')}
 										</p>
 									</div>
 									<div className="relative inline-flex items-center cursor-pointer">
@@ -362,9 +364,9 @@ const Settings: React.FC = () => {
 							<div>
 								<label className="flex items-center justify-between">
 									<div>
-										<span className="text-sm font-medium text-gray-700 dark:text-gray-300">Hide Empty Columns</span>
+										<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('settings:webUi.hideEmptyColumns.label')}</span>
 										<p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-											Hide board columns whose status has no tasks. Columns reappear while dragging a task so they remain valid drop targets.
+											{t('settings:webUi.hideEmptyColumns.help')}
 										</p>
 									</div>
 									<div className="relative inline-flex items-center cursor-pointer">
@@ -383,11 +385,11 @@ const Settings: React.FC = () => {
 
 					{/* Advanced Settings */}
 					<div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Advanced Settings</h2>
+						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('settings:advanced.title')}</h2>
 						<div className="space-y-4">
 							<div>
 								<label htmlFor="maxColumnWidth" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-									Max Column Width
+									{t('settings:advanced.maxColumnWidth.label')}
 								</label>
 								<input
 									id="maxColumnWidth"
@@ -399,13 +401,13 @@ const Settings: React.FC = () => {
 									className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200"
 								/>
 								<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-									Maximum width for text columns in CLI output
+									{t('settings:advanced.maxColumnWidth.help')}
 								</p>
 							</div>
 
 							<div>
 								<label htmlFor="taskResolutionStrategy" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-									Task Resolution Strategy
+									{t('settings:advanced.taskResolutionStrategy.label')}
 								</label>
 								<select
 									id="taskResolutionStrategy"
@@ -413,17 +415,17 @@ const Settings: React.FC = () => {
 									onChange={(e) => handleInputChange('taskResolutionStrategy', e.target.value as 'most_recent' | 'most_progressed')}
 									className="w-full h-10 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200"
 								>
-									<option value="most_recent">Most Recent</option>
-									<option value="most_progressed">Most Progressed</option>
+									<option value="most_recent">{t('settings:advanced.taskResolutionStrategy.mostRecent')}</option>
+									<option value="most_progressed">{t('settings:advanced.taskResolutionStrategy.mostProgressed')}</option>
 								</select>
 								<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-									Strategy for resolving conflicts when tasks exist in multiple branches
+									{t('settings:advanced.taskResolutionStrategy.help')}
 								</p>
 							</div>
 
 							<div>
 								<label htmlFor="zeroPaddedIds" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-									Zero-Padded IDs
+									{t('settings:advanced.zeroPaddedIds.label')}
 								</label>
 								<input
 									id="zeroPaddedIds"
@@ -435,13 +437,13 @@ const Settings: React.FC = () => {
 									className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200"
 								/>
 								<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-									Number of digits for ID padding (0 = disabled, 3 = task-001, 4 = task-0001)
+									{t('settings:advanced.zeroPaddedIds.help')}
 								</p>
 							</div>
 
 							<div>
 								<label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-									Task Prefix <span className="text-gray-400 dark:text-gray-500 font-normal">(read-only)</span>
+									{t('settings:advanced.taskPrefix.label')} <span className="text-gray-400 dark:text-gray-500 font-normal">{t('settings:advanced.taskPrefix.readOnly')}</span>
 								</label>
 								<input
 									type="text"
@@ -450,7 +452,7 @@ const Settings: React.FC = () => {
 									className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
 								/>
 								<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-									Set during initialization. Cannot be changed to avoid breaking existing task IDs.
+									{t('settings:advanced.taskPrefix.help')}
 								</p>
 							</div>
 						</div>
@@ -463,14 +465,14 @@ const Settings: React.FC = () => {
 								disabled={!hasUnsavedChanges || saving}
 								className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 disabled:opacity-50 transition-colors duration-200"
 							>
-								Cancel
+								{t('common:cancel')}
 							</button>
 							<button
 								onClick={handleSave}
 								disabled={!hasUnsavedChanges || saving}
 								className="px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 disabled:opacity-50 transition-colors duration-200"
 							>
-								{saving ? 'Saving...' : 'Save Changes'}
+								{saving ? t('common:saving') : t('settings:actions.saveChanges')}
 							</button>
 						</div>
 				</div>
@@ -479,7 +481,7 @@ const Settings: React.FC = () => {
 			{/* Success Toast */}
 			{showSuccess && (
 				<SuccessToast
-					message="Settings saved successfully!"
+					message={t('settings:saveSuccess')}
 					onDismiss={() => setShowSuccess(false)}
 				/>
 			)}
