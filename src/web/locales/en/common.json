@@ -9,6 +9,10 @@
 	"remove": "Remove",
 	"removeItem": "Remove {{item}}",
 	"closeModal": "Close modal",
+	"confirmDialog": {
+		"defaultTitle": "Confirm",
+		"defaultConfirm": "Confirm"
+	},
 	"labelFilter": {
 		"label": "Labels",
 		"all": "All",
