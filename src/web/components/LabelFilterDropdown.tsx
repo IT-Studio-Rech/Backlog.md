@@ -21,8 +21,22 @@ export default function LabelFilterDropdown({
 }: LabelFilterDropdownProps) {
 	const { t } = useTranslation(["common"]);
 	const [isOpen, setIsOpen] = useState(false);
+	const [canScrollMore, setCanScrollMore] = useState(false);
 	const buttonRef = useRef<HTMLButtonElement | null>(null);
 	const menuRef = useRef<HTMLDivElement | null>(null);
+	const listRef = useRef<HTMLDivElement | null>(null);
+
+	const updateScrollHint = () => {
+		const el = listRef.current;
+		if (!el) return;
+		setCanScrollMore(el.scrollHeight - el.scrollTop - el.clientHeight > 4);
+	};
+
+	useEffect(() => {
+		if (!isOpen) return;
+		const raf = requestAnimationFrame(updateScrollHint);
+		return () => cancelAnimationFrame(raf);
+	}, [isOpen, availableLabels.length, selectedLabels.length]);
 
 	useEffect(() => {
 		if (!isOpen) return;
@@ -85,6 +99,7 @@ export default function LabelFilterDropdown({
 					ref={menuRef}
 					className="absolute z-50 mt-2 w-[220px] max-h-56 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg"
 				>
+					<div ref={listRef} onScroll={updateScrollHint} className="max-h-56 overflow-y-auto scrollbar-hide">
 						{availableLabels.length === 0 ? (
 							<div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{t("common:labelFilter.noLabels")}</div>
 						) : (
@@ -126,6 +141,14 @@ export default function LabelFilterDropdown({
 								{t("common:labelFilter.clear")}
 							</button>
 						)}
+					</div>
+					{canScrollMore && (
+						<div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pt-4 pb-1 bg-gradient-to-t from-white dark:from-gray-800 to-transparent">
+							<svg className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+							</svg>
+						</div>
+					)}
 				</div>
 			)}
 		</div>
