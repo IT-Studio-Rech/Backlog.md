@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Task } from '../../types';
-import { sortByPriority } from '../../utils/task-sorting';
+import { sortByPriority, sortByProgress } from '../../utils/task-sorting';
 import type { ReorderTaskPayload } from '../lib/api';
 import TaskCard from './TaskCard';
 
@@ -66,6 +66,31 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
     }
 
     const sortedTasks = sortByPriority(tasks);
+    const orderedTaskIds = sortedTasks.map(t => t.id);
+
+    const currentIds = tasks.map(t => t.id);
+    const hasChanged = orderedTaskIds.some((id, index) => id !== currentIds[index]);
+    const leadTaskId = orderedTaskIds[0];
+
+    if (hasChanged && leadTaskId) {
+      onTaskReorder({
+        taskId: leadTaskId,
+        targetStatus: title,
+        orderedTaskIds,
+        ...(targetMilestone !== undefined ? { targetMilestone } : {}),
+      });
+    }
+
+    setShowMenu(false);
+  };
+
+  const handleSortByProgress = () => {
+    if (!onTaskReorder || !canSortByPriority) {
+      setShowMenu(false);
+      return;
+    }
+
+    const sortedTasks = sortByProgress(tasks);
     const orderedTaskIds = sortedTasks.map(t => t.id);
 
     const currentIds = tasks.map(t => t.id);
@@ -231,6 +256,17 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
                   </svg>
                   {t('board:sortByPriority')}
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={handleSortByProgress}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 transition-colors duration-150"
+                >
+                  <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {t('board:sortByProgress')}
                 </button>
               </div>
             )}

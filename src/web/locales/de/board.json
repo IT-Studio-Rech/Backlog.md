@@ -18,6 +18,7 @@
 	"cleanupSuccessMessage_other": "{{count}} Aufgaben erfolgreich in den Ordner \"Erledigt\" verschoben",
 	"columnActions": "Spalten-Aktionen",
 	"sortByPriority": "Nach Priorität sortieren",
+	"sortByProgress": "Nach Fortschritt sortieren",
 	"dropToMove": "Ablegen zum Verschieben",
 	"empty": "Leer",
 	"dropTaskHere": "Aufgabe hier ablegen, um den Status zu ändern",

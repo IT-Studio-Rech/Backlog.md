@@ -165,6 +165,51 @@ export function sortByOrdinalAndPriority<
 }
 
 /**
+ * Compute a task's checklist completion ratio across acceptance criteria and
+ * definition-of-done items combined. Returns null when the task has no
+ * checklist items at all, so callers can sort those consistently to one end.
+ */
+function getProgressRatio(task: {
+	acceptanceCriteriaItems?: { checked: boolean }[];
+	definitionOfDoneItems?: { checked: boolean }[];
+}): number | null {
+	const items = [...(task.acceptanceCriteriaItems ?? []), ...(task.definitionOfDoneItems ?? [])];
+	if (items.length === 0) return null;
+	const checkedCount = items.filter((item) => item.checked).length;
+	return checkedCount / items.length;
+}
+
+/**
+ * Sort an array of tasks by acceptance criteria + definition of done
+ * completion ratio, most complete first. Tasks without any checklist items
+ * sort last. Ties (including no-checklist tasks) are broken by task ID.
+ */
+export function sortByProgress<
+	T extends {
+		id: string;
+		acceptanceCriteriaItems?: { checked: boolean }[];
+		definitionOfDoneItems?: { checked: boolean }[];
+	},
+>(items: T[]): T[] {
+	return [...items].sort((a, b) => {
+		const aRatio = getProgressRatio(a);
+		const bRatio = getProgressRatio(b);
+
+		if (aRatio === null && bRatio === null) {
+			return compareTaskIds(a.id, b.id);
+		}
+		if (aRatio === null) return 1;
+		if (bRatio === null) return -1;
+
+		if (aRatio !== bRatio) {
+			return bRatio - aRatio;
+		}
+
+		return compareTaskIds(a.id, b.id);
+	});
+}
+
+/**
  * Sort tasks by a specified field with fallback to task ID sorting.
  * Supported fields: 'priority', 'id', 'ordinal'
  */
