@@ -10,9 +10,12 @@ interface TaskCardProps {
   onDragEnd?: () => void;
   status?: string;
   laneId?: string;
+  // id -> title, so the dependencies tooltip can show real titles instead of bare IDs
+  taskTitleById?: Record<string, string>;
+  onContextMenu?: (task: Task, x: number, y: number) => void;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEnd, status, laneId }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEnd, status, laneId, taskTitleById, onContextMenu }) => {
   const { t } = useTranslation(['board', 'common']);
   const [isDragging, setIsDragging] = React.useState(false);
   const [showBranchTooltip, setShowBranchTooltip] = React.useState(false);
@@ -107,6 +110,11 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onClick={() => onEdit(task)}
+        onContextMenu={(e) => {
+          if (!onContextMenu) return;
+          e.preventDefault();
+          onContextMenu(task, e.clientX, e.clientY);
+        }}
       >
         {/* Cross-branch indicator banner */}
         {isFromOtherBranch && (

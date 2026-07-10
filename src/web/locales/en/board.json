@@ -26,5 +26,19 @@
 	"switchBranchToMove": "Switch to {{branch}} branch to move this task",
 	"fromBranch": "From {{branch}} branch",
 	"failedToUpdateTask": "Failed to update task",
-	"failedToReorderTask": "Failed to reorder task"
+	"failedToReorderTask": "Failed to reorder task",
+	"contextMenu": {
+		"changeStatus": "Change status",
+		"changePriority": "Change priority",
+		"archive": "Archive",
+		"copyIdOrLink": "Copy ID/link",
+		"copyId": "Copy task ID",
+		"copyLink": "Copy link",
+		"idCopied": "Task ID copied",
+		"linkCopied": "Link copied",
+		"archived": "Task archived",
+		"archiveConfirm": "Are you sure you want to archive \"{{title}}\"?",
+		"failedToArchiveTask": "Failed to archive task",
+		"failedToCopy": "Copy failed"
+	}
 }

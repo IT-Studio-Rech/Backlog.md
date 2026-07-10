@@ -26,5 +26,19 @@
 	"switchBranchToMove": "Wechsle zum Branch {{branch}}, um diese Aufgabe zu verschieben",
 	"fromBranch": "Aus Branch {{branch}}",
 	"failedToUpdateTask": "Aufgabe konnte nicht aktualisiert werden",
-	"failedToReorderTask": "Aufgabe konnte nicht neu sortiert werden"
+	"failedToReorderTask": "Aufgabe konnte nicht neu sortiert werden",
+	"contextMenu": {
+		"changeStatus": "Status ändern",
+		"changePriority": "Priorität ändern",
+		"archive": "Archivieren",
+		"copyIdOrLink": "ID/Link kopieren",
+		"copyId": "Task-ID kopieren",
+		"copyLink": "Link kopieren",
+		"idCopied": "Task-ID kopiert",
+		"linkCopied": "Link kopiert",
+		"archived": "Aufgabe archiviert",
+		"archiveConfirm": "Möchtest du \"{{title}}\" wirklich archivieren?",
+		"failedToArchiveTask": "Aufgabe konnte nicht archiviert werden",
+		"failedToCopy": "Kopieren fehlgeschlagen"
+	}
 }

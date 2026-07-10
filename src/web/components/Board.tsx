@@ -7,10 +7,13 @@ import { collectAvailableLabels, labelsToLower } from '../../utils/label-filter'
 import { collectArchivedMilestoneKeys, milestoneKey } from '../utils/milestones';
 import { getTerminalStatus } from '../../utils/terminal-status';
 import TaskColumn from './TaskColumn';
+import TaskContextMenu, { type TaskContextMenuTarget } from './TaskContextMenu';
 import CleanupModal from './CleanupModal';
 import LabelFilterDropdown from './LabelFilterDropdown';
 import Select from './Select';
 import { SuccessToast } from './SuccessToast';
+import { useConfirm } from '../hooks/useConfirm';
+import { copyTextToClipboard } from '../utils/clipboard';
 
 interface BoardProps {
   onEditTask: (task: Task) => void;
@@ -78,6 +81,9 @@ const Board: React.FC<BoardProps> = ({
   const [showCleanupModal, setShowCleanupModal] = useState(false);
   const [cleanupSuccessMessage, setCleanupSuccessMessage] = useState<string | null>(null);
   const [collapsedLanes, setCollapsedLanes] = useState<Record<string, boolean>>({});
+  const [contextMenuTarget, setContextMenuTarget] = useState<TaskContextMenuTarget | null>(null);
+  const [actionToast, setActionToast] = useState<string | null>(null);
+  const { confirm, confirmDialog } = useConfirm();
   const terminalStatus = getTerminalStatus(statuses);
   const archivedMilestoneIds = useMemo(
     () => collectArchivedMilestoneKeys(archivedMilestones, milestoneEntities),
@@ -295,6 +301,52 @@ const Board: React.FC<BoardProps> = ({
       setUpdateError(null);
     } catch (err) {
       setUpdateError(err instanceof Error ? err.message : t('board:failedToReorderTask'));
+    }
+  };
+
+  const showActionToast = (message: string) => {
+    setActionToast(message);
+    setTimeout(() => setActionToast(null), 3000);
+  };
+
+  const handleContextMenuChangeStatus = (task: Task, status: string) => {
+    void handleTaskUpdate(task.id, { status });
+  };
+
+  const handleContextMenuChangePriority = (task: Task, priority: 'high' | 'medium' | 'low' | '') => {
+    void handleTaskUpdate(task.id, { priority: priority || undefined });
+  };
+
+  const handleContextMenuArchive = async (task: Task) => {
+    if (!(await confirm({ message: t('board:contextMenu.archiveConfirm', { title: task.title }), tone: 'danger' }))) {
+      return;
+    }
+    try {
+      await apiClient.archiveTask(task.id);
+      if (onRefreshData) {
+        await onRefreshData();
+      }
+      showActionToast(t('board:contextMenu.archived'));
+    } catch (err) {
+      setUpdateError(err instanceof Error ? err.message : t('board:contextMenu.failedToArchiveTask'));
+    }
+  };
+
+  const handleContextMenuCopyId = async (task: Task) => {
+    try {
+      await copyTextToClipboard(task.id);
+      showActionToast(t('board:contextMenu.idCopied'));
+    } catch {
+      showActionToast(t('board:contextMenu.failedToCopy'));
+    }
+  };
+
+  const handleContextMenuCopyLink = async (task: Task) => {
+    try {
+      await copyTextToClipboard(`${window.location.origin}/?highlight=${encodeURIComponent(task.id)}`);
+      showActionToast(t('board:contextMenu.linkCopied'));
+    } catch {
+      showActionToast(t('board:contextMenu.failedToCopy'));
     }
   };
 
@@ -618,6 +670,7 @@ const Board: React.FC<BoardProps> = ({
                             dragSourceLane={dragSourceLane}
                             laneId={lane.key}
                             targetMilestone={lane.milestone ?? null}
+                            onCardContextMenu={(task, x, y) => setContextMenuTarget({ task, x, y })}
                             onDragStart={({ status: draggedStatus, laneId }) => {
                               setDragSourceStatus(draggedStatus);
                               setDragSourceLane(laneId ?? null);
@@ -651,6 +704,7 @@ const Board: React.FC<BoardProps> = ({
                   dragSourceStatus={dragSourceStatus}
                   dragSourceLane={dragSourceLane}
                   laneId={DEFAULT_LANE_KEY}
+                  onCardContextMenu={(task, x, y) => setContextMenuTarget({ task, x, y })}
                   onDragStart={({ status: draggedStatus, laneId }) => {
                     setDragSourceStatus(draggedStatus);
                     setDragSourceLane(laneId ?? null);
@@ -685,6 +739,26 @@ const Board: React.FC<BoardProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           }
+        />
+      )}
+
+      {actionToast && (
+        <SuccessToast message={actionToast} onDismiss={() => setActionToast(null)} />
+      )}
+
+      {confirmDialog}
+
+      {contextMenuTarget && (
+        <TaskContextMenu
+          key={`${contextMenuTarget.task.id}-${contextMenuTarget.x}-${contextMenuTarget.y}`}
+          target={contextMenuTarget}
+          statuses={statuses}
+          onClose={() => setContextMenuTarget(null)}
+          onChangeStatus={handleContextMenuChangeStatus}
+          onChangePriority={handleContextMenuChangePriority}
+          onArchive={handleContextMenuArchive}
+          onCopyId={handleContextMenuCopyId}
+          onCopyLink={handleContextMenuCopyLink}
         />
       )}
     </div>

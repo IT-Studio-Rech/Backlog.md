@@ -18,6 +18,8 @@ interface TaskColumnProps {
   onCleanup?: () => void;
   laneId?: string;
   targetMilestone?: string | null;
+  taskTitleById?: Record<string, string>;
+  onCardContextMenu?: (task: Task, x: number, y: number) => void;
 }
 
 const TaskColumn: React.FC<TaskColumnProps> = ({
@@ -32,7 +34,9 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
   onDragEnd,
   onCleanup,
   laneId,
-  targetMilestone
+  targetMilestone,
+  taskTitleById,
+  onCardContextMenu,
 }) => {
   const { t } = useTranslation(['board', 'common']);
   const [isDragOver, setIsDragOver] = React.useState(false);
@@ -275,6 +279,8 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
               }}
               status={title}
               laneId={laneId}
+              taskTitleById={taskTitleById}
+              onContextMenu={onCardContextMenu}
             />
             
             {/* Drop indicator for after this task */}
