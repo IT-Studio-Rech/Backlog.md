@@ -12,7 +12,7 @@
 	"unassigned": "Unassigned",
 	"allPriorities": "All priorities",
 	"clearFilters": "Clear filters",
-	"newTask": "+ New Task",
+	"newTask": "New Task",
 	"loadingTasks": "Loading tasks...",
 	"cleanupSuccessMessage_one": "Successfully moved {{count}} task to completed folder",
 	"cleanupSuccessMessage_other": "Successfully moved {{count}} tasks to completed folder",

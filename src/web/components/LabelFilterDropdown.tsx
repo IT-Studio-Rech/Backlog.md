@@ -80,11 +80,11 @@ export default function LabelFilterDropdown({
 				onClick={() => setIsOpen((open) => !open)}
 				aria-expanded={isOpen}
 				aria-controls={menuId}
-				className={`${className} py-2 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200 text-left`}
+				className={`${className} h-8 py-1.5 pl-3 pr-8 text-sm border border-gray-200 dark:border-white/10 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200 text-left`}
 			>
 				<div className="flex items-center justify-between gap-2">
-					<span>{t("common:labelFilter.label")}</span>
-					<span className="text-xs text-gray-500 dark:text-gray-400">
+					<span className="truncate">{t("common:labelFilter.label")}</span>
+					<span className="truncate max-w-[70px] shrink-0 text-xs text-gray-500 dark:text-gray-400">
 						{selectedLabels.length === 0
 							? t("common:labelFilter.all")
 							: selectedLabels.length === 1
@@ -93,11 +93,20 @@ export default function LabelFilterDropdown({
 					</span>
 				</div>
 			</button>
+			<svg
+				className={`pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 dark:text-gray-500 transition-transform duration-150 ${isOpen ? "rotate-180" : ""}`}
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+				aria-hidden="true"
+			>
+				<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+			</svg>
 			{isOpen && (
 				<div
 					id={menuId}
 					ref={menuRef}
-					className="absolute z-50 mt-2 w-[220px] max-h-56 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg"
+					className="absolute z-50 mt-2 w-[220px] rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 shadow-lg dark:shadow-none overflow-hidden"
 				>
 					<div ref={listRef} onScroll={updateScrollHint} className="max-h-56 overflow-y-auto scrollbar-hide">
 						{availableLabels.length === 0 ? (
@@ -132,7 +141,7 @@ export default function LabelFilterDropdown({
 						{selectedLabels.length > 0 && (
 							<button
 								type="button"
-								className="w-full text-left px-3 py-2 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 border-t border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
+								className="w-full text-left px-3 py-2 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 border-t border-gray-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
 								onClick={() => {
 									onChange([]);
 									setIsOpen(false);

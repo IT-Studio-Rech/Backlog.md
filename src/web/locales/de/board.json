@@ -12,7 +12,7 @@
 	"unassigned": "Nicht zugewiesen",
 	"allPriorities": "Alle Prioritäten",
 	"clearFilters": "Filter zurücksetzen",
-	"newTask": "+ Neue Aufgabe",
+	"newTask": "Neue Aufgabe",
 	"loadingTasks": "Aufgaben werden geladen...",
 	"cleanupSuccessMessage_one": "{{count}} Aufgabe erfolgreich in den Ordner \"Erledigt\" verschoben",
 	"cleanupSuccessMessage_other": "{{count}} Aufgaben erfolgreich in den Ordner \"Erledigt\" verschoben",

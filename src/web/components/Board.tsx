@@ -538,13 +538,13 @@ const Board: React.FC<BoardProps> = ({
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200">{t('board:heading')}</h2>
           <div className="flex flex-wrap items-center gap-3" role="toolbar" aria-label={t('board:viewControls')}>
-            <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-gray-50 dark:bg-gray-800/50 transition-colors duration-200">
+            <div className="inline-flex rounded-lg border border-gray-200 dark:border-white/10 p-1 bg-gray-50 dark:bg-white/[0.03] transition-colors duration-200">
               <button
                 type="button"
                 onClick={() => onLaneChange('none')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${
+                className={`px-2.5 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
                   laneMode === 'none'
-                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                    ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-gray-100 shadow-sm dark:shadow-none'
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                 }`}
               >
@@ -555,11 +555,11 @@ const Board: React.FC<BoardProps> = ({
                 onClick={() => onLaneChange('milestone')}
                 disabled={!hasTasksWithMilestones}
                 title={!hasTasksWithMilestones ? t('board:noMilestonesTooltip') : t('board:groupByMilestoneTooltip')}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${
+                className={`px-2.5 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
                   !hasTasksWithMilestones
                     ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-50'
                     : laneMode === 'milestone'
-                      ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                      ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-gray-100 shadow-sm dark:shadow-none'
                       : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                 }`}
               >
@@ -615,9 +615,12 @@ const Board: React.FC<BoardProps> = ({
           </div>
         </div>
         <button
-          className="inline-flex items-center px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 dark:focus:ring-blue-500 dark:focus:ring-offset-gray-800 transition-colors duration-200"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 dark:focus:ring-blue-500 dark:focus:ring-offset-gray-800 transition-colors duration-200"
           onClick={onNewTask}
         >
+          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+          </svg>
           {t('board:newTask')}
         </button>
       </div>

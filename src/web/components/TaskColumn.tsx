@@ -20,6 +20,7 @@ interface TaskColumnProps {
   targetMilestone?: string | null;
   taskTitleById?: Record<string, string>;
   onCardContextMenu?: (task: Task, x: number, y: number) => void;
+  labelColors?: Record<string, string>;
 }
 
 const TaskColumn: React.FC<TaskColumnProps> = ({
@@ -37,6 +38,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
   targetMilestone,
   taskTitleById,
   onCardContextMenu,
+  labelColors,
 }) => {
   const { t } = useTranslation(['board', 'common']);
   const [isDragOver, setIsDragOver] = React.useState(false);
@@ -215,7 +217,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 min-h-7">
         <div className="flex items-center gap-2">
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200">{title}</h3>
           <span className={`px-2 py-1 text-xs font-medium rounded-circle ${getStatusBadgeClass(title)}`}>
@@ -244,7 +246,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
               <div
                 id={columnActionsId}
                 role="menu"
-                className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50 py-1 ring-1 ring-black ring-opacity-5"
+                className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-white/10 rounded-md shadow-lg dark:shadow-none z-50 py-1"
               >
                 <button
                   type="button"
@@ -317,6 +319,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
               laneId={laneId}
               taskTitleById={taskTitleById}
               onContextMenu={onCardContextMenu}
+              labelColors={labelColors}
             />
             
             {/* Drop indicator for after this task */}
