@@ -62,6 +62,15 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
     return t('common:relativeDate.yearsAgo', { count: Math.floor(diffDays / 365) });
   };
 
+  const getInitials = (name: string) => {
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    const first = parts[0];
+    if (!first) return '';
+    const last = parts.length > 1 ? parts[parts.length - 1] : undefined;
+    if (!last) return first.slice(0, 2).toUpperCase();
+    return `${first[0]}${last[0]}`.toUpperCase();
+  };
+
   const getPriorityBadge = (priority?: string) => {
     switch (priority) {
       case 'high': return { bg: 'bg-red-100 dark:bg-red-900/40', text: 'text-red-700 dark:text-red-300', label: t('common:priorityBadge.high') };
@@ -87,10 +96,10 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
       )}
 
       <div
-        className={`bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md p-3 mb-2 transition-all duration-200 ${
-          isFromOtherBranch 
-            ? 'opacity-75 cursor-not-allowed border-dashed' 
-            : 'cursor-pointer hover:shadow-md dark:hover:shadow-lg hover:border-stone-500 dark:hover:border-stone-400'
+        className={`bg-white dark:bg-gray-700 border border-gray-200 dark:border-white/10 rounded-lg p-3.5 mb-2 transition-all duration-200 ${
+          isFromOtherBranch
+            ? 'opacity-75 cursor-not-allowed border-dashed'
+            : 'cursor-pointer hover:shadow-md dark:hover:shadow-none hover:border-stone-500 dark:hover:border-white/20'
         } ${
           isDragging ? 'opacity-50 transform rotate-2 scale-105' : ''
         }`}
@@ -112,7 +121,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
         )}
 
         {/* Header row with priority badge and task ID */}
-        <div className="flex items-center justify-between gap-2 mb-1.5">
+        <div className="flex items-center justify-between gap-2 mb-2">
           <span className="text-xs text-gray-400 dark:text-gray-500 font-mono transition-colors duration-200">{task.id}</span>
           {(() => {
             const badge = getPriorityBadge(task.priority);
@@ -125,7 +134,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
         </div>
 
         {/* Title */}
-        <h4 className={`font-semibold text-sm line-clamp-2 transition-colors duration-200 ${
+        <h4 className={`font-semibold text-[15px] leading-snug line-clamp-2 transition-colors duration-200 ${
           isFromOtherBranch
             ? 'text-gray-600 dark:text-gray-400'
             : 'text-gray-900 dark:text-gray-100'
@@ -139,7 +148,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
             {task.labels.slice(0, 3).map(label => (
               <span
                 key={label}
-                className="inline-block px-1.5 py-0.5 text-[10px] bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 rounded transition-colors duration-200"
+                className="inline-block px-1.5 py-0.5 text-[10px] bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 rounded transition-colors duration-200"
               >
                 {label}
               </span>
@@ -153,11 +162,14 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
         )}
 
         {/* Footer with date */}
-        <div className="flex items-center justify-between text-[10px] text-gray-400 dark:text-gray-500 mt-2 pt-1.5 border-t border-gray-100 dark:border-gray-600/50 transition-colors duration-200">
+        <div className="flex items-center justify-between text-[10px] text-gray-400 dark:text-gray-500 mt-2 pt-2 border-t border-gray-100 dark:border-white/10 transition-colors duration-200">
           <span>{formatRelativeDate(task.createdDate)}</span>
           {task.assignee.length > 0 && (
-            <span className="truncate max-w-[80px]" title={task.assignee.join(', ')}>
-              {task.assignee[0]}
+            <span
+              className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-100 dark:bg-white/10 text-stone-700 dark:text-gray-200 text-[9px] font-semibold shrink-0"
+              title={task.assignee.join(', ')}
+            >
+              {getInitials(task.assignee[0] ?? '')}
             </span>
           )}
         </div>
