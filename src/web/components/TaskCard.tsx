@@ -40,11 +40,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
   const { t } = useTranslation(['board', 'common']);
   const [isDragging, setIsDragging] = React.useState(false);
   const [showBranchTooltip, setShowBranchTooltip] = React.useState(false);
+  const dragCloneRef = React.useRef<HTMLElement | null>(null);
 
   // Check if task is from another branch (read-only)
   const isFromOtherBranch = Boolean(task.branch);
 
-  const handleDragStart = (e: React.DragEvent) => {
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     // Prevent dragging cross-branch tasks
     if (isFromOtherBranch) {
       e.preventDefault();
@@ -61,12 +62,37 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
       e.dataTransfer.setData('text/lane', laneId);
     }
     e.dataTransfer.effectAllowed = 'move';
-    setIsDragging(true);
+
+    // Use an isolated clone as the drag ghost instead of the browser's
+    // automatic snapshot: some browsers stack extra translucency on top of
+    // our own dimmed styling (making the ghost look nearly invisible), and
+    // the auto-snapshot's capture region can bleed into whatever sits right
+    // below the card. Cloning just this element into a detached, off-screen
+    // node guarantees the ghost is exactly this card, at full opacity, with
+    // nothing else in frame.
+    const cardElement = e.currentTarget;
+    const rect = cardElement.getBoundingClientRect();
+    const clone = cardElement.cloneNode(true) as HTMLElement;
+    clone.style.position = 'fixed';
+    clone.style.top = '-9999px';
+    clone.style.left = '-9999px';
+    clone.style.width = `${rect.width}px`;
+    clone.style.margin = '0';
+    clone.style.pointerEvents = 'none';
+    document.body.appendChild(clone);
+    dragCloneRef.current = clone;
+    e.dataTransfer.setDragImage(clone, e.clientX - rect.left, e.clientY - rect.top);
+
+    // Deferred so the browser finishes reading the (still full-opacity) card
+    // for the drag operation before we dim the card left behind in the column.
+    setTimeout(() => setIsDragging(true), 0);
     onDragStart?.();
   };
 
   const handleDragEnd = () => {
     setIsDragging(false);
+    dragCloneRef.current?.remove();
+    dragCloneRef.current = null;
     onDragEnd?.();
   };
 
