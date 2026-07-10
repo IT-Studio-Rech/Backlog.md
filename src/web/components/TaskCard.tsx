@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { type Task } from '../../types';
 
 interface TaskCardProps {
@@ -12,6 +13,7 @@ interface TaskCardProps {
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEnd, status, laneId }) => {
+  const { t } = useTranslation(['board', 'common']);
   const [isDragging, setIsDragging] = React.useState(false);
   const [showBranchTooltip, setShowBranchTooltip] = React.useState(false);
 
@@ -44,15 +46,6 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
     onDragEnd?.();
   };
 
-  const getPriorityClass = (priority?: string) => {
-    switch (priority) {
-      case 'high': return 'border-l-4 border-l-red-500 dark:border-l-red-400';
-      case 'medium': return 'border-l-4 border-l-yellow-500 dark:border-l-yellow-400';
-      case 'low': return 'border-l-4 border-l-green-500 dark:border-l-green-400';
-      default: return 'border-l-4 border-l-gray-300 dark:border-l-gray-600';
-    }
-  };
-
   const formatRelativeDate = (dateStr: string) => {
     // Handle both date-only and datetime formats
     const hasTime = dateStr.includes(" ") || dateStr.includes("T");
@@ -61,19 +54,19 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
     const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 0) return 'today';
-    if (diffDays === 1) return 'yesterday';
-    if (diffDays < 7) return `${diffDays}d ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
-    if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`;
-    return `${Math.floor(diffDays / 365)}y ago`;
+    if (diffDays === 0) return t('common:relativeDate.today');
+    if (diffDays === 1) return t('common:relativeDate.yesterday');
+    if (diffDays < 7) return t('common:relativeDate.daysAgo', { count: diffDays });
+    if (diffDays < 30) return t('common:relativeDate.weeksAgo', { count: Math.floor(diffDays / 7) });
+    if (diffDays < 365) return t('common:relativeDate.monthsAgo', { count: Math.floor(diffDays / 30) });
+    return t('common:relativeDate.yearsAgo', { count: Math.floor(diffDays / 365) });
   };
 
   const getPriorityBadge = (priority?: string) => {
     switch (priority) {
-      case 'high': return { bg: 'bg-red-100 dark:bg-red-900/40', text: 'text-red-700 dark:text-red-300', label: 'High' };
-      case 'medium': return { bg: 'bg-yellow-100 dark:bg-yellow-900/40', text: 'text-yellow-700 dark:text-yellow-300', label: 'Med' };
-      case 'low': return { bg: 'bg-green-100 dark:bg-green-900/40', text: 'text-green-700 dark:text-green-300', label: 'Low' };
+      case 'high': return { bg: 'bg-red-100 dark:bg-red-900/40', text: 'text-red-700 dark:text-red-300', label: t('common:priorityBadge.high') };
+      case 'medium': return { bg: 'bg-yellow-100 dark:bg-yellow-900/40', text: 'text-yellow-700 dark:text-yellow-300', label: t('common:priorityBadge.medium') };
+      case 'low': return { bg: 'bg-green-100 dark:bg-green-900/40', text: 'text-green-700 dark:text-green-300', label: t('common:priorityBadge.low') };
       default: return null;
     }
   };
@@ -87,7 +80,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
             <svg className="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            Switch to <span className="font-semibold text-amber-300">{task.branch}</span> branch to move this task
+            {t('board:switchBranchToMove', { branch: task.branch })}
           </div>
           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900 dark:bg-gray-700"></div>
         </div>
@@ -98,7 +91,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
           isFromOtherBranch 
             ? 'opacity-75 cursor-not-allowed border-dashed' 
             : 'cursor-pointer hover:shadow-md dark:hover:shadow-lg hover:border-stone-500 dark:hover:border-stone-400'
-        } ${getPriorityClass(task.priority)} ${
+        } ${
           isDragging ? 'opacity-50 transform rotate-2 scale-105' : ''
         }`}
         draggable={!isFromOtherBranch}
@@ -113,7 +106,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
             </svg>
             <span className="truncate">
-              From <span className="font-semibold">{task.branch}</span> branch
+              {t('board:fromBranch', { branch: task.branch })}
             </span>
           </div>
         )}
