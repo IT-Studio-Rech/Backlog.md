@@ -88,12 +88,13 @@
         })();
     </script>
     <script>
-        // Prevent flash of wrong theme by applying theme before page renders
+        // Prevent flash of wrong theme by applying theme before page renders.
+        // Dark is the default for every first-time visitor, regardless of OS/browser
+        // preference — only an explicit prior choice (saved below) switches to light.
         (function() {
             const savedTheme = localStorage.getItem('backlog-theme');
-            const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const shouldUseDark = savedTheme === 'dark' || (!savedTheme && systemDark);
-            
+            const shouldUseDark = savedTheme !== 'light';
+
             if (shouldUseDark) {
                 document.documentElement.classList.add('dark');
             }

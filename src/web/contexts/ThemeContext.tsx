@@ -23,18 +23,10 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 	const [theme, setTheme] = useState<Theme>(() => {
-		// Check localStorage for saved theme preference
+		// Dark is the default for every first-time visitor, regardless of OS/browser
+		// preference — only an explicit prior choice (saved below) switches to light.
 		const savedTheme = localStorage.getItem('backlog-theme') as Theme;
-		if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
-			return savedTheme;
-		}
-		
-		// Check system preference
-		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			return 'dark';
-		}
-		
-		return 'light';
+		return savedTheme === 'light' ? 'light' : 'dark';
 	});
 
 	useEffect(() => {
