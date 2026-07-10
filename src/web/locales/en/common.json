@@ -111,5 +111,8 @@
 	"healthCheck": {
 		"serverDisconnected": "Server disconnected",
 		"connectionRestored": "Connection restored!"
-	}
+	},
+	"acceptanceCriteriaProgress": "Acceptance criteria",
+	"dependenciesCount_one": "{{count}} dependency",
+	"dependenciesCount_other": "{{count}} dependencies"
 }

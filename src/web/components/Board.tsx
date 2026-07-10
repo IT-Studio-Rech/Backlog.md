@@ -244,6 +244,14 @@ const Board: React.FC<BoardProps> = ({
     [tasks, availableLabels]
   );
 
+  const taskTitleById = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const task of tasks) {
+      map[task.id] = task.title;
+    }
+    return map;
+  }, [tasks]);
+
   const normalizedFilterLabels = useMemo(
     () => filterLabels.map(label => label.trim()).filter(label => label.length > 0),
     [filterLabels]
@@ -678,6 +686,7 @@ const Board: React.FC<BoardProps> = ({
                             dragSourceLane={dragSourceLane}
                             laneId={lane.key}
                             targetMilestone={lane.milestone ?? null}
+                            taskTitleById={taskTitleById}
                             labelColors={labelColors}
                             onCardContextMenu={(task, x, y) => setContextMenuTarget({ task, x, y })}
                             onDragStart={({ status: draggedStatus, laneId }) => {
@@ -713,6 +722,7 @@ const Board: React.FC<BoardProps> = ({
                   dragSourceStatus={dragSourceStatus}
                   dragSourceLane={dragSourceLane}
                   laneId={DEFAULT_LANE_KEY}
+                  taskTitleById={taskTitleById}
                   labelColors={labelColors}
                   onCardContextMenu={(task, x, y) => setContextMenuTarget({ task, x, y })}
                   onDragStart={({ status: draggedStatus, laneId }) => {

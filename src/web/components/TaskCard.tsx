@@ -17,6 +17,25 @@ interface TaskCardProps {
   labelColors?: Record<string, string>;
 }
 
+// Deterministic per-person color so the same assignee reads consistently across
+// cards, instead of every avatar chip sharing one flat neutral tint.
+const AVATAR_PALETTE = [
+  { light: 'bg-teal-100 text-teal-700', dark: 'dark:bg-teal-500/15 dark:text-teal-300' },
+  { light: 'bg-sky-100 text-sky-700', dark: 'dark:bg-sky-500/15 dark:text-sky-300' },
+  { light: 'bg-violet-100 text-violet-700', dark: 'dark:bg-violet-500/15 dark:text-violet-300' },
+  { light: 'bg-amber-100 text-amber-700', dark: 'dark:bg-amber-500/15 dark:text-amber-300' },
+  { light: 'bg-rose-100 text-rose-700', dark: 'dark:bg-rose-500/15 dark:text-rose-300' },
+  { light: 'bg-emerald-100 text-emerald-700', dark: 'dark:bg-emerald-500/15 dark:text-emerald-300' },
+];
+
+const getAvatarColor = (name: string) => {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+  }
+  return AVATAR_PALETTE[hash % AVATAR_PALETTE.length] ?? AVATAR_PALETTE[0]!;
+};
+
 const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEnd, status, laneId, taskTitleById, onContextMenu, labelColors }) => {
   const { t } = useTranslation(['board', 'common']);
   const [isDragging, setIsDragging] = React.useState(false);
@@ -67,20 +86,13 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
     return t('common:relativeDate.yearsAgo', { count: Math.floor(diffDays / 365) });
   };
 
-  const getInitials = (name: string) => {
-    const parts = name.trim().split(/\s+/).filter(Boolean);
-    const first = parts[0];
-    if (!first) return '';
-    const last = parts.length > 1 ? parts[parts.length - 1] : undefined;
-    if (!last) return first.slice(0, 2).toUpperCase();
-    return `${first[0]}${last[0]}`.toUpperCase();
-  };
+  const truncateName = (name: string, max = 15) => (name.length > max ? `${name.slice(0, max)}…` : name);
 
-  const getPriorityBadge = (priority?: string) => {
+  const getPriorityBars = (priority?: string) => {
     switch (priority) {
-      case 'high': return { bg: 'bg-red-100 dark:bg-red-900/40', text: 'text-red-700 dark:text-red-300', label: t('common:priorityBadge.high') };
-      case 'medium': return { bg: 'bg-yellow-100 dark:bg-yellow-900/40', text: 'text-yellow-700 dark:text-yellow-300', label: t('common:priorityBadge.medium') };
-      case 'low': return { bg: 'bg-green-100 dark:bg-green-900/40', text: 'text-green-700 dark:text-green-300', label: t('common:priorityBadge.low') };
+      case 'high': return { active: 3, bar: 'bg-red-500 dark:bg-red-400', label: t('common:priorityBadge.high') };
+      case 'medium': return { active: 2, bar: 'bg-amber-500 dark:bg-amber-400', label: t('common:priorityBadge.medium') };
+      case 'low': return { active: 1, bar: 'bg-stone-500 dark:bg-stone-400', label: t('common:priorityBadge.low') };
       default: return null;
     }
   };
@@ -101,12 +113,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
       )}
 
       <div
-        className={`bg-white dark:bg-gray-700 border border-gray-200 dark:border-white/10 rounded-lg p-3.5 mb-2 transition-all duration-200 ${
+        className={`bg-white dark:bg-gray-700 border border-gray-200 dark:border-white/10 rounded-lg p-4 mb-2 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:focus-visible:ring-stone-400 ${
           isFromOtherBranch
             ? 'opacity-75 cursor-not-allowed border-dashed'
-            : 'cursor-pointer hover:shadow-md dark:hover:shadow-none hover:border-stone-500 dark:hover:border-white/20'
+            : 'cursor-pointer hover:shadow-md dark:hover:shadow-none hover:border-stone-500 dark:hover:border-white/20 dark:hover:bg-white/[0.04]'
         } ${
-          isDragging ? 'opacity-50 transform rotate-2 scale-105' : ''
+          isDragging ? 'opacity-60 ring-2 ring-stone-500/40 shadow-xl' : ''
         }`}
         draggable={!isFromOtherBranch}
         onDragStart={handleDragStart}
@@ -117,10 +129,18 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
           e.preventDefault();
           onContextMenu(task, e.clientX, e.clientY);
         }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onEdit(task);
+          }
+        }}
+        role="button"
+        tabIndex={0}
       >
         {/* Cross-branch indicator banner */}
         {isFromOtherBranch && (
-          <div className="flex items-center gap-1.5 mb-2 px-2 py-1 -mx-1 -mt-1 bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-700 rounded-t text-xs text-amber-700 dark:text-amber-300">
+          <div className="flex items-center gap-1.5 mb-2 px-2 py-1 -mx-1 -mt-1 bg-sky-50 dark:bg-sky-900/20 border-b border-sky-200 dark:border-sky-800 rounded-t text-xs text-sky-700 dark:text-sky-300">
             <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
             </svg>
@@ -130,14 +150,27 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
           </div>
         )}
 
-        {/* Header row with priority badge and task ID */}
+        {/* Header row with priority indicator and task ID */}
         <div className="flex items-center justify-between gap-2 mb-2">
-          <span className="text-xs text-gray-400 dark:text-gray-500 font-mono transition-colors duration-200">{task.id}</span>
+          <span className="text-xs tabular-nums text-gray-400 dark:text-gray-500 font-mono transition-colors duration-200">{task.id}</span>
           {(() => {
-            const badge = getPriorityBadge(task.priority);
-            return badge ? (
-              <span className={`px-1.5 py-0.5 text-[10px] font-semibold rounded ${badge.bg} ${badge.text} transition-colors duration-200`}>
-                {badge.label}
+            const priority = getPriorityBars(task.priority);
+            return priority ? (
+              <span
+                className="flex items-end gap-0.5 shrink-0"
+                aria-label={priority.label}
+                data-tooltip-id="app-tooltip"
+                data-tooltip-content={priority.label}
+              >
+                {[0, 1, 2].map((i) => (
+                  <span
+                    key={i}
+                    className={`w-[3px] rounded-sm transition-colors duration-200 ${
+                      i < priority.active ? priority.bar : 'bg-gray-200 dark:bg-white/10'
+                    }`}
+                    style={{ height: `${6 + i * 4}px` }}
+                  />
+                ))}
               </span>
             ) : null;
           })()}
@@ -152,34 +185,130 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
           {task.title}
         </h4>
 
-        {/* Labels - limit to 3 */}
-        {task.labels.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2">
-            {task.labels.slice(0, 3).map(label => (
-              <span
-                key={label}
-                className="inline-block px-1.5 py-0.5 text-[10px] bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 rounded transition-colors duration-200"
-              >
-                {label}
-              </span>
-            ))}
-            {task.labels.length > 3 && (
-              <span className="inline-block px-1.5 py-0.5 text-[10px] text-gray-400 dark:text-gray-500">
-                +{task.labels.length - 3}
-              </span>
+        {/* Labels (left) + acceptance-criteria progress / dependencies (right),
+            sharing one row instead of stacking as separate lines */}
+        {(task.labels.length > 0 || (task.acceptanceCriteriaItems?.length ?? 0) > 0 || task.dependencies.length > 0) && (
+          <div className="flex items-start flex-wrap gap-2 mt-2">
+            {task.labels.length > 0 && (
+              <div className="flex flex-wrap gap-1 min-w-0">
+                {task.labels.slice(0, 3).map(label => {
+                  const style = getLabelChipStyle(resolveLabelColor(label, labelColors));
+                  return (
+                    <span
+                      key={label}
+                      style={style}
+                      className={`inline-block px-1.5 py-0.5 text-[10px] rounded transition-colors duration-200 ${
+                        style ? '' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300'
+                      }`}
+                    >
+                      {label}
+                    </span>
+                  );
+                })}
+                {task.labels.length > 3 && (
+                  <span className="inline-block px-1.5 py-0.5 text-[10px] text-gray-400 dark:text-gray-500">
+                    +{task.labels.length - 3}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {((task.acceptanceCriteriaItems?.length ?? 0) > 0 || task.dependencies.length > 0) && (
+              <div className="flex items-center gap-2 shrink-0 ml-auto text-[10px] tabular-nums text-gray-400 dark:text-gray-500 transition-colors duration-200">
+                {task.acceptanceCriteriaItems && task.acceptanceCriteriaItems.length > 0 && (() => {
+                  const items = task.acceptanceCriteriaItems;
+                  const total = items.length;
+                  const done = items.filter((item) => item.checked).length;
+                  const complete = done === total;
+                  return (
+                    <span className="relative group">
+                      <span
+                        className={`flex items-center gap-1 ${complete ? 'text-teal-600 dark:text-teal-400' : ''}`}
+                        aria-label={t('common:acceptanceCriteriaProgress')}
+                      >
+                        <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {done}/{total}
+                      </span>
+                      <span className="pointer-events-none absolute right-0 top-full mt-1.5 w-56 rounded-md bg-gray-900 dark:bg-gray-950 px-2.5 py-2 text-[11px] text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 z-20">
+                        <span className="mb-1 block font-semibold text-gray-300 dark:text-gray-400">
+                          {t('common:acceptanceCriteriaProgress')}
+                        </span>
+                        <span className="block space-y-1">
+                          {items.map((item) => (
+                            <span key={item.index} className="flex items-start gap-1.5">
+                              {item.checked ? (
+                                <svg className="w-3 h-3 mt-0.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                </svg>
+                              ) : (
+                                <span className="w-3 h-3 mt-0.5 shrink-0 rounded-full border border-white/30" />
+                              )}
+                              <span className="truncate">{item.text}</span>
+                            </span>
+                          ))}
+                        </span>
+                      </span>
+                    </span>
+                  );
+                })()}
+                {task.dependencies.length > 0 && (
+                  <span className="relative group">
+                    <span className="flex items-center gap-1" aria-label={t('common:dependenciesCount', { count: task.dependencies.length })}>
+                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                      </svg>
+                      {task.dependencies.length}
+                    </span>
+                    <span className="pointer-events-none absolute right-0 top-full mt-1.5 w-56 rounded-md bg-gray-900 dark:bg-gray-950 px-2.5 py-2 text-[11px] text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 z-20">
+                      <span className="mb-1 block font-semibold text-gray-300 dark:text-gray-400">
+                        {t('common:dependenciesCount', { count: task.dependencies.length })}
+                      </span>
+                      <span className="block space-y-1">
+                        {task.dependencies.map((depId) => (
+                          <span key={depId} className="flex items-start gap-1.5">
+                            <span className="font-mono text-gray-400 shrink-0">{depId}</span>
+                            {taskTitleById?.[depId] && <span className="truncate">{taskTitleById[depId]}</span>}
+                          </span>
+                        ))}
+                      </span>
+                    </span>
+                  </span>
+                )}
+              </div>
             )}
           </div>
         )}
 
-        {/* Footer with date */}
-        <div className="flex items-center justify-between text-[10px] text-gray-400 dark:text-gray-500 mt-2 pt-2 border-t border-gray-100 dark:border-white/10 transition-colors duration-200">
-          <span>{formatRelativeDate(task.createdDate)}</span>
-          {task.assignee.length > 0 && (
+        {/* Footer with date and assignee */}
+        <div className="flex items-center justify-between gap-2 text-[10px] text-gray-400 dark:text-gray-500 mt-2 pt-2 border-t border-gray-100 dark:border-white/10 transition-colors duration-200">
+          <span className="shrink-0">{formatRelativeDate(task.createdDate)}</span>
+          {task.assignee.length > 0 ? (() => {
+            const name = task.assignee[0] ?? '';
+            const color = getAvatarColor(name);
+            return (
+              <span className="relative group min-w-0">
+                <span
+                  className={`flex items-center h-5 px-1.5 rounded text-[10px] font-medium truncate ${color.light} ${color.dark}`}
+                >
+                  {truncateName(name)}
+                </span>
+                <span className="pointer-events-none absolute bottom-full right-0 mb-1.5 whitespace-nowrap rounded-md bg-gray-900 dark:bg-gray-950 px-2 py-1 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 z-20">
+                  {task.assignee.join(', ')}
+                </span>
+              </span>
+            );
+          })() : (
             <span
-              className="flex items-center justify-center w-5 h-5 rounded-full bg-stone-100 dark:bg-white/10 text-stone-700 dark:text-gray-200 text-[9px] font-semibold shrink-0"
-              title={task.assignee.join(', ')}
+              className="flex items-center justify-center w-5 h-5 rounded-full border border-dashed border-gray-200 dark:border-white/10 text-gray-300 dark:text-white/20 shrink-0"
+              aria-label={t('board:unassigned')}
+              data-tooltip-id="app-tooltip"
+              data-tooltip-content={t('board:unassigned')}
             >
-              {getInitials(task.assignee[0] ?? '')}
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
             </span>
           )}
         </div>

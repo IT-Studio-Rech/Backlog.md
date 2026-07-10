@@ -111,5 +111,8 @@
 	"healthCheck": {
 		"serverDisconnected": "Server-Verbindung getrennt",
 		"connectionRestored": "Verbindung wiederhergestellt!"
-	}
+	},
+	"acceptanceCriteriaProgress": "Akzeptanzkriterien",
+	"dependenciesCount_one": "{{count}} Abhängigkeit",
+	"dependenciesCount_other": "{{count}} Abhängigkeiten"
 }
