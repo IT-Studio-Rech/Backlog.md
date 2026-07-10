@@ -9,6 +9,7 @@ import { getTerminalStatus } from '../../utils/terminal-status';
 import TaskColumn from './TaskColumn';
 import CleanupModal from './CleanupModal';
 import LabelFilterDropdown from './LabelFilterDropdown';
+import Select from './Select';
 import { SuccessToast } from './SuccessToast';
 
 interface BoardProps {
@@ -34,11 +35,10 @@ interface BoardProps {
   dateFormat?: string;
 }
 
-const BOARD_FILTER_SELECT_CLASS =
-  'min-w-[140px] h-10 py-2 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200';
+const BOARD_FILTER_WIDTH_CLASS = 'w-[168px]';
 
 const BOARD_FILTER_BUTTON_CLASS =
-  'h-10 py-2 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg whitespace-nowrap transition-colors duration-200 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400';
+  'h-8 py-1.5 px-2.5 text-sm border border-gray-200 dark:border-white/10 rounded-lg whitespace-nowrap transition-colors duration-200 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400';
 
 const Board: React.FC<BoardProps> = ({
   onEditTask,
@@ -500,38 +500,38 @@ const Board: React.FC<BoardProps> = ({
               </button>
             </div>
             {onFiltersChange && (
-              <div className="flex flex-wrap items-center gap-3" aria-label={t('board:boardFilters')}>
-                <select
+              <div className="flex flex-wrap items-center gap-3 pl-3 border-l border-gray-200 dark:border-white/10" aria-label={t('board:boardFilters')}>
+                <Select
                   aria-label={t('board:filterByAssignee')}
                   value={filterAssignee}
                   onChange={e => onFiltersChange({ assignee: e.target.value, labels: normalizedFilterLabels, priority: filterPriority })}
-                  className={BOARD_FILTER_SELECT_CLASS}
+                  wrapperClassName={BOARD_FILTER_WIDTH_CLASS}
                 >
                   <option value="">{t('board:allAssignees')}</option>
                   <option value="__unassigned__">{t('board:unassigned')}</option>
                   {uniqueAssignees.map(a => (
                     <option key={a} value={a}>{a}</option>
                   ))}
-                </select>
+                </Select>
 
                 <LabelFilterDropdown
                   availableLabels={uniqueLabels}
                   selectedLabels={normalizedFilterLabels}
                   onChange={labels => onFiltersChange({ assignee: filterAssignee, labels, priority: filterPriority })}
                   menuId="board-labels-filter-menu"
-                  className="min-w-[200px]"
+                  className={BOARD_FILTER_WIDTH_CLASS}
                 />
 
-                <select
+                <Select
                   aria-label={t('board:filterByPriority')}
                   value={filterPriority}
                   onChange={e => onFiltersChange({ assignee: filterAssignee, labels: normalizedFilterLabels, priority: e.target.value })}
-                  className={BOARD_FILTER_SELECT_CLASS}
+                  wrapperClassName={BOARD_FILTER_WIDTH_CLASS}
                 >
                   {PRIORITY_OPTIONS.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
-                </select>
+                </Select>
 
                 {hasActiveFilters && (
                   <button

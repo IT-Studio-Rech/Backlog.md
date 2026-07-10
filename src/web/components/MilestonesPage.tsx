@@ -7,6 +7,8 @@ import { buildMilestoneBuckets, collectArchivedMilestoneKeys, isDoneStatus, mile
 import { type Milestone, type MilestoneBucket, type Task } from "../../types";
 import MilestoneTaskRow from "./MilestoneTaskRow";
 import Modal from "./Modal";
+import Select from "./Select";
+import { useConfirm } from "../hooks/useConfirm";
 
 interface MilestoneSearchEntry {
 	id: string;
@@ -60,6 +62,7 @@ const MilestonesPage: React.FC<MilestonesPageProps> = ({
 	onRefreshData,
 }) => {
 	const { t } = useTranslation(["milestones", "common"]);
+	const { confirm, confirmDialog } = useConfirm();
 	const [newMilestone, setNewMilestone] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState<string | null>(null);
@@ -272,7 +275,7 @@ const MilestonesPage: React.FC<MilestonesPageProps> = ({
 			if (!bucket.milestone) return;
 
 			const label = bucket.label || bucket.milestone;
-			const confirmed = window.confirm(t("milestones:archiveConfirm", { name: label }));
+			const confirmed = await confirm({ message: t("milestones:archiveConfirm", { name: label }), tone: "danger" });
 			if (!confirmed) return;
 
 			setArchivingMilestoneKey(bucket.key);
@@ -1012,21 +1015,22 @@ const MilestonesPage: React.FC<MilestonesPageProps> = ({
 								<span className="block text-xs text-gray-500 dark:text-gray-400">
 									{t("milestones:reassignHint")}
 								</span>
-								<select
+								<Select
 									value={removeReassignTo}
 									onChange={(event) => {
 										setRemoveReassignTo(event.target.value);
 										setModalError(null);
 									}}
 									disabled={removeTaskHandling !== "reassign" || !canReassignRemovedMilestone}
-									className="mt-2 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 disabled:opacity-60"
+									uiSize="md"
+									wrapperClassName="mt-2"
 								>
 									{removeReassignOptions.map((milestone) => (
 										<option key={milestone.id} value={milestone.id}>
 											{milestone.title}
 										</option>
 									))}
-								</select>
+								</Select>
 							</span>
 						</label>
 					</div>
@@ -1050,6 +1054,7 @@ const MilestonesPage: React.FC<MilestonesPageProps> = ({
 					</div>
 				</div>
 			</Modal>
+			{confirmDialog}
 		</div>
 	);
 };
