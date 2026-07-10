@@ -48,6 +48,12 @@
 		"addItem": "+ Add label",
 		"colorPickerTitle": "Label color"
 	},
+	"assignees": {
+		"title": "Assignees",
+		"description": "Manage a fixed roster of assignees offered as suggestions. Names outside this list can still be added freely per task.",
+		"itemPlaceholder": "Assignee name",
+		"addItem": "+ Add assignee"
+	},
 	"webUi": {
 		"title": "Web UI Settings",
 		"defaultPort": {

@@ -519,6 +519,7 @@ function App() {
                 hideEmptyColumns={config?.hideEmptyColumns ?? false}
                 dateFormat={config?.dateFormat}
                 labelColors={config?.labelColors}
+                availableAssignees={config?.assignees}
               />
             }
           />
@@ -582,6 +583,7 @@ function App() {
           definitionOfDoneDefaults={config?.definitionOfDone ?? []}
           dateFormat={config?.dateFormat}
           labelColors={config?.labelColors}
+          availableAssignees={config?.assignees}
         />
 
         {/* Task Creation Confirmation Toast */}

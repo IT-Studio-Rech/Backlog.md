@@ -377,6 +377,44 @@ const Settings: React.FC = () => {
 						</div>
 					</div>
 
+					{/* Assignees */}
+					<div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
+						<h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('settings:assignees.title')}</h2>
+						<p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+							{t('settings:assignees.description')}
+						</p>
+						<div className="space-y-3">
+							{(config.assignees ?? []).map((assignee, index) => (
+								<div key={`assignee-${index}`} className="flex items-center gap-2">
+									<input
+										type="text"
+										value={assignee}
+										onChange={(e) => {
+											const next = [...(config.assignees ?? [])];
+											next[index] = e.target.value;
+											handleInputChange('assignees', next);
+										}}
+										className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 transition-colors duration-200"
+										placeholder={t('settings:assignees.itemPlaceholder')}
+									/>
+									<button
+										type="button"
+										onClick={() => {
+											const next = (config.assignees ?? []).filter((_, idx) => idx !== index);
+											handleInputChange('assignees', next);
+										}}
+										className="px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:underline"
+									>
+										{t('common:remove')}
+									</button>
+								</div>
+							))}
+							<button
+								type="button"
+								onClick={() => handleInputChange('assignees', [...(config.assignees ?? []), ""])}
+								className="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+							>
+								{t('settings:assignees.addItem')}
 							</button>
 						</div>
 					</div>

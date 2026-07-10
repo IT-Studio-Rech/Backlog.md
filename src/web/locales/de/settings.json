@@ -48,6 +48,12 @@
 		"addItem": "+ Label hinzufügen",
 		"colorPickerTitle": "Label-Farbe"
 	},
+	"assignees": {
+		"title": "Zuständige",
+		"description": "Verwalte eine feste Liste von Zuständigen, die als Vorschläge angeboten wird. Namen außerhalb dieser Liste können weiterhin frei pro Aufgabe hinzugefügt werden.",
+		"itemPlaceholder": "Name der/des Zuständigen",
+		"addItem": "+ Zuständige/n hinzufügen"
+	},
 	"webUi": {
 		"title": "Web-UI-Einstellungen",
 		"defaultPort": {

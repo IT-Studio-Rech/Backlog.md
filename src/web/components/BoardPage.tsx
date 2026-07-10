@@ -18,6 +18,7 @@ interface BoardPageProps {
 	hideEmptyColumns?: boolean;
 	dateFormat?: string;
 	labelColors?: Record<string, string>;
+	availableAssignees?: string[];
 }
 
 export default function BoardPage({
@@ -34,6 +35,7 @@ export default function BoardPage({
 	hideEmptyColumns,
 	dateFormat,
 	labelColors,
+	availableAssignees,
 }: BoardPageProps) {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [highlightTaskId, setHighlightTaskId] = useState<string | null>(null);
@@ -148,6 +150,7 @@ export default function BoardPage({
 				hideEmptyColumns={hideEmptyColumns}
 				dateFormat={dateFormat}
 				labelColors={labelColors}
+				availableAssignees={availableAssignees}
 			/>
 		</div>
 	);

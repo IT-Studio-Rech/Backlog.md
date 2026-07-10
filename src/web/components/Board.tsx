@@ -37,6 +37,7 @@ interface BoardProps {
   hideEmptyColumns?: boolean;
   dateFormat?: string;
   labelColors?: Record<string, string>;
+  availableAssignees?: string[];
 }
 
 const BOARD_FILTER_WIDTH_CLASS = 'w-[168px]';
@@ -65,6 +66,7 @@ const Board: React.FC<BoardProps> = ({
   hideEmptyColumns = false,
   dateFormat,
   labelColors,
+  availableAssignees = [],
 }) => {
   const { t } = useTranslation(['board', 'common']);
   const PRIORITY_OPTIONS = useMemo(
@@ -226,13 +228,16 @@ const Board: React.FC<BoardProps> = ({
   // Collect unique assignees and labels from all tasks for filter dropdowns
   const uniqueAssignees = useMemo(() => {
     const seen = new Set<string>();
+    for (const a of availableAssignees) {
+      if (a.trim()) seen.add(a.trim());
+    }
     for (const task of tasks) {
       for (const a of task.assignee) {
         if (a.trim()) seen.add(a.trim());
       }
     }
     return Array.from(seen).sort((a, b) => a.localeCompare(b));
-  }, [tasks]);
+  }, [tasks, availableAssignees]);
 
   const uniqueLabels = useMemo(
     () => collectAvailableLabels(tasks, availableLabels),

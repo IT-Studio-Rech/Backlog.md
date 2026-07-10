@@ -1420,6 +1420,7 @@ ${description || `Milestone: ${title}`}`,
 				case "statuses":
 				case "labels":
 				case "types":
+				case "assignees":
 					if (value.startsWith("[") && value.endsWith("]")) {
 						const arrayContent = value.slice(1, -1);
 						config[key] = arrayContent
@@ -1505,6 +1506,7 @@ ${description || `Milestone: ${title}`}`,
 			statuses: config.statuses || [...DEFAULT_STATUSES],
 			labels: config.labels || [],
 			labelColors: config.labelColors,
+			assignees: config.assignees || [],
 			types: config.types,
 			definitionOfDone: config.definitionOfDone,
 			defaultStatus: config.defaultStatus,
@@ -1538,6 +1540,9 @@ ${description || `Milestone: ${title}`}`,
 			`labels: [${config.labels.map((l) => `"${l}"`).join(", ")}]`,
 			...(config.labelColors && Object.keys(config.labelColors).length > 0
 				? [`label_colors: ${JSON.stringify(config.labelColors)}`]
+				: []),
+			...(config.assignees && config.assignees.length > 0
+				? [`assignees: [${config.assignees.map((a) => `"${a}"`).join(", ")}]`]
 				: []),
 			...(config.types && config.types.length > 0 ? [`types: [${config.types.map((t) => `"${t}"`).join(", ")}]`] : []),
 			...(Array.isArray(normalizedDefinitionOfDone)

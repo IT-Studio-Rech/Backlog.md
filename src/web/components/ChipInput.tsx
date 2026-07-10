@@ -11,12 +11,16 @@ interface ChipInputProps {
   disabled?: boolean;
   /** Resolves a chip's display color (hex), e.g. from configured label colors. Chips without a resolved color keep the default flat style. */
   chipColor?: (value: string) => string | undefined;
+  /** Known values (e.g. a configured assignee roster) offered as browser-native autocomplete suggestions. Values outside this list can still be typed and added freely. */
+  suggestions?: string[];
 }
 
-const ChipInput: React.FC<ChipInputProps> = ({ value, onChange, placeholder, label, name, disabled, chipColor }) => {
+const ChipInput: React.FC<ChipInputProps> = ({ value, onChange, placeholder, label, name, disabled, chipColor, suggestions }) => {
   const { t } = useTranslation(['common']);
   const [inputValue, setInputValue] = useState('');
   const inputId = `chip-input-${name}`;
+  const datalistId = `${inputId}-suggestions`;
+  const remainingSuggestions = suggestions?.filter((s) => !value.includes(s));
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (disabled) return;
@@ -106,7 +110,15 @@ const ChipInput: React.FC<ChipInputProps> = ({ value, onChange, placeholder, lab
             placeholder={value.length === 0 ? placeholder : ''}
             className="flex-1 min-w-[2ch] outline-none text-sm bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             disabled={disabled}
+            list={remainingSuggestions?.length ? datalistId : undefined}
           />
+          {remainingSuggestions && remainingSuggestions.length > 0 && (
+            <datalist id={datalistId}>
+              {remainingSuggestions.map((s) => (
+                <option key={s} value={s} />
+              ))}
+            </datalist>
+          )}
         </div>
       </div>
     </div>

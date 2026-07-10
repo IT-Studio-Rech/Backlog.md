@@ -299,6 +299,8 @@ export interface BacklogConfig {
 	labels: string[];
 	/** Custom display color per label (hex string), keyed by label name. Labels without an entry fall back to the default neutral chip style. */
 	labelColors?: Record<string, string>;
+	/** Fixed, manageable assignee roster offered as suggestions. Assignees not in this list can still be added freely per task. */
+	assignees?: string[];
 	/** Allowed task types. Defaults to DEFAULT_TASK_TYPES when not configured. */
 	types?: string[];
 	/** @deprecated Milestones are sourced from milestone files, not config. */
