@@ -129,11 +129,11 @@ jobs:
       - name: Dry run trusted publish
         run: |
           cd dist
-          npm publish --access public --dry-run
+          npm publish --access public --tag latest --dry-run
       - name: Publish to npm
         run: |
           cd dist
-          npm publish --access public
+          npm publish --access public --tag latest
 
   publish-binaries:
     needs: build
@@ -220,11 +220,11 @@ jobs:
       - name: Dry run platform publish
         run: |
           cd pkg
-          npm publish --access public --dry-run
+          npm publish --access public --tag latest --dry-run
       - name: Publish platform package
         run: |
           cd pkg
-          npm publish --access public
+          npm publish --access public --tag latest
 
   verify-platform-packages:
     name: verify-platform-packages-${{ matrix.os }}
