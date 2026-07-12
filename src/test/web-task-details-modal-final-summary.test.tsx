@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "bun:test";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "bun:test";
 import { JSDOM } from "jsdom";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
@@ -7,6 +7,17 @@ import type { Milestone, Task } from "../types/index.ts";
 import { ThemeProvider } from "../web/contexts/ThemeContext";
 import { TaskDetailsModal } from "../web/components/TaskDetailsModal";
 import { apiClient } from "../web/lib/api.ts";
+
+import i18n from "../web/i18n.ts";
+
+// Die Tests dieser Datei prüfen englische UI-Texte; das Produkt-Default ist Deutsch.
+beforeAll(async () => {
+	await i18n.changeLanguage("en");
+});
+
+afterAll(async () => {
+	await i18n.changeLanguage("de");
+});
 
 let activeRoot: Root | null = null;
 
@@ -110,7 +121,7 @@ afterEach(() => {
 });
 
 describe("Web task popup Final Summary display", () => {
-	it("renders Final Summary section in preview when present", () => {
+	it("shows Final Summary content in preview after selecting the Summary tab", async () => {
 		setupDom();
 
 		const task: Task = {
@@ -124,14 +135,28 @@ describe("Web task popup Final Summary display", () => {
 			finalSummary: "PR-style summary",
 		};
 
-		const html = renderToString(
-			<ThemeProvider>
-				<TaskDetailsModal task={task} isOpen={true} onClose={() => {}} />
-			</ThemeProvider>,
-		);
+		const container = document.getElementById("root");
+		expect(container).toBeTruthy();
+		activeRoot = createRoot(container as HTMLElement);
+		await act(async () => {
+			activeRoot?.render(
+				<ThemeProvider>
+					<TaskDetailsModal task={task} isOpen={true} onClose={() => {}} />
+				</ThemeProvider>,
+			);
+			await Promise.resolve();
+		});
+		await flushReact();
 
-		expect(html).toContain("Final Summary");
-		expect(html).toContain("PR-style summary");
+		const summaryTab = findButton(container as HTMLElement, "Summary");
+		expect(summaryTab).toBeTruthy();
+		await act(async () => {
+			clickElement(summaryTab as HTMLButtonElement);
+			await Promise.resolve();
+		});
+		await flushReact();
+
+		expect(container?.textContent).toContain("PR-style summary");
 	});
 
 	it("renders Comments section in preview when present", () => {
@@ -167,7 +192,7 @@ describe("Web task popup Final Summary display", () => {
 		expect(html).not.toContain("Add comment");
 	});
 
-	it("renders an empty Comments section as read-only in preview", () => {
+	it("collapses the empty Comments section in preview", () => {
 		setupDom();
 
 		const task: Task = {
@@ -186,8 +211,7 @@ describe("Web task popup Final Summary display", () => {
 			</ThemeProvider>,
 		);
 
-		expect(html).toContain("Comments");
-		expect(html).toContain("No comments");
+		expect(html).not.toContain("No comments");
 		expect(html).not.toContain("Add comment");
 	});
 
@@ -418,7 +442,23 @@ describe("Web task popup Final Summary display", () => {
 
 		expect(findInputByValue(container as HTMLElement, "Local title")).toBeTruthy();
 		expect(findTextareaByValue(container as HTMLElement, "Local description")).toBeTruthy();
+
+		const planTab = findButton(container as HTMLElement, "Implementation Plan");
+		expect(planTab).toBeTruthy();
+		await act(async () => {
+			clickElement(planTab as HTMLButtonElement);
+			await Promise.resolve();
+		});
+		await flushReact();
 		expect(findTextareaByValue(container as HTMLElement, "External plan")).toBeTruthy();
+
+		const notesTab = findButton(container as HTMLElement, "Implementation Notes");
+		expect(notesTab).toBeTruthy();
+		await act(async () => {
+			clickElement(notesTab as HTMLButtonElement);
+			await Promise.resolve();
+		});
+		await flushReact();
 		expect(findTextareaByValue(container as HTMLElement, "External notes")).toBeTruthy();
 		expect(container?.textContent).toContain("Save");
 	});
@@ -444,10 +484,10 @@ describe("Web task popup Final Summary display", () => {
 			await Promise.resolve();
 		});
 		await flushReact();
-		await waitFor(() => Boolean((container as HTMLElement).querySelector("input[placeholder='Enter task title']")));
+		await waitFor(() => Boolean((container as HTMLElement).querySelector("input[placeholder='What needs to be done?']")));
 
 		const titleInput = (container as HTMLElement).querySelector(
-			"input[placeholder='Enter task title']",
+			"input[placeholder='What needs to be done?']",
 		) as HTMLInputElement | null;
 		const descriptionTextarea = (container as HTMLElement).querySelector("textarea") as HTMLTextAreaElement | null;
 		expect(titleInput).toBeTruthy();
@@ -460,7 +500,7 @@ describe("Web task popup Final Summary display", () => {
 		await flushReact();
 		await waitFor(
 			() =>
-				((container as HTMLElement).querySelector("input[placeholder='Enter task title']") as HTMLInputElement | null)
+				((container as HTMLElement).querySelector("input[placeholder='What needs to be done?']") as HTMLInputElement | null)
 					?.value === "Local draft title",
 		);
 		await waitFor(() => ((container as HTMLElement).querySelector("textarea") as HTMLTextAreaElement | null)?.value === "Local draft description");
@@ -479,7 +519,7 @@ describe("Web task popup Final Summary display", () => {
 			await Promise.resolve();
 		});
 
-		expect((container as HTMLElement).querySelector("input[placeholder='Enter task title']")).toHaveProperty(
+		expect((container as HTMLElement).querySelector("input[placeholder='What needs to be done?']")).toHaveProperty(
 			"value",
 			"Local draft title",
 		);
@@ -511,17 +551,19 @@ describe("Web task popup Final Summary display", () => {
 		expect(html).not.toContain("Final Summary");
 	});
 
-	it("shows Final Summary editor in create mode", () => {
+	it("does not offer a Final Summary editor in create mode", () => {
 		setupDom();
 
+		// Das Create-Formular ist bewusst schlank: die Zusammenfassung entsteht am
+		// Ende einer Aufgabe, nicht beim Anlegen — kein Summary-Tab, kein Editor.
 		const html = renderToString(
 			<ThemeProvider>
 				<TaskDetailsModal isOpen={true} onClose={() => {}} />
 			</ThemeProvider>,
 		);
 
-		expect(html).toContain("Final Summary");
-		expect(html).toContain("PR-style summary of what was implemented");
+		expect(html).not.toContain("Final Summary");
+		expect(html).not.toContain("PR-style summary of what was implemented");
 	});
 
 	it("resolves numeric milestone aliases to milestone IDs in the milestone selector", () => {
@@ -552,9 +594,9 @@ describe("Web task popup Final Summary display", () => {
 			</ThemeProvider>,
 		);
 
-		expect(html).toContain('option value="m-1"');
+		// Die Select-Komponente rendert kein natives <select>; der Trigger-Button
+		// zeigt das Label der aufgelösten Auswahl.
 		expect(html).toContain("Release 1");
-		expect(html).not.toContain('option value="1"');
 	});
 
 	it("resolves zero-padded milestone aliases to canonical milestone IDs in the milestone selector", () => {
@@ -585,8 +627,8 @@ describe("Web task popup Final Summary display", () => {
 			</ThemeProvider>,
 		);
 
-		expect(html).toContain('option value="m-1"');
-		expect(html).not.toContain('option value="m-01"');
+		// Aufgelöst auf m-1 zeigt der Select-Trigger den Meilenstein-Titel.
+		expect(html).toContain("Release 1");
 	});
 
 	it("prefers archived milestone IDs over active title matches for ID-shaped values", () => {
@@ -631,7 +673,8 @@ describe("Web task popup Final Summary display", () => {
 			</ThemeProvider>,
 		);
 
-		expect(html).toContain('option value="m-0"');
-		expect(html).not.toContain('option value="m-2" selected');
+		// Der archivierte Meilenstein m-0 gewinnt gegen den aktiven Titel-Treffer m-2:
+		// der Select-Trigger zeigt dessen Titel.
+		expect(html).toContain("Archived source");
 	});
 });

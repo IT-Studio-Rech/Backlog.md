@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "bun:test";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "bun:test";
 import { JSDOM } from "jsdom";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
@@ -6,6 +6,17 @@ import { MemoryRouter } from "react-router-dom";
 import type { Milestone, Task } from "../types/index.ts";
 import MilestonesPage from "../web/components/MilestonesPage.tsx";
 import { apiClient } from "../web/lib/api.ts";
+
+import i18n from "../web/i18n.ts";
+
+// Die Tests dieser Datei prüfen englische UI-Texte; das Produkt-Default ist Deutsch.
+beforeAll(async () => {
+	await i18n.changeLanguage("en");
+});
+
+afterAll(async () => {
+	await i18n.changeLanguage("de");
+});
 
 const createTask = (overrides: Partial<Task>): Task => ({
 	id: "task-1",
@@ -45,12 +56,17 @@ const originalUpdateMilestone = apiClient.updateMilestone.bind(apiClient);
 const originalRemoveMilestone = apiClient.removeMilestone.bind(apiClient);
 
 const setupDom = () => {
-	const dom = new JSDOM("<!doctype html><html><body><div id='root'></div></body></html>", { url: "http://localhost" });
+	const dom = new JSDOM("<!doctype html><html><body><div id='root'></div></body></html>", {
+		url: "http://localhost",
+		pretendToBeVisual: true,
+	});
 	(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 	globalThis.window = dom.window as unknown as Window & typeof globalThis;
 	globalThis.document = dom.window.document as unknown as Document;
 	globalThis.navigator = dom.window.navigator as unknown as Navigator;
 	globalThis.localStorage = dom.window.localStorage as unknown as Storage;
+	globalThis.requestAnimationFrame = dom.window.requestAnimationFrame.bind(dom.window);
+	globalThis.cancelAnimationFrame = dom.window.cancelAnimationFrame.bind(dom.window);
 
 	if (!window.matchMedia) {
 		window.matchMedia = () =>
@@ -257,9 +273,19 @@ describe("Web milestones page search", () => {
 		expect(text).toContain("Leave tasks unassigned");
 		expect(text).toContain("Reassign tasks");
 
-		const select = container.querySelector("select") as HTMLSelectElement | null;
-		expect(select).toBeTruthy();
-		expect(Array.from(select?.options ?? []).map((option) => option.value)).toContain("m-2");
+		const reassignRadio = container.querySelector("input[value='reassign']") as HTMLInputElement | null;
+		expect(reassignRadio).toBeTruthy();
+		clickElement(reassignRadio as HTMLInputElement);
+
+		const selectTrigger = container.querySelector(
+			"button[aria-haspopup='listbox']",
+		) as HTMLButtonElement | null;
+		expect(selectTrigger).toBeTruthy();
+		clickElement(selectTrigger as HTMLButtonElement);
+		const optionLabels = Array.from(container.querySelectorAll("[role='option']")).map(
+			(option) => option.textContent?.trim() ?? "",
+		);
+		expect(optionLabels).toContain("Release 2");
 	});
 
 	it("submits milestone edits through the API and refreshes data", async () => {
@@ -314,14 +340,16 @@ describe("Web milestones page search", () => {
 		const reassignRadio = container.querySelector("input[value='reassign']") as HTMLInputElement | null;
 		expect(reassignRadio).toBeTruthy();
 		clickElement(reassignRadio as HTMLInputElement);
-		const select = container.querySelector("select") as HTMLSelectElement | null;
-		expect(select).toBeTruthy();
-		act(() => {
-			if (select) {
-				select.value = "m-2";
-				select.dispatchEvent(new window.Event("change", { bubbles: true }));
-			}
-		});
+		const selectTrigger = container.querySelector(
+			"button[aria-haspopup='listbox']",
+		) as HTMLButtonElement | null;
+		expect(selectTrigger).toBeTruthy();
+		clickElement(selectTrigger as HTMLButtonElement);
+		const reassignOption = Array.from(container.querySelectorAll("[role='option']")).find(
+			(option) => option.textContent?.includes("Release 2"),
+		);
+		expect(reassignOption).toBeTruthy();
+		clickElement(reassignOption as Element);
 		const submitButton = Array.from(container.querySelectorAll("button")).find(
 			(button) => button.textContent === "Remove milestone",
 		);

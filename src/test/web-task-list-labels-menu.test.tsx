@@ -1,10 +1,21 @@
-import { afterEach, describe, expect, it } from "bun:test";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "bun:test";
 import { JSDOM } from "jsdom";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 import type { Task } from "../types/index.ts";
 import TaskList from "../web/components/TaskList.tsx";
+
+import i18n from "../web/i18n.ts";
+
+// Die Tests dieser Datei prüfen englische UI-Texte; das Produkt-Default ist Deutsch.
+beforeAll(async () => {
+	await i18n.changeLanguage("en");
+});
+
+afterAll(async () => {
+	await i18n.changeLanguage("de");
+});
 
 const createTask = (overrides: Partial<Task>): Task => ({
 	id: "task-1",
@@ -32,6 +43,9 @@ const setupDom = () => {
 	globalThis.document = dom.window.document as unknown as Document;
 	globalThis.navigator = dom.window.navigator as unknown as Navigator;
 	globalThis.localStorage = dom.window.localStorage as unknown as Storage;
+	globalThis.requestAnimationFrame = (callback: FrameRequestCallback) =>
+		window.setTimeout(() => callback(Date.now()), 0) as unknown as number;
+	globalThis.cancelAnimationFrame = (handle: number) => window.clearTimeout(handle);
 
 	if (!window.matchMedia) {
 		window.matchMedia = () =>
@@ -95,21 +109,23 @@ const clickElement = async (element: Element) => {
 	});
 };
 
-const getSelectByFirstOption = (container: HTMLElement, firstOptionText: string): HTMLSelectElement => {
-	const select = Array.from(container.querySelectorAll("select")).find(
-		(element) => element.options[0]?.textContent === firstOptionText,
+// Der Statusfilter nutzt die eigene Select-Komponente: der Trigger-Button zeigt
+// das Label der aktuellen Auswahl, die Optionen erscheinen als role='option'.
+const getSelectTriggerByLabel = (container: HTMLElement, selectedLabel: string): HTMLButtonElement => {
+	const trigger = Array.from(container.querySelectorAll("button[aria-haspopup='listbox']")).find(
+		(element) => element.textContent?.trim() === selectedLabel,
 	);
-	expect(select).toBeTruthy();
-	return select as HTMLSelectElement;
+	expect(trigger).toBeTruthy();
+	return trigger as HTMLButtonElement;
 };
 
-const setSelectValue = async (select: HTMLSelectElement, value: string) => {
-	await act(async () => {
-		const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, "value")?.set;
-		valueSetter?.call(select, value);
-		select.dispatchEvent(new window.Event("change", { bubbles: true }));
-		await Promise.resolve();
-	});
+const chooseSelectOption = async (container: HTMLElement, currentLabel: string, optionText: string) => {
+	await clickElement(getSelectTriggerByLabel(container, currentLabel));
+	const option = Array.from(container.querySelectorAll("[role='option']")).find(
+		(element) => element.textContent?.trim() === optionText,
+	);
+	expect(option).toBeTruthy();
+	await clickElement(option as Element);
 };
 
 const waitFor = async (predicate: () => boolean) => {
@@ -254,7 +270,7 @@ describe("TaskList labels filter menu", () => {
 			tasks: [closedTask],
 			availableStatuses: ["To Do", "Review", "Closed"],
 		});
-		await setSelectValue(getSelectByFirstOption(container, "All statuses"), "Closed");
+		await chooseSelectOption(container, "All statuses", "Closed");
 		await waitFor(() => fetchCalls.length === 1 && (container.textContent ?? "").includes("Clean Up"));
 
 		expect(container.textContent).toContain("Clean Up");
@@ -280,7 +296,7 @@ describe("TaskList labels filter menu", () => {
 			tasks: [reviewTask],
 			availableStatuses: ["To Do", "Review", "Closed"],
 		});
-		await setSelectValue(getSelectByFirstOption(container, "All statuses"), "Review");
+		await chooseSelectOption(container, "All statuses", "Review");
 		await waitFor(() => fetchCalls.length === 1 && (container.textContent ?? "").includes("Review task"));
 
 		expect(container.textContent).not.toContain("Clean Up");

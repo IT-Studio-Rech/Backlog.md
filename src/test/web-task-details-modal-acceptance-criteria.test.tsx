@@ -1,10 +1,21 @@
-import { describe, expect, it } from "bun:test";
+import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { JSDOM } from "jsdom";
 import { renderToString } from "react-dom/server";
 import type { Task } from "../types/index.ts";
 import TaskCard from "../web/components/TaskCard";
 import { TaskDetailsModal } from "../web/components/TaskDetailsModal";
 import { ThemeProvider } from "../web/contexts/ThemeContext";
+
+import i18n from "../web/i18n.ts";
+
+// Die Tests dieser Datei prüfen englische UI-Texte; das Produkt-Default ist Deutsch.
+beforeAll(async () => {
+	await i18n.changeLanguage("en");
+});
+
+afterAll(async () => {
+	await i18n.changeLanguage("de");
+});
 
 const setupDom = () => {
 	const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost" });
@@ -52,14 +63,15 @@ describe("Web task popup acceptance criteria display", () => {
 			</ThemeProvider>,
 		);
 
-		expect(html).toContain("Acceptance Criteria (1/2)");
-		expect(html).toContain("#1");
+		// SSR fügt Kommentar-Knoten zwischen Textsegmente ein („Acceptance Criteria<!-- --> (1/2)"),
+		// deshalb Titel und Zähler getrennt prüfen; die Index-Badges rendern ohne #-Präfix.
+		expect(html).toContain("Acceptance Criteria");
+		expect(html).toContain("(1/2)");
 		expect(html).toContain("First criterion");
-		expect(html).toContain("#3");
 		expect(html).toContain("Third criterion");
 	});
 
-	it("does not add acceptance criteria details to board cards", () => {
+	it("shows acceptance criteria progress with a tooltip preview on board cards", () => {
 		setupDom();
 
 		const task: Task = {
@@ -76,7 +88,9 @@ describe("Web task popup acceptance criteria display", () => {
 		const html = renderToString(<TaskCard task={task} onUpdate={() => {}} onEdit={() => {}} />);
 
 		expect(html).toContain("Board card task");
-		expect(html).not.toContain("Hidden criterion");
-		expect(html).not.toContain("#7");
+		// Karten zeigen den Kriterien-Fortschritt als Zähler; der Kriterien-Text
+		// erscheint nur in der Hover-Tooltip-Vorschau.
+		expect(html).toContain("Acceptance criteria");
+		expect(html).toContain("Hidden criterion");
 	});
 });

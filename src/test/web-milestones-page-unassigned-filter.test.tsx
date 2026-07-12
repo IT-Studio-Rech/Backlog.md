@@ -1,8 +1,19 @@
-import { describe, expect, it } from "bun:test";
+import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { renderToString } from "react-dom/server";
 import { MemoryRouter } from "react-router-dom";
 import type { Milestone, Task } from "../types/index.ts";
 import MilestonesPage from "../web/components/MilestonesPage";
+
+import i18n from "../web/i18n.ts";
+
+// Die Tests dieser Datei prüfen englische UI-Texte; das Produkt-Default ist Deutsch.
+beforeAll(async () => {
+	await i18n.changeLanguage("en");
+});
+
+afterAll(async () => {
+	await i18n.changeLanguage("de");
+});
 
 const statuses = ["To Do", "In Progress", "Done"];
 

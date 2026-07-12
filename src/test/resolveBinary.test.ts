@@ -68,18 +68,27 @@ describe("getCandidatePackageNames", () => {
 
 describe("resolveBinaryPath", () => {
 	it("resolves the native package when it is installed", () => {
-		const resolver = resolverFor(["@rechstudio/backlog.md-darwin-arm64/backlog", "@rechstudio/backlog.md-darwin-x64/backlog"]);
-		expect(resolveBinaryPath("darwin", "arm64", resolver)).toBe("/node_modules/@rechstudio/backlog.md-darwin-arm64/backlog");
+		const resolver = resolverFor([
+			"@rechstudio/backlog.md-darwin-arm64/backlog",
+			"@rechstudio/backlog.md-darwin-x64/backlog",
+		]);
+		expect(resolveBinaryPath("darwin", "arm64", resolver)).toBe(
+			"/node_modules/@rechstudio/backlog.md-darwin-arm64/backlog",
+		);
 	});
 
 	it("falls back to darwin-x64 when arm64 Node only has the x64 package", () => {
 		const resolver = resolverFor(["@rechstudio/backlog.md-darwin-x64/backlog"]);
-		expect(resolveBinaryPath("darwin", "arm64", resolver)).toBe("/node_modules/@rechstudio/backlog.md-darwin-x64/backlog");
+		expect(resolveBinaryPath("darwin", "arm64", resolver)).toBe(
+			"/node_modules/@rechstudio/backlog.md-darwin-x64/backlog",
+		);
 	});
 
 	it("falls back to darwin-arm64 when Rosetta x64 Node only has the arm64 package", () => {
 		const resolver = resolverFor(["@rechstudio/backlog.md-darwin-arm64/backlog"]);
-		expect(resolveBinaryPath("darwin", "x64", resolver)).toBe("/node_modules/@rechstudio/backlog.md-darwin-arm64/backlog");
+		expect(resolveBinaryPath("darwin", "x64", resolver)).toBe(
+			"/node_modules/@rechstudio/backlog.md-darwin-arm64/backlog",
+		);
 	});
 
 	it("throws the original error when no darwin package is installed", () => {
@@ -97,7 +106,9 @@ describe("resolveBinaryPath", () => {
 
 	it("resolves the .exe binary on windows", () => {
 		const resolver = resolverFor(["@rechstudio/backlog.md-windows-x64/backlog.exe"]);
-		expect(resolveBinaryPath("win32", "x64", resolver)).toBe("/node_modules/@rechstudio/backlog.md-windows-x64/backlog.exe");
+		expect(resolveBinaryPath("win32", "x64", resolver)).toBe(
+			"/node_modules/@rechstudio/backlog.md-windows-x64/backlog.exe",
+		);
 	});
 });
 

@@ -1,10 +1,21 @@
-import { afterEach, describe, expect, it } from "bun:test";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "bun:test";
 import { JSDOM } from "jsdom";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import type { Task } from "../types/index.ts";
 import TaskColumn from "../web/components/TaskColumn.tsx";
 import type { ReorderTaskPayload } from "../web/lib/api.ts";
+
+import i18n from "../web/i18n.ts";
+
+// Die Tests dieser Datei prüfen englische UI-Texte; das Produkt-Default ist Deutsch.
+beforeAll(async () => {
+	await i18n.changeLanguage("en");
+});
+
+afterAll(async () => {
+	await i18n.changeLanguage("de");
+});
 
 const createTask = (overrides: Partial<Task>): Task => ({
 	id: "TASK-1",
