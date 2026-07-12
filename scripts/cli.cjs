@@ -19,11 +19,11 @@ function printInstallHelp() {
 		console.error(
 			"  - Homebrew: use the native brew (`which brew`; /opt/homebrew = arm64, /usr/local = Intel), then `brew reinstall backlog-md`.",
 		);
-		console.error("  - npm on Apple Silicon: `arch -arm64 npm i -g backlog.md`");
-		console.error("  - Bun on Apple Silicon: `arch -arm64 bun add -g backlog.md`");
+		console.error("  - npm on Apple Silicon: `arch -arm64 npm i -g @rechstudio/backlog.md`");
+		console.error("  - Bun on Apple Silicon: `arch -arm64 bun add -g @rechstudio/backlog.md`");
 		console.error("More details: https://github.com/MrLesk/Backlog.md#apple-silicon-macos");
 	} else {
-		console.error("Reinstall backlog.md so the platform package matching this architecture gets installed.");
+		console.error("Reinstall @rechstudio/backlog.md so the platform package matching this architecture gets installed.");
 	}
 }
 

@@ -1,5 +1,5 @@
 {
-  "name": "backlog.md",
+  "name": "@rechstudio/backlog.md",
   "version": "1.47.1-rechstudio.1",
   "type": "module",
   "module": "src/cli.ts",
@@ -12,12 +12,12 @@
     "backlog": "scripts/cli.cjs"
   },
   "optionalDependencies": {
-    "backlog.md-darwin-arm64": "*",
-    "backlog.md-darwin-x64": "*",
-    "backlog.md-linux-arm64": "*",
-    "backlog.md-linux-x64": "*",
-    "backlog.md-windows-arm64": "*",
-    "backlog.md-windows-x64": "*"
+    "@rechstudio/backlog.md-darwin-arm64": "*",
+    "@rechstudio/backlog.md-darwin-x64": "*",
+    "@rechstudio/backlog.md-linux-arm64": "*",
+    "@rechstudio/backlog.md-linux-x64": "*",
+    "@rechstudio/backlog.md-windows-arm64": "*",
+    "@rechstudio/backlog.md-windows-x64": "*"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.3",
@@ -77,7 +77,7 @@
   "author": "Alex Gavrilescu (https://github.com/MrLesk)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MrLesk/Backlog.md.git"
+    "url": "git+https://github.com/IT-Studio-Rech/Backlog.md.git"
   },
   "bugs": {
     "url": "https://github.com/MrLesk/Backlog.md/issues"
