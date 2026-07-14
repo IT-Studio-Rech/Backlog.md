@@ -340,7 +340,11 @@ export default function DocumentationDetail({docs, onRefreshData, dateFormat}: D
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                                       d="M3 7h5l2 2h11v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
                                             </svg>
-                                            <span className="truncate min-w-0" title={document.path}>{document.path}</span>
+                                            <span
+                                                className="truncate min-w-0"
+                                                data-tooltip-id="app-tooltip"
+                                                data-tooltip-content={document.path}
+                                            >{document.path}</span>
                                         </div>
                                     )}
                                     {document?.createdDate && (

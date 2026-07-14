@@ -231,7 +231,8 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
               type="button"
               onClick={() => setShowMenu(!showMenu)}
               className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
-              title={t('board:columnActions')}
+              data-tooltip-id="app-tooltip"
+              data-tooltip-content={t('board:columnActions')}
               aria-label={t('board:columnActions')}
               aria-haspopup="menu"
               aria-expanded={showMenu}
@@ -352,7 +353,8 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
 	            <button
 	              onClick={onCleanup}
 	              className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
-	              title={t('board:cleanUpOldTasksTooltip')}
+	              data-tooltip-id="app-tooltip"
+	              data-tooltip-content={t('board:cleanUpOldTasksTooltip')}
 	            >
 	              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 	                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

@@ -197,7 +197,8 @@ const FolderNode = memo(function FolderNode({ node, depth, folderExpanded, onTog
 				onClick={() => onToggleFolder(node.path)}
 				aria-label={`${node.name} folder`}
 				aria-expanded={isExpanded}
-				title={node.name}
+				data-tooltip-id="app-tooltip"
+				data-tooltip-content={node.name}
 				className="flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200 w-full"
 				style={{ paddingLeft: `${12 + depth * 12}px` }}
 			>
@@ -419,7 +420,8 @@ const SideNavigation = memo(function SideNavigation({
 					onClick={toggleCollapse}
 					className="absolute -right-3 top-1/2 transform -translate-y-1/2 z-10 flex items-center justify-center w-6 h-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-circle shadow-sm hover:shadow-md text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200"
 					aria-label={isCollapsed ? t('nav:expandSidebar') : t('nav:collapseSidebar')}
-					title={isCollapsed ? t('nav:expandSidebar') : t('nav:collapseSidebar')}
+					data-tooltip-id="app-tooltip"
+					data-tooltip-content={isCollapsed ? t('nav:expandSidebar') : t('nav:collapseSidebar')}
 				>
 					{isCollapsed ? <Icons.ChevronRight /> : <Icons.ChevronLeft />}
 				</button>
@@ -462,7 +464,8 @@ const SideNavigation = memo(function SideNavigation({
 							<button
 								onClick={() => setIsCollapsed(false)}
 								className="flex items-center justify-center p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200"
-								title={`${t('nav:searchShortcut')} (${getSearchShortcutHint()})`}
+								data-tooltip-id="app-tooltip"
+								data-tooltip-content={`${t('nav:searchShortcut')} (${getSearchShortcutHint()})`}
 							>
 								<Icons.Search />
 						</button>
@@ -667,7 +670,8 @@ const SideNavigation = memo(function SideNavigation({
 										<button
 											onClick={() => setIsDocsCollapsed(!isDocsCollapsed)}
 											className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 rounded transition-colors duration-200"
-											title={isDocsCollapsed ? t('nav:expandDocuments') : t('nav:collapseDocuments')}
+											data-tooltip-id="app-tooltip"
+											data-tooltip-content={isDocsCollapsed ? t('nav:expandDocuments') : t('nav:collapseDocuments')}
 										>
 											<span className={`inline-flex transition-transform duration-200 ${isDocsCollapsed ? '' : 'rotate-90'}`}>
 												<Icons.ChevronRight />
@@ -679,7 +683,8 @@ const SideNavigation = memo(function SideNavigation({
 									<button
 										onClick={handleCreateDocument}
 										className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors duration-200"
-										title={t('nav:createNewDocument')}
+										data-tooltip-id="app-tooltip"
+										data-tooltip-content={t('nav:createNewDocument')}
 									>
 										<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -728,7 +733,8 @@ const SideNavigation = memo(function SideNavigation({
 										<button
 											onClick={() => setIsDecisionsCollapsed(!isDecisionsCollapsed)}
 											className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 rounded transition-colors duration-200"
-											title={isDecisionsCollapsed ? t('nav:expandDecisions') : t('nav:collapseDecisions')}
+											data-tooltip-id="app-tooltip"
+											data-tooltip-content={isDecisionsCollapsed ? t('nav:expandDecisions') : t('nav:collapseDecisions')}
 										>
 											<span className={`inline-flex transition-transform duration-200 ${isDecisionsCollapsed ? '' : 'rotate-90'}`}>
 												<Icons.ChevronRight />

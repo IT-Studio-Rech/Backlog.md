@@ -691,7 +691,8 @@ const TaskList: React.FC<TaskListProps> = ({
 									type="button"
 									onClick={() => setShowCleanupModal(true)}
 									className="py-2 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400"
-									title={t("tasks:cleanUpTooltip")}
+									data-tooltip-id="app-tooltip"
+									data-tooltip-content={t("tasks:cleanUpTooltip")}
 								>
 									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -793,14 +794,16 @@ const TaskList: React.FC<TaskListProps> = ({
 																? "text-gray-600 dark:text-gray-300"
 																: "text-gray-900 dark:text-gray-100"
 														}`}
-														title={task.title}
+														data-tooltip-id="app-tooltip"
+														data-tooltip-content={task.title}
 													>
 														{task.title}
 													</span>
 													{isFromOtherBranch && task.branch && (
 														<span
 															className="inline-flex shrink-0 items-center rounded-circle bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
-															title={t("tasks:readOnlyBranchTooltip", { branch: task.branch })}
+															data-tooltip-id="app-tooltip"
+															data-tooltip-content={t("tasks:readOnlyBranchTooltip", { branch: task.branch })}
 														>
 															{task.branch}
 														</span>
@@ -838,7 +841,8 @@ const TaskList: React.FC<TaskListProps> = ({
 																	className={`inline-flex max-w-[7rem] truncate rounded-circle px-2 py-0.5 text-[11px] ${
 																		style ? "" : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200"
 																	}`}
-																	title={label}
+																	data-tooltip-id="app-tooltip"
+																	data-tooltip-content={label}
 																>
 																	{label}
 																</span>
@@ -858,7 +862,8 @@ const TaskList: React.FC<TaskListProps> = ({
 														{visibleAssignees.map((assignee) => (
 															<span
 																key={assignee}
-																title={assignee}
+																data-tooltip-id="app-tooltip"
+																data-tooltip-content={assignee}
 																className="inline-flex h-6 w-6 items-center justify-center rounded-circle bg-blue-100 text-[10px] font-semibold text-blue-700 dark:bg-blue-900/50 dark:text-blue-200"
 															>
 																{getAssigneeInitials(assignee)}
@@ -872,7 +877,11 @@ const TaskList: React.FC<TaskListProps> = ({
 													<span className="text-xs text-gray-300 dark:text-gray-600">—</span>
 												)}
 											</td>
-											<td className="px-3 py-2.5 text-xs text-gray-600 dark:text-gray-300 truncate" title={milestoneLabel}>
+											<td
+											className="px-3 py-2.5 text-xs text-gray-600 dark:text-gray-300 truncate"
+											data-tooltip-id="app-tooltip"
+											data-tooltip-content={milestoneLabel}
+										>
 												{milestoneLabel}
 											</td>
 											<td className="px-3 py-2.5 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap tabular-nums">

@@ -333,7 +333,8 @@ const Settings: React.FC = () => {
 												handleInputChange('labelColors', nextColors);
 											}}
 											className="h-9 w-10 shrink-0 rounded border border-gray-300 dark:border-gray-600 bg-transparent cursor-pointer"
-											title={t('settings:labels.colorPickerTitle')}
+											data-tooltip-id="app-tooltip"
+											data-tooltip-content={t('settings:labels.colorPickerTitle')}
 										/>
 										<input
 											type="text"

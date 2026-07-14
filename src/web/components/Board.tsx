@@ -554,7 +554,8 @@ const Board: React.FC<BoardProps> = ({
                 type="button"
                 onClick={() => onLaneChange('milestone')}
                 disabled={!hasTasksWithMilestones}
-                title={!hasTasksWithMilestones ? t('board:noMilestonesTooltip') : t('board:groupByMilestoneTooltip')}
+                data-tooltip-id="app-tooltip"
+                data-tooltip-content={!hasTasksWithMilestones ? t('board:noMilestonesTooltip') : t('board:groupByMilestoneTooltip')}
                 className={`px-2.5 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
                   !hasTasksWithMilestones
                     ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-50'

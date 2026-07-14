@@ -180,7 +180,8 @@ const AcceptanceCriteriaEditor: React.FC<Props> = ({
             type="button"
             onClick={() => handleRemove(c.index)}
             className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 shrink-0"
-            title={t("common:remove")}
+            data-tooltip-id="app-tooltip"
+            data-tooltip-content={t("common:remove")}
             aria-label={t("common:remove")}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -211,7 +212,8 @@ const AcceptanceCriteriaEditor: React.FC<Props> = ({
           onClick={handleAdd}
           disabled={!newCriterion.trim()}
           className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-stone-600 dark:hover:text-stone-400 hover:bg-stone-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400 shrink-0"
-          title={t("common:add")}
+          data-tooltip-id="app-tooltip"
+          data-tooltip-content={t("common:add")}
           aria-label={t("common:add")}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

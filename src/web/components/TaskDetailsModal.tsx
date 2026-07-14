@@ -872,7 +872,8 @@ export const TaskDetailsModal: React.FC<Props> = ({
 		              onClick={handleArchive}
 		              disabled={archiving}
 		              className="inline-flex items-center px-3 py-2 mr-2 border border-transparent rounded-lg text-sm font-medium text-white bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors duration-200 disabled:opacity-50"
-		              title={t("taskModal:archiveTask")}
+		              data-tooltip-id="app-tooltip"
+		              data-tooltip-content={t("taskModal:archiveTask")}
 		            >
 		              {archiving ? (
 		                <svg className="animate-spin w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" aria-hidden="true">
@@ -892,7 +893,8 @@ export const TaskDetailsModal: React.FC<Props> = ({
 		              onClick={handleComplete}
 		              disabled={completing}
 		              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white bg-emerald-600 dark:bg-emerald-700 hover:bg-emerald-700 dark:hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors duration-200 disabled:opacity-50"
-		              title={t("taskModal:markAsCompletedTooltip")}
+		              data-tooltip-id="app-tooltip"
+		              data-tooltip-content={t("taskModal:markAsCompletedTooltip")}
 		            >
 		              {completing ? (
 		                <svg className="animate-spin w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" aria-hidden="true">
@@ -914,7 +916,8 @@ export const TaskDetailsModal: React.FC<Props> = ({
 		              className={`inline-flex items-center border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors duration-200 ${
 		                isDoneStatus ? 'p-2' : 'gap-2 px-4 py-2'
 		              }`}
-		              title={t("taskModal:edit")}
+		              data-tooltip-id="app-tooltip"
+		              data-tooltip-content={t("taskModal:edit")}
 		            >
               <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -927,7 +930,8 @@ export const TaskDetailsModal: React.FC<Props> = ({
 		              <button
 		                onClick={handleCancelEdit}
 		                className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors duration-200"
-		                title={t("common:cancel")}
+		                data-tooltip-id="app-tooltip"
+		                data-tooltip-content={t("common:cancel")}
 		              >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -938,7 +942,8 @@ export const TaskDetailsModal: React.FC<Props> = ({
 		                onClick={() => void handleSave()}
 		                disabled={saving}
 		                className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition-colors duration-200 disabled:opacity-50"
-		                title={t("common:save")}
+		                data-tooltip-id="app-tooltip"
+		                data-tooltip-content={t("common:save")}
 		              >
                 {saving ? (
                   <svg className="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" aria-hidden="true">
@@ -1223,7 +1228,8 @@ export const TaskDetailsModal: React.FC<Props> = ({
                             handleInlineMetaUpdate({ references: newRefs });
                           }}
                           className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 text-gray-400 hover:text-red-500 transition-all flex-shrink-0 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:focus-visible:ring-stone-400"
-                          title={t("taskModal:removeReference")}
+                          data-tooltip-id="app-tooltip"
+                          data-tooltip-content={t("taskModal:removeReference")}
                           aria-label={t("taskModal:removeReference")}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1339,7 +1345,8 @@ export const TaskDetailsModal: React.FC<Props> = ({
                           setMode("edit");
                           setAutoFocusNewChecklistItem(true);
                         }}
-                        title={t("taskModal:edit")}
+                        data-tooltip-id="app-tooltip"
+                        data-tooltip-content={t("taskModal:edit")}
                         aria-label={t("taskModal:edit")}
                         className="p-1 text-gray-400 dark:text-gray-500 hover:text-stone-600 dark:hover:text-stone-400 rounded-md hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:focus-visible:ring-stone-400 shrink-0"
                       >
@@ -1390,7 +1397,8 @@ export const TaskDetailsModal: React.FC<Props> = ({
                           setMode("edit");
                           setAutoFocusNewChecklistItem(true);
                         }}
-                        title={t("taskModal:edit")}
+                        data-tooltip-id="app-tooltip"
+                        data-tooltip-content={t("taskModal:edit")}
                         aria-label={t("taskModal:edit")}
                         className="p-1 text-gray-400 dark:text-gray-500 hover:text-stone-600 dark:hover:text-stone-400 rounded-md hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:focus-visible:ring-stone-400 shrink-0"
                       >
