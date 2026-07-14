@@ -1,17 +1,18 @@
 ---
 id: BACK-469
 title: 'TUI theme-adaptive rendering: remove hardcoded colors, add scroll improvements'
-status: In Progress
+status: To Do
 assignee:
   - '@codex'
 created_date: '2026-02-21 08:42'
-updated_date: '2026-06-07 19:42'
+updated_date: '2026-07-10 10:27'
 labels:
   - ui
   - board
   - ux
 dependencies: []
 priority: low
+ordinal: 6500
 ---
 
 ## Description

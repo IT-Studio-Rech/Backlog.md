@@ -2,9 +2,10 @@
 id: BACK-200
 title: Add Claude Code integration with workflow commands during init
 status: To Do
-assignee: []
+assignee:
+  - clord
 created_date: '2025-07-23'
-updated_date: '2025-09-06 21:22'
+updated_date: '2026-07-10 13:00'
 labels:
   - enhancement
   - developer-experience
@@ -12,6 +13,7 @@ dependencies:
   - task-24.1
   - task-208
 priority: medium
+ordinal: 98000
 ---
 
 ## Description

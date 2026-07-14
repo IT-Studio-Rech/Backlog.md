@@ -1,14 +1,14 @@
 ---
 id: BACK-521
 title: Improve agent experience for weaker local models
-status: In Progress
+status: Done
 assignee:
   - '@codex'
 created_date: '2026-07-06 13:40'
-updated_date: '2026-07-06 21:49'
+updated_date: '2026-07-10 10:27'
 labels: []
 dependencies: []
-ordinal: 116000
+ordinal: 443000
 ---
 
 ## Description

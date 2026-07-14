@@ -1,14 +1,16 @@
 ---
 id: BACK-522
 title: Hide empty status columns on Board when no tasks
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-07-08 19:33'
+updated_date: '2026-07-10 13:03'
 labels:
   - ui
   - enhancement
+milestone: m-6
 dependencies: []
-ordinal: 24000
+ordinal: 7000
 ---
 
 ## Description

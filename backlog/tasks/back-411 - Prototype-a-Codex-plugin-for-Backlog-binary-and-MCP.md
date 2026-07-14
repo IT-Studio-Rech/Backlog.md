@@ -1,16 +1,18 @@
 ---
 id: BACK-411
 title: Prototype a Codex plugin for Backlog binary and MCP
-status: In Progress
+status: To Do
 assignee:
   - '@codex'
 created_date: '2026-04-03 05:57'
+updated_date: '2026-07-10 10:27'
 labels: []
 dependencies: []
 documentation:
   - README.md
   - DEVELOPMENT.md
   - /Users/alex/.codex/skills/.system/plugin-creator/SKILL.md
+ordinal: 86000
 ---
 
 ## Description

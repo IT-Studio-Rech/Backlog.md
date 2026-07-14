@@ -2,14 +2,17 @@
 id: BACK-208
 title: Add paste-as-markdown support in Web UI
 status: To Do
-assignee: []
+assignee:
+  - clarsd
 created_date: '2025-07-26'
+updated_date: '2026-07-10 13:00'
 labels:
   - web-ui
   - enhancement
   - markdown
 dependencies: []
 priority: medium
+ordinal: 26000
 ---
 
 ## Description
