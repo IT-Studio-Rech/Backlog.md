@@ -61,6 +61,8 @@ tmp/
 
 # Local files
 *.local.*
+HANDOFF.zip
+HANDOFF/
 
 # Performance benchmark artifacts
 test-benchmark-report.json
