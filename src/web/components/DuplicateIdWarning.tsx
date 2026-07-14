@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { DuplicateGroup } from "../../utils/duplicate-detection";
 import { buildDuplicateCleanupPrompt } from "../../utils/duplicate-detection";
+import { copyTextToClipboard } from "../utils/clipboard";
 
 interface DuplicateIdWarningProps {
 	groups: DuplicateGroup[];
@@ -20,39 +21,6 @@ function formatTaskLocation(filePath?: string): string | null {
 	}
 
 	return normalized;
-}
-
-async function copyTextToClipboard(text: string): Promise<void> {
-	if (navigator.clipboard?.writeText) {
-		try {
-			await navigator.clipboard.writeText(text);
-			return;
-		} catch {
-			// Fall back for browsers that deny async clipboard access in local sessions.
-		}
-	}
-
-	const textarea = document.createElement("textarea");
-	textarea.value = text;
-	textarea.setAttribute("readonly", "");
-	textarea.style.position = "fixed";
-	textarea.style.top = "0";
-	textarea.style.left = "0";
-	textarea.style.opacity = "0";
-	document.body.appendChild(textarea);
-	textarea.focus();
-	textarea.select();
-
-	let copied = false;
-	try {
-		copied = document.execCommand("copy");
-	} finally {
-		textarea.remove();
-	}
-
-	if (!copied) {
-		throw new Error("Clipboard copy failed");
-	}
 }
 
 export function DuplicateIdWarning({ groups }: DuplicateIdWarningProps) {
@@ -132,11 +100,17 @@ export function DuplicateIdWarning({ groups }: DuplicateIdWarningProps) {
 											const location = formatTaskLocation(task.filePath);
 											return (
 												<li key={`${group.id}-${task.filePath ?? task.title}`} className="min-w-0">
-													<div className="truncate text-xs font-medium text-gray-900 dark:text-gray-100" title={task.title}>
+													<div className="truncate text-xs font-medium text-gray-900 dark:text-gray-100"
+															data-tooltip-id="app-tooltip"
+															data-tooltip-content={task.title}
+														>
 														{task.title || t('common:duplicateWarning.untitledTask')}
 													</div>
 													{location && (
-														<div className="truncate font-mono text-[11px] text-amber-700/80 dark:text-amber-300/80" title={location}>
+														<div className="truncate font-mono text-[11px] text-amber-700/80 dark:text-amber-300/80"
+																data-tooltip-id="app-tooltip"
+																data-tooltip-content={location}
+															>
 															{location}
 														</div>
 													)}
@@ -165,7 +139,8 @@ export function DuplicateIdWarning({ groups }: DuplicateIdWarningProps) {
 						onClick={handleCopyInstructions}
 						className="inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-amber-700 text-xs font-semibold text-white transition-colors duration-200 hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-amber-50 dark:bg-amber-500 dark:text-amber-950 dark:hover:bg-amber-400 dark:focus:ring-amber-300 dark:focus:ring-offset-amber-950 sm:w-auto sm:px-3 sm:py-2"
 						aria-label={copyLabel}
-						title={copyLabel}
+						data-tooltip-id="app-tooltip"
+						data-tooltip-content={copyLabel}
 					>
 						<svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
 							<path d="M7 3.5A1.5 1.5 0 0 1 8.5 2h6A1.5 1.5 0 0 1 16 3.5v8A1.5 1.5 0 0 1 14.5 13h-6A1.5 1.5 0 0 1 7 11.5v-8Z" />
@@ -178,7 +153,8 @@ export function DuplicateIdWarning({ groups }: DuplicateIdWarningProps) {
 						onClick={() => setDismissed(true)}
 						className="inline-flex h-8 w-8 items-center justify-center rounded-md text-amber-800 transition-colors duration-200 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-amber-50 dark:text-amber-100 dark:hover:bg-amber-900 dark:focus:ring-amber-300 dark:focus:ring-offset-amber-950"
 						aria-label={t('common:duplicateWarning.dismiss')}
-						title={t('common:duplicateWarning.dismiss')}
+						data-tooltip-id="app-tooltip"
+						data-tooltip-content={t('common:duplicateWarning.dismiss')}
 					>
 						<svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
 							<path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
