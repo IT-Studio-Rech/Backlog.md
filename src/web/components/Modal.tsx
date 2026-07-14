@@ -12,40 +12,63 @@ interface ModalProps {
 	showCloseButton?: boolean; // hide when actions already provide an explicit close (e.g. Cancel)
 }
 
+// Live-queried on every Tab press rather than cached once, since a modal's
+// focusable content can change while it stays open (e.g. TaskDetailsModal's tabs).
+const FOCUSABLE_SELECTOR =
+	'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, maxWidthClass = "max-w-2xl", disableEscapeClose, actions, showCloseButton = true }) => {
 	const { t } = useTranslation(['common']);
 	const dialogRef = useRef<HTMLDivElement>(null);
 	const titleRef = useRef<HTMLHeadingElement>(null);
+	const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
 	useEffect(() => {
-		const handleEscape = (e: KeyboardEvent) => {
+		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.key === 'Escape' && !disableEscapeClose) {
 				onClose();
+				return;
+			}
+
+			if (e.key === 'Tab' && dialogRef.current) {
+				const focusable = dialogRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
+				const first = focusable[0];
+				const last = focusable[focusable.length - 1];
+				if (!first || !last) return;
+				if (e.shiftKey && document.activeElement === first) {
+					e.preventDefault();
+					last.focus();
+				} else if (!e.shiftKey && document.activeElement === last) {
+					e.preventDefault();
+					first.focus();
+				}
 			}
 		};
 
 		if (isOpen) {
-			if (!disableEscapeClose) {
-				document.addEventListener('keydown', handleEscape);
-			}
+			document.addEventListener('keydown', handleKeyDown);
 			document.body.style.overflow = 'hidden';
 		}
 
 		return () => {
-			if (!disableEscapeClose) {
-				document.removeEventListener('keydown', handleEscape);
-			}
+			document.removeEventListener('keydown', handleKeyDown);
 			document.body.style.overflow = 'unset';
 		};
 	}, [isOpen, onClose, disableEscapeClose]);
 
 	// Move focus into the modal when it opens so keyboard users don't stay
 	// tabbing through the page behind the backdrop. Skip it if a child already
-	// claimed focus on mount (e.g. an input with autoFocus).
+	// claimed focus on mount (e.g. an input with autoFocus). Restore focus to
+	// whatever triggered the modal once it closes.
 	useEffect(() => {
 		if (!isOpen) return;
-		if (dialogRef.current?.contains(document.activeElement)) return;
-		titleRef.current?.focus();
+		previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
+		if (!dialogRef.current?.contains(document.activeElement)) {
+			titleRef.current?.focus();
+		}
+		return () => {
+			previouslyFocusedRef.current?.focus?.();
+		};
 	}, [isOpen]);
 
 	if (!isOpen) return null;
