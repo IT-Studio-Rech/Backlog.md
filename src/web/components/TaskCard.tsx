@@ -246,62 +246,45 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
                   const total = items.length;
                   const done = items.filter((item) => item.checked).length;
                   const complete = done === total;
+                  const payload = JSON.stringify({
+                    title: t('common:acceptanceCriteriaProgress'),
+                    items: items.map((item) => ({ text: item.text, checked: item.checked })),
+                  });
                   return (
-                    <span className="relative group">
-                      <span
-                        className={`flex items-center gap-1 ${complete ? 'text-teal-600 dark:text-teal-400' : ''}`}
-                        aria-label={t('common:acceptanceCriteriaProgress')}
-                      >
-                        <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        {done}/{total}
-                      </span>
-                      <span className="pointer-events-none absolute right-0 top-full mt-1.5 w-56 rounded-md bg-gray-900 dark:bg-gray-950 px-2.5 py-2 text-[11px] text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 z-20">
-                        <span className="mb-1 block font-semibold text-gray-300 dark:text-gray-400">
-                          {t('common:acceptanceCriteriaProgress')}
-                        </span>
-                        <span className="block space-y-1">
-                          {items.map((item) => (
-                            <span key={item.index} className="flex items-start gap-1.5">
-                              {item.checked ? (
-                                <svg className="w-3 h-3 mt-0.5 shrink-0 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                                </svg>
-                              ) : (
-                                <span className="w-3 h-3 mt-0.5 shrink-0 rounded-full border border-white/30" />
-                              )}
-                              <span className="truncate">{item.text}</span>
-                            </span>
-                          ))}
-                        </span>
-                      </span>
+                    <span
+                      className={`flex items-center gap-1 ${complete ? 'text-teal-600 dark:text-teal-400' : ''}`}
+                      aria-label={t('common:acceptanceCriteriaProgress')}
+                      data-tooltip-id="app-tooltip"
+                      data-tooltip-kind="checklist"
+                      data-tooltip-payload={payload}
+                    >
+                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {done}/{total}
                     </span>
                   );
                 })()}
-                {task.dependencies.length > 0 && (
-                  <span className="relative group">
-                    <span className="flex items-center gap-1" aria-label={t('common:dependenciesCount', { count: task.dependencies.length })}>
+                {task.dependencies.length > 0 && (() => {
+                  const payload = JSON.stringify({
+                    title: t('common:dependenciesCount', { count: task.dependencies.length }),
+                    deps: task.dependencies.map((depId) => ({ id: depId, title: taskTitleById?.[depId] })),
+                  });
+                  return (
+                    <span
+                      className="flex items-center gap-1"
+                      aria-label={t('common:dependenciesCount', { count: task.dependencies.length })}
+                      data-tooltip-id="app-tooltip"
+                      data-tooltip-kind="dependencies"
+                      data-tooltip-payload={payload}
+                    >
                       <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                       </svg>
                       {task.dependencies.length}
                     </span>
-                    <span className="pointer-events-none absolute right-0 top-full mt-1.5 w-56 rounded-md bg-gray-900 dark:bg-gray-950 px-2.5 py-2 text-[11px] text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 z-20">
-                      <span className="mb-1 block font-semibold text-gray-300 dark:text-gray-400">
-                        {t('common:dependenciesCount', { count: task.dependencies.length })}
-                      </span>
-                      <span className="block space-y-1">
-                        {task.dependencies.map((depId) => (
-                          <span key={depId} className="flex items-start gap-1.5">
-                            <span className="font-mono text-gray-400 shrink-0">{depId}</span>
-                            {taskTitleById?.[depId] && <span className="truncate">{taskTitleById[depId]}</span>}
-                          </span>
-                        ))}
-                      </span>
-                    </span>
-                  </span>
-                )}
+                  );
+                })()}
               </div>
             )}
           </div>
@@ -314,15 +297,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
             const name = task.assignee[0] ?? '';
             const color = getAvatarColor(name);
             return (
-              <span className="relative group min-w-0">
-                <span
-                  className={`flex items-center h-5 px-1.5 rounded text-[10px] font-medium truncate ${color.light} ${color.dark}`}
-                >
-                  {truncateName(name)}
-                </span>
-                <span className="pointer-events-none absolute bottom-full right-0 mb-1.5 whitespace-nowrap rounded-md bg-gray-900 dark:bg-gray-950 px-2 py-1 text-[11px] font-medium text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 z-20">
-                  {task.assignee.join(', ')}
-                </span>
+              <span
+                className={`flex items-center h-5 px-1.5 rounded text-[10px] font-medium truncate min-w-0 ${color.light} ${color.dark}`}
+                data-tooltip-id="app-tooltip"
+                data-tooltip-content={task.assignee.join(', ')}
+              >
+                {truncateName(name)}
               </span>
             );
           })() : (
