@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Tooltip } from 'react-tooltip';
 import {
 	type Decision,
 	type DecisionSearchResult,
@@ -786,7 +785,8 @@ const SideNavigation = memo(function SideNavigation({
 					<div className="px-2 py-2 space-y-2">
 						<NavLink
 							to="/"
-							data-tooltip-id="sidebar-tooltip"
+							data-tooltip-id="app-tooltip"
+							data-tooltip-place="right"
 							data-tooltip-content={t('nav:kanbanBoard')}
 							aria-label={t('nav:kanbanBoard')}
 							className={({ isActive }) =>
@@ -803,7 +803,8 @@ const SideNavigation = memo(function SideNavigation({
 						</NavLink>
 						<NavLink
 							to="/tasks"
-							data-tooltip-id="sidebar-tooltip"
+							data-tooltip-id="app-tooltip"
+							data-tooltip-place="right"
 							data-tooltip-content={t('nav:allTasks')}
 							aria-label={t('nav:allTasks')}
 							className={({ isActive }) =>
@@ -821,7 +822,8 @@ const SideNavigation = memo(function SideNavigation({
 						{/* Drafts Navigation */}
 						<NavLink
 							to="/drafts"
-							data-tooltip-id="sidebar-tooltip"
+							data-tooltip-id="app-tooltip"
+							data-tooltip-place="right"
 							data-tooltip-content={t('nav:drafts')}
 							aria-label={t('nav:drafts')}
 							className={({ isActive }) =>
@@ -839,7 +841,8 @@ const SideNavigation = memo(function SideNavigation({
 						{/* Milestones Navigation */}
 						<NavLink
 							to="/milestones"
-							data-tooltip-id="sidebar-tooltip"
+							data-tooltip-id="app-tooltip"
+							data-tooltip-place="right"
 							data-tooltip-content={t('nav:milestones')}
 							aria-label={t('nav:milestones')}
 							className={({ isActive }) =>
@@ -857,7 +860,8 @@ const SideNavigation = memo(function SideNavigation({
 						{/* Statistics Navigation */}
 						<NavLink
 							to="/statistics"
-							data-tooltip-id="sidebar-tooltip"
+							data-tooltip-id="app-tooltip"
+							data-tooltip-place="right"
 							data-tooltip-content={t('nav:statistics')}
 							aria-label={t('nav:statistics')}
 							className={({ isActive }) =>
@@ -877,7 +881,8 @@ const SideNavigation = memo(function SideNavigation({
 								setIsCollapsed(false);
 								setIsDocsCollapsed(false);
 							}}
-								data-tooltip-id="sidebar-tooltip"
+								data-tooltip-id="app-tooltip"
+							data-tooltip-place="right"
 								data-tooltip-content={t('nav:documentation')}
 								className={`flex items-center justify-center p-3 rounded-md transition-colors duration-200 w-full ${
 									location.pathname.startsWith('/documentation')
@@ -894,7 +899,8 @@ const SideNavigation = memo(function SideNavigation({
 								setIsCollapsed(false);
 								setIsDecisionsCollapsed(false);
 							}}
-								data-tooltip-id="sidebar-tooltip"
+								data-tooltip-id="app-tooltip"
+							data-tooltip-place="right"
 								data-tooltip-content={t('nav:decisions')}
 								className={`flex items-center justify-center p-3 rounded-md transition-colors duration-200 w-full ${
 									location.pathname.startsWith('/decisions')
@@ -932,7 +938,8 @@ const SideNavigation = memo(function SideNavigation({
 				) : (
 					<NavLink
 						to="/settings"
-						data-tooltip-id="sidebar-tooltip"
+						data-tooltip-id="app-tooltip"
+							data-tooltip-place="right"
 						data-tooltip-content={t('nav:settings')}
 						className={({ isActive }) =>
 							`flex items-center justify-center p-3 rounded-md transition-colors duration-200 ${
@@ -948,8 +955,6 @@ const SideNavigation = memo(function SideNavigation({
 					</NavLink>
 				)}
 			</div>
-			
-			<Tooltip id="sidebar-tooltip" place="right" />
 			</div>
 		</ErrorBoundary>
 	);
