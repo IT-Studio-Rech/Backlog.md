@@ -16,6 +16,7 @@ references:
   - src/test/enhanced-init.test.ts
   - src/test/definition-of-done.test.ts
 priority: medium
+ordinal: 359000
 ---
 
 ## Description

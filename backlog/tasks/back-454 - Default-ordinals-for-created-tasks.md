@@ -17,6 +17,7 @@ modified_files:
   - src/test/core.test.ts
   - src/test/mcp-tasks.test.ts
 priority: medium
+ordinal: 380000
 ---
 
 ## Description

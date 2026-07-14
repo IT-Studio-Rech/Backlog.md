@@ -17,7 +17,7 @@ modified_files:
   - CLI-INSTRUCTIONS.md
 parent_task_id: BACK-507
 priority: high
-ordinal: 40000
+ordinal: 330000
 ---
 
 ## Description

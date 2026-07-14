@@ -16,7 +16,7 @@ modified_files:
   - src/core/content-store.ts
   - src/test/worktree-refresh.test.ts
 priority: medium
-ordinal: 110000
+ordinal: 395000
 ---
 
 ## Description

@@ -23,6 +23,7 @@ documentation:
   - src/markdown/section-titles.ts
   - src/guidelines/mcp/task-finalization.md
 priority: medium
+ordinal: 346000
 ---
 
 ## Description

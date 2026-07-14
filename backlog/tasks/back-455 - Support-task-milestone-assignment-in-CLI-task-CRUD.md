@@ -20,6 +20,7 @@ modified_files:
   - src/test/cli-task-milestone.test.ts
   - src/utils/milestone-storage.ts
 priority: medium
+ordinal: 381000
 ---
 
 ## Description

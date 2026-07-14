@@ -17,6 +17,7 @@ modified_files:
   - src/web/components/TaskDetailsModal.tsx
   - src/test/web-task-details-modal-final-summary.test.tsx
 priority: high
+ordinal: 307000
 ---
 
 ## Description

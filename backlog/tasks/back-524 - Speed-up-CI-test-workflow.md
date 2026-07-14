@@ -13,7 +13,7 @@ modified_files:
   - scripts/list-test-shard.ts
   - src/test/cli-priority-filtering.test.ts
 priority: medium
-ordinal: 167000
+ordinal: 399000
 ---
 
 ## Description

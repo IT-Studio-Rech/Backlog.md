@@ -18,6 +18,7 @@ modified_files:
   - src/test/server-cache.test.ts
   - src/test/server-assets.test.ts
 priority: high
+ordinal: 302000
 ---
 
 ## Description

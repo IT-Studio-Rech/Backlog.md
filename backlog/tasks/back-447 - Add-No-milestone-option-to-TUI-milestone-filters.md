@@ -21,6 +21,7 @@ modified_files:
   - src/ui/board.ts
   - src/test/unified-view-filters.test.ts
 priority: medium
+ordinal: 377000
 ---
 
 ## Description

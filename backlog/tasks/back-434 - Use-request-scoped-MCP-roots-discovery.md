@@ -20,6 +20,7 @@ documentation:
   - >-
     https://github.com/modelcontextprotocol/typescript-sdk/blob/main/docs/client.md#roots
 priority: high
+ordinal: 310000
 ---
 
 ## Description

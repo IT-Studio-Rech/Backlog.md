@@ -13,7 +13,7 @@ modified_files:
   - src/test/cli-root-entry.test.ts
 parent_task_id: BACK-507
 priority: medium
-ordinal: 44000
+ordinal: 393000
 ---
 
 ## Description

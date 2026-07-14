@@ -20,6 +20,7 @@ modified_files:
   - src/guidelines/agent-guidelines.md
   - CLI-INSTRUCTIONS.md
 priority: medium
+ordinal: 378000
 ---
 
 ## Description

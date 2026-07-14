@@ -26,6 +26,7 @@ modified_files:
   - src/test/web-task-list-labels-menu.test.tsx
   - src/test/terminal-status.test.ts
 priority: high
+ordinal: 317000
 ---
 
 ## Description

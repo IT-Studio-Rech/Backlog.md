@@ -23,6 +23,7 @@ documentation:
   - 'https://github.com/oven-sh/bun/issues/23536'
   - 'https://github.com/oven-sh/bun/releases/tag/bun-v1.3.9'
 priority: high
+ordinal: 303000
 ---
 
 ## Description

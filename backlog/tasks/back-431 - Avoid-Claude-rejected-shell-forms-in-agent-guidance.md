@@ -19,6 +19,7 @@ modified_files:
   - src/guidelines/agent-guidelines.md
   - src/test/agent-instructions.test.ts
 priority: medium
+ordinal: 371000
 ---
 
 ## Description

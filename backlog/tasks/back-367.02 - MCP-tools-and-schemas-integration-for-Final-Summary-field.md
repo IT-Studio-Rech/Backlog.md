@@ -16,6 +16,7 @@ documentation:
   - src/guidelines/mcp/task-finalization.md
 parent_task_id: BACK-367
 priority: medium
+ordinal: 348000
 ---
 
 ## Description

@@ -13,7 +13,7 @@ modified_files:
   - src/test/cli.test.ts
 parent_task_id: BACK-507
 priority: high
-ordinal: 41000
+ordinal: 331000
 ---
 
 ## Description

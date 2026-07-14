@@ -18,6 +18,7 @@ modified_files:
   - src/ui/board.ts
   - src/ui/components/generic-list.ts
   - src/ui/utils/strip-tags.ts
+ordinal: 439000
 ---
 
 ## Description

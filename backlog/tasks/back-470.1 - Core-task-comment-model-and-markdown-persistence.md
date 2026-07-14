@@ -24,7 +24,7 @@ documentation:
   - src/test/search-service.test.ts
 parent_task_id: BACK-470
 priority: medium
-ordinal: 27000
+ordinal: 385000
 ---
 
 ## Description

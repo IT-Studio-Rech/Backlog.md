@@ -15,6 +15,7 @@ documentation:
   - src/web/components/TaskDetailsModal.tsx
 parent_task_id: BACK-367
 priority: medium
+ordinal: 349000
 ---
 
 ## Description

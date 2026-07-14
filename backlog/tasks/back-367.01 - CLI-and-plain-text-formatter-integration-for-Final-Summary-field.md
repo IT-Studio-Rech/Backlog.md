@@ -16,6 +16,7 @@ documentation:
   - src/formatters/task-plain-text.ts
 parent_task_id: BACK-367
 priority: medium
+ordinal: 347000
 ---
 
 ## Description

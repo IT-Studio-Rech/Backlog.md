@@ -18,6 +18,7 @@ modified_files:
   - src/mcp/tools/milestones/handlers.ts
   - src/server/index.ts
 priority: high
+ordinal: 316000
 ---
 
 ## Description

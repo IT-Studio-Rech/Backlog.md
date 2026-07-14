@@ -15,6 +15,7 @@ references:
   - 'https://github.com/MrLesk/Backlog.md/issues/543'
   - 'https://github.com/MrLesk/Backlog.md/pull/544'
 priority: high
+ordinal: 304000
 ---
 
 ## Description

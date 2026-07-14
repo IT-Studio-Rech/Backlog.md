@@ -21,7 +21,7 @@ modified_files:
   - src/test/build.test.ts
   - src/test/mcp-client-setup.test.ts
 priority: high
-ordinal: 31000
+ordinal: 323000
 ---
 
 ## Description

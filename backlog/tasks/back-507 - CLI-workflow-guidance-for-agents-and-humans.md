@@ -59,7 +59,7 @@ modified_files:
   - CLI-INSTRUCTIONS.md
   - AGENTS.md
 priority: high
-ordinal: 31000
+ordinal: 324000
 ---
 
 ## Description

@@ -17,6 +17,7 @@ modified_files:
   - src/file-system/operations.ts
   - src/test/atomic-task-create.test.ts
 priority: high
+ordinal: 315000
 ---
 
 ## Description

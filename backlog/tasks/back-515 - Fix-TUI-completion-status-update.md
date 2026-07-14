@@ -18,7 +18,7 @@ modified_files:
   - src/ui/task-viewer-with-search.ts
   - src/test/tui-task-lifecycle.test.ts
 priority: medium
-ordinal: 110000
+ordinal: 396000
 ---
 
 ## Description

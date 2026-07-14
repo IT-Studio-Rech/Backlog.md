@@ -18,6 +18,7 @@ references:
   - src/mcp/README.md
   - src/guidelines/mcp/overview.md
 priority: high
+ordinal: 293000
 ---
 
 ## Description

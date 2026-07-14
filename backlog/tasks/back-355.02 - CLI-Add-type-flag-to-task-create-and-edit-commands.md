@@ -10,6 +10,7 @@ dependencies:
   - task-355.01
 parent_task_id: BACK-355
 priority: medium
+ordinal: 79000
 ---
 
 ## Description

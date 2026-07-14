@@ -12,6 +12,7 @@ dependencies: []
 modified_files:
   - src/guidelines/agent-guidelines.md
 priority: low
+ordinal: 403000
 ---
 
 ## Description

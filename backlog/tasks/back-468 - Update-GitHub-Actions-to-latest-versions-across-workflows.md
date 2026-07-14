@@ -15,7 +15,7 @@ modified_files:
   - .github/workflows/release.yml
   - .github/workflows/shai-hulud-check.yml
 priority: medium
-ordinal: 25000
+ordinal: 383000
 ---
 
 ## Description

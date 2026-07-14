@@ -25,6 +25,7 @@ references:
   - src/guidelines/mcp/overview.md
   - src/guidelines/agent-guidelines.md
 priority: high
+ordinal: 311000
 ---
 
 ## Description

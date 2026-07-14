@@ -17,7 +17,7 @@ modified_files:
   - src/test/cli-milestone-management.test.ts
 parent_task_id: BACK-507
 priority: high
-ordinal: 42000
+ordinal: 332000
 ---
 
 ## Description

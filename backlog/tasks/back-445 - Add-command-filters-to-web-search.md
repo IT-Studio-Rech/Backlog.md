@@ -22,6 +22,7 @@ modified_files:
   - src/test/search-service.test.ts
   - src/test/server-search-endpoint.test.ts
 priority: medium
+ordinal: 376000
 ---
 
 ## Description

@@ -17,6 +17,7 @@ references:
   - /Users/alex/projects/Backlog.md/src/ui/unified-view.ts
   - /Users/alex/projects/Backlog.md/src/utils/task-search.ts
 priority: medium
+ordinal: 361000
 ---
 
 ## Description

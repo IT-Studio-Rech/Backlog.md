@@ -14,7 +14,7 @@ references:
 modified_files:
   - .github/workflows/release.yml
 priority: high
-ordinal: 25000
+ordinal: 322000
 ---
 
 ## Description

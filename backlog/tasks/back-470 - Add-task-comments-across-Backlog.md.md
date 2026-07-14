@@ -25,7 +25,7 @@ documentation:
   - src/formatters/task-plain-text.ts
   - src/mcp/tools/tasks/handlers.ts
 priority: medium
-ordinal: 26000
+ordinal: 384000
 ---
 
 ## Description

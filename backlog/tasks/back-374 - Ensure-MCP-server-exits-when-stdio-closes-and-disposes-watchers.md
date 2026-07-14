@@ -13,6 +13,7 @@ references:
   - src/mcp/server.ts
   - src/core/content-store.ts
   - src/core/backlog.ts
+ordinal: 425000
 ---
 
 ## Description

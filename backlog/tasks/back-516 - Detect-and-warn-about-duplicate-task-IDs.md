@@ -23,6 +23,7 @@ modified_files:
     backlog/archive/tasks/back-466 -
     Hide-empty-status-columns-on-Board-when-no-tasks.md
 priority: medium
+ordinal: 397000
 ---
 
 ## Description

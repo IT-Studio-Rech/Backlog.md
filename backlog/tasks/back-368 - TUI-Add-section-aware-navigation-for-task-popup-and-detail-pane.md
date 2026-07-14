@@ -16,6 +16,7 @@ documentation:
   - src/ui/sequences.ts
   - src/ui/task-viewer-with-search.ts#L1118
 priority: medium
+ordinal: 83000
 ---
 
 ## Description

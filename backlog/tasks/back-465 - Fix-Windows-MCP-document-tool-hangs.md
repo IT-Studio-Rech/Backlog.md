@@ -16,7 +16,7 @@ modified_files:
   - src/test/mcp-stdio-exit.test.ts
   - src/test/git.test.ts
 priority: high
-ordinal: 23000
+ordinal: 320000
 ---
 
 ## Description

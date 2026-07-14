@@ -21,7 +21,7 @@ documentation:
   - src/test/web-task-details-modal-final-summary.test.tsx
 parent_task_id: BACK-470
 priority: medium
-ordinal: 29000
+ordinal: 387000
 ---
 
 ## Description

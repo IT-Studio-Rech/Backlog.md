@@ -17,6 +17,7 @@ references:
   - src/test/definition-of-done-cli.test.ts
   - src/test/cli-plain-create-edit.test.ts
 priority: medium
+ordinal: 360000
 ---
 
 ## Description

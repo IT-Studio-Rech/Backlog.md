@@ -13,6 +13,7 @@ references:
     https://github.com/MrLesk/Backlog.md/actions/runs/21924056436/job/63312529781
   - 'https://github.com/MrLesk/Backlog.md/issues/489'
 priority: high
+ordinal: 299000
 ---
 
 ## Description

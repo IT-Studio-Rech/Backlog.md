@@ -17,6 +17,7 @@ modified_files:
   - src/web/components/MermaidMarkdown.tsx
   - src/test/mermaid-markdown.test.tsx
 priority: medium
+ordinal: 369000
 ---
 
 ## Description

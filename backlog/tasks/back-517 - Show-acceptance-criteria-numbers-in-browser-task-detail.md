@@ -13,7 +13,7 @@ references:
 modified_files:
   - src/web/components/TaskDetailsModal.tsx
   - src/test/web-task-details-modal-acceptance-criteria.test.tsx
-ordinal: 112000
+ordinal: 441000
 ---
 
 ## Description

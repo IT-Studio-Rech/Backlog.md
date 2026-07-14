@@ -14,6 +14,7 @@ references:
   - >-
     https://cursor.com/docs (verify current rules/skills paths when
     implementing)
+ordinal: 85000
 ---
 
 ## Description

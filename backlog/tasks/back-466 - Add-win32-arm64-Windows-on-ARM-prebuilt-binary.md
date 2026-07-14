@@ -17,7 +17,7 @@ modified_files:
   - src/test/resolveBinary.test.ts
   - biome.json
 priority: high
-ordinal: 24000
+ordinal: 321000
 ---
 
 ## Description

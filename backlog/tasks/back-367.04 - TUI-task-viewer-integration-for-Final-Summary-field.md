@@ -15,6 +15,7 @@ documentation:
   - src/ui/tui.ts
 parent_task_id: BACK-367
 priority: medium
+ordinal: 350000
 ---
 
 ## Description
