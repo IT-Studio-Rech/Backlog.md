@@ -26,6 +26,7 @@
 	"cleanUpOldTasksTooltip": "Alte erledigte Aufgaben aufräumen",
 	"switchBranchToMove": "Wechsle zum Branch {{branch}}, um diese Aufgabe zu verschieben",
 	"fromBranch": "Aus Branch {{branch}}",
+	"needsInput": "Wartet auf dich",
 	"failedToUpdateTask": "Aufgabe konnte nicht aktualisiert werden",
 	"failedToReorderTask": "Aufgabe konnte nicht neu sortiert werden",
 	"contextMenu": {

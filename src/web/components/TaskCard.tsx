@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Task } from '../../types';
+import { NEEDS_INPUT_LABEL } from '../../constants';
 import { getLabelChipStyle, resolveLabelColor } from '../utils/labelColors';
 
 interface TaskCardProps {
@@ -44,6 +45,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
 
   // Check if task is from another branch (read-only)
   const isFromOtherBranch = Boolean(task.branch);
+  const needsInput = task.labels.includes(NEEDS_INPUT_LABEL);
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     // Prevent dragging cross-branch tasks
@@ -164,6 +166,18 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
         role="button"
         tabIndex={0}
       >
+        {/* Needs-your-input banner: stacks above the branch banner when both apply */}
+        {needsInput && (
+          <div className="flex items-center gap-1.5 mb-2 px-2 py-1 -mx-1 -mt-1 bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800 rounded-t text-xs text-red-700 dark:text-red-300">
+            <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="truncate">
+              {t('board:needsInput')}
+            </span>
+          </div>
+        )}
+
         {/* Cross-branch indicator banner */}
         {isFromOtherBranch && (
           <div className="flex items-center gap-1.5 mb-2 px-2 py-1 -mx-1 -mt-1 bg-sky-50 dark:bg-sky-900/20 border-b border-sky-200 dark:border-sky-800 rounded-t text-xs text-sky-700 dark:text-sky-300">

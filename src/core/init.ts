@@ -5,7 +5,7 @@ import {
 	ensureMcpGuidelines,
 	installClaudeAgent,
 } from "../agent-instructions.ts";
-import { DEFAULT_INIT_CONFIG } from "../constants/index.ts";
+import { DEFAULT_INIT_CONFIG, NEEDS_INPUT_LABEL, NEEDS_INPUT_LABEL_COLOR } from "../constants/index.ts";
 import type { BacklogConfig } from "../types/index.ts";
 import { normalizeProjectBacklogDirectory } from "../utils/backlog-directory.ts";
 import {
@@ -136,7 +136,7 @@ export async function initializeProject(
 	const baseConfig: BacklogConfig = {
 		projectName,
 		statuses: ["To Do", "In Progress", "Done"],
-		labels: [],
+		labels: [NEEDS_INPUT_LABEL],
 		defaultStatus: "To Do",
 		dateFormat: "yyyy-mm-dd",
 		maxColumnWidth: 20,
@@ -186,6 +186,11 @@ export async function initializeProject(
 		...(hasDefinitionOfDoneOverride && Array.isArray(normalizedAdvancedConfig.definitionOfDone)
 			? { definitionOfDone: [...normalizedAdvancedConfig.definitionOfDone] }
 			: {}),
+		// Seed a color for the reserved needs-input label on fresh projects only —
+		// re-init must not retroactively inject labelColors into a config that
+		// simply never had any (labelColors is optional, so an absent key on
+		// existingConfig wouldn't otherwise override this on its own).
+		...(!isReInitialization ? { labelColors: { [NEEDS_INPUT_LABEL]: NEEDS_INPUT_LABEL_COLOR } } : {}),
 	};
 	// Preserve all non-init-managed fields, but allow init-managed optional fields to be explicitly cleared.
 	if (hasDefaultEditorOverride && !normalizedAdvancedConfig.defaultEditor) {

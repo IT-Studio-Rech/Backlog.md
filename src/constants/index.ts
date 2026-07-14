@@ -77,4 +77,18 @@ export const DEFAULT_INIT_CONFIG = {
 	autoOpenBrowser: true,
 } as const;
 
+/**
+ * Reserved label that flags a task as waiting on a human decision, rather
+ * than something the agent is still driving. Seeded into fresh projects'
+ * default labels/labelColors so it renders distinctly out of the box.
+ */
+export const NEEDS_INPUT_LABEL = "needs-input";
+
+/**
+ * Fixed color for NEEDS_INPUT_LABEL, distinct from DEFAULT_LABEL_PALETTE
+ * (src/web/utils/labelColors.ts) so it doesn't visually blend with
+ * auto-assigned label colors.
+ */
+export const NEEDS_INPUT_LABEL_COLOR = "#dc2626";
+
 export * from "../guidelines/index.ts";

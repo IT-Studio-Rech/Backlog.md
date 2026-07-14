@@ -26,6 +26,7 @@
 	"cleanUpOldTasksTooltip": "Clean up old completed tasks",
 	"switchBranchToMove": "Switch to {{branch}} branch to move this task",
 	"fromBranch": "From {{branch}} branch",
+	"needsInput": "Waiting on you",
 	"failedToUpdateTask": "Failed to update task",
 	"failedToReorderTask": "Failed to reorder task",
 	"contextMenu": {
