@@ -5,6 +5,8 @@ import { sortByPriority, sortByProgress } from '../../utils/task-sorting';
 import type { ReorderTaskPayload } from '../lib/api';
 import TaskCard from './TaskCard';
 
+type BoardDensity = 'comfortable' | 'compact';
+
 interface TaskColumnProps {
   title: string;
   tasks: Task[];
@@ -21,6 +23,7 @@ interface TaskColumnProps {
   taskTitleById?: Record<string, string>;
   onCardContextMenu?: (task: Task, x: number, y: number) => void;
   labelColors?: Record<string, string>;
+  density?: BoardDensity;
 }
 
 const TaskColumn: React.FC<TaskColumnProps> = ({
@@ -39,6 +42,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
   taskTitleById,
   onCardContextMenu,
   labelColors,
+  density = 'comfortable',
 }) => {
   const { t } = useTranslation(['board', 'common']);
   const [isDragOver, setIsDragOver] = React.useState(false);
@@ -203,7 +207,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
 
   return (
     <div
-      className={`rounded-lg p-4 transition-colors duration-200 h-full ${
+      className={`rounded-lg ${density === 'compact' ? 'p-2' : 'p-4'} transition-colors duration-200 h-full ${
         isEmpty ? 'min-h-24' : 'min-h-96'
       } ${
         isDragOver && (dragSourceStatus !== title || (dragSourceLane ?? null) !== (laneId ?? null))
@@ -277,7 +281,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
         )}
       </div>
       
-      <div className="space-y-3">
+      <div className={density === 'compact' ? 'space-y-1.5' : 'space-y-3'}>
         {tasks.map((task, index) => (
           <div 
             key={task.id} 
@@ -321,6 +325,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
               taskTitleById={taskTitleById}
               onContextMenu={onCardContextMenu}
               labelColors={labelColors}
+              density={density}
             />
             
             {/* Drop indicator for after this task */}

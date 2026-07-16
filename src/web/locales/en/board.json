@@ -5,6 +5,10 @@
 	"milestoneView": "Milestone",
 	"noMilestonesTooltip": "No tasks have milestones. Assign milestones to tasks first.",
 	"groupByMilestoneTooltip": "Group tasks by milestone",
+	"density": {
+		"comfortable": "Comfortable",
+		"compact": "Compact"
+	},
 	"boardFilters": "Board filters",
 	"filterByAssignee": "Filter board by assignee",
 	"filterByPriority": "Filter board by priority",

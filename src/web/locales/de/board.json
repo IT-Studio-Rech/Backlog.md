@@ -5,6 +5,10 @@
 	"milestoneView": "Meilenstein",
 	"noMilestonesTooltip": "Keine Aufgabe hat einen Meilenstein. Weise zuerst Meilensteine zu.",
 	"groupByMilestoneTooltip": "Aufgaben nach Meilenstein gruppieren",
+	"density": {
+		"comfortable": "Komfortabel",
+		"compact": "Kompakt"
+	},
 	"boardFilters": "Board-Filter",
 	"filterByAssignee": "Board nach Zuständige/r filtern",
 	"filterByPriority": "Board nach Priorität filtern",

@@ -15,6 +15,8 @@ import { SuccessToast } from './SuccessToast';
 import { useConfirm } from '../hooks/useConfirm';
 import { copyTextToClipboard } from '../utils/clipboard';
 
+type BoardDensity = 'comfortable' | 'compact';
+
 interface BoardProps {
   onEditTask: (task: Task) => void;
   onNewTask: () => void;
@@ -29,6 +31,8 @@ interface BoardProps {
   archivedMilestones: Milestone[];
   laneMode: LaneMode;
   onLaneChange: (mode: LaneMode) => void;
+  density: BoardDensity;
+  onDensityChange: (density: BoardDensity) => void;
   milestoneFilter?: string | null;
   filterAssignee?: string;
   filterLabels?: string[];
@@ -45,6 +49,10 @@ const BOARD_FILTER_WIDTH_CLASS = 'w-[168px]';
 const BOARD_FILTER_BUTTON_CLASS =
   'h-8 py-1.5 px-2.5 text-sm border border-gray-200 dark:border-white/10 rounded-lg whitespace-nowrap transition-colors duration-200 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:focus:ring-stone-400';
 
+// Shared by the milestone grid and the status-lane flex row: both tighten their
+// gap the same way in compact density, so the swap lives in one place.
+const boardGapClass = (density: BoardDensity) => (density === 'compact' ? 'gap-2' : 'gap-4');
+
 const Board: React.FC<BoardProps> = ({
   onEditTask,
   onNewTask,
@@ -58,6 +66,8 @@ const Board: React.FC<BoardProps> = ({
   archivedMilestones,
   laneMode,
   onLaneChange,
+  density,
+  onDensityChange,
   milestoneFilter,
   filterAssignee = '',
   filterLabels = [],
@@ -567,6 +577,30 @@ const Board: React.FC<BoardProps> = ({
                 {t('board:milestoneView')}
               </button>
             </div>
+            <div className="inline-flex rounded-lg border border-gray-200 dark:border-white/10 p-1 bg-gray-50 dark:bg-white/[0.03] transition-colors duration-200">
+              <button
+                type="button"
+                onClick={() => onDensityChange('comfortable')}
+                className={`px-2.5 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
+                  density === 'comfortable'
+                    ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-gray-100 shadow-sm dark:shadow-none'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                {t('board:density.comfortable')}
+              </button>
+              <button
+                type="button"
+                onClick={() => onDensityChange('compact')}
+                className={`px-2.5 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
+                  density === 'compact'
+                    ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-gray-100 shadow-sm dark:shadow-none'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                {t('board:density.compact')}
+              </button>
+            </div>
             {onFiltersChange && (
               <div className="flex flex-wrap items-center gap-3 pl-3 border-l border-gray-200 dark:border-white/10" aria-label={t('board:boardFilters')}>
                 <Select
@@ -677,7 +711,7 @@ const Board: React.FC<BoardProps> = ({
                 {/* Lane content - columns */}
                 {!isCollapsed && (
                   <div className="p-4">
-                    <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${visibleStatuses.length}, minmax(0, 1fr))` }}>
+                    <div className={`grid ${boardGapClass(density)}`} style={{ gridTemplateColumns: `repeat(${visibleStatuses.length}, minmax(0, 1fr))` }}>
                       {visibleStatuses.map((status) => (
                         <div key={`${lane.key}-${status}`} className="min-w-0">
                           <TaskColumn
@@ -692,6 +726,7 @@ const Board: React.FC<BoardProps> = ({
                             targetMilestone={lane.milestone ?? null}
                             taskTitleById={taskTitleById}
                             labelColors={labelColors}
+                            density={density}
                             onCardContextMenu={(task, x, y) => setContextMenuTarget({ task, x, y })}
                             onDragStart={({ status: draggedStatus, laneId }) => {
                               setDragSourceStatus(draggedStatus);
@@ -714,9 +749,9 @@ const Board: React.FC<BoardProps> = ({
         </div>
       ) : (
         <div className="overflow-x-auto pb-2">
-          <div className="flex flex-row flex-nowrap gap-4 w-full">
+          <div className={`flex flex-row flex-nowrap ${boardGapClass(density)} w-full`}>
             {visibleStatuses.map((status) => (
-              <div key={status} className="flex-1 min-w-[16rem]">
+              <div key={status} className={`flex-1 ${density === 'compact' ? 'min-w-[13rem]' : 'min-w-[16rem]'}`}>
                 <TaskColumn
                   title={status}
                   tasks={getTasksForLane(DEFAULT_LANE_KEY, status)}
@@ -728,6 +763,7 @@ const Board: React.FC<BoardProps> = ({
                   laneId={DEFAULT_LANE_KEY}
                   taskTitleById={taskTitleById}
                   labelColors={labelColors}
+                  density={density}
                   onCardContextMenu={(task, x, y) => setContextMenuTarget({ task, x, y })}
                   onDragStart={({ status: draggedStatus, laneId }) => {
                     setDragSourceStatus(draggedStatus);
