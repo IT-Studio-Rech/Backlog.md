@@ -10,8 +10,8 @@
 	"markAsCompleted": "Erledigt",
 	"markAsCompletedTooltip": "In den Ordner \"Erledigt\" verschieben (entfernt vom Board)",
 	"edit": "Bearbeiten",
-	"readOnlyLabel": "Nur lesbar:",
-	"readOnlyBranchNotice": "Diese Aufgabe existiert im Branch {{branch}}. Wechsle zu diesem Branch, um sie zu bearbeiten.",
+	"readOnlyLabel": "Nur Ansicht:",
+	"readOnlyBranchNotice": "Dieser Stand kommt aus einem parallelen Arbeitsstand ({{branch}}) und wird hier nur angezeigt.",
 	"fields": {
 		"title": "Titel",
 		"titlePlaceholder": "Was muss erledigt werden?",

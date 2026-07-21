@@ -14,7 +14,7 @@
 	"noTasks": "No tasks",
 	"noTasksFilteredHint": "Try adjusting your search or clearing filters to see more tasks.",
 	"noTasksHint": "Get started by creating a new task.",
-	"readOnlyBranchTooltip": "Read-only task from {{branch}} branch",
+	"readOnlyBranchTooltip": "From a parallel work area ({{branch}}) — view only",
 	"cleanupSuccessMessage_one": "Successfully moved {{count}} task to completed folder",
 	"cleanupSuccessMessage_other": "Successfully moved {{count}} tasks to completed folder",
 	"columns": {

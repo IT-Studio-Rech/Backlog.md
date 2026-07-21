@@ -507,7 +507,7 @@ const Board: React.FC<BoardProps> = ({
 
   const getLaneLabel = (lane: typeof lanes[0]): string => {
     if (laneMode === 'worktree') {
-      return lane.isHereLane ? t('board:hereLane') : lane.label;
+      return lane.isHereLane ? t('board:hereLane') : t('board:parallelLane', { branch: lane.label });
     }
     if (lane.isNoMilestone || !lane.milestone) {
       return t('board:unassigned');

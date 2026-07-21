@@ -6,7 +6,7 @@
 	"noMilestonesTooltip": "Keine Aufgabe hat ein Epic. Weise zuerst Epics zu.",
 	"groupByMilestoneTooltip": "Aufgaben nach Epic gruppieren",
 	"worktreeView": "Arbeitsbereiche",
-	"hereLane": "Hier",
+	"hereLane": "Dein Arbeitsbereich",
 	"noWorktreesTooltip": "Gerade keine weiteren Arbeitsbereiche. Lege einen mit git worktree add an.",
 	"groupByWorktreeTooltip": "Aufgaben nach Arbeitsbereich gruppieren",
 	"boardFilters": "Board-Filter",
@@ -28,7 +28,7 @@
 	"dropTaskHere": "Aufgabe hier ablegen, um den Status zu ändern",
 	"cleanUpOldTasks": "Alte Aufgaben aufräumen",
 	"cleanUpOldTasksTooltip": "Alte erledigte Aufgaben aufräumen",
-	"switchBranchToMove": "Wechsle zu diesem Arbeitsstand ({{branch}}), um diese Aufgabe zu verschieben",
+	"switchBranchToMove": "Diese Aufgabe wird in einem parallelen Arbeitsstand ({{branch}}) bearbeitet — hier nur Ansicht",
 	"fromBranch": "Aus parallelem Arbeitsstand ({{branch}})",
 	"needsInput": "Wartet auf dich",
 	"failedToUpdateTask": "Aufgabe konnte nicht aktualisiert werden",
@@ -46,5 +46,6 @@
 		"archiveConfirm": "Möchtest du \"{{title}}\" wirklich archivieren?",
 		"failedToArchiveTask": "Aufgabe konnte nicht archiviert werden",
 		"failedToCopy": "Kopieren fehlgeschlagen"
-	}
+	},
+	"parallelLane": "Paralleler Arbeitsbereich ({{branch}})"
 }

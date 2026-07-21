@@ -14,7 +14,7 @@
 	"noTasks": "Keine Aufgaben",
 	"noTasksFilteredHint": "Passe deine Suche an oder setze die Filter zurück, um mehr Aufgaben zu sehen.",
 	"noTasksHint": "Lege los, indem du eine neue Aufgabe erstellst.",
-	"readOnlyBranchTooltip": "Schreibgeschützte Aufgabe vom Branch {{branch}}",
+	"readOnlyBranchTooltip": "Aus parallelem Arbeitsstand ({{branch}}) — hier nur Ansicht",
 	"cleanupSuccessMessage_one": "{{count}} Aufgabe erfolgreich in den Ordner \"Erledigt\" verschoben",
 	"cleanupSuccessMessage_other": "{{count}} Aufgaben erfolgreich in den Ordner \"Erledigt\" verschoben",
 	"columns": {

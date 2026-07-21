@@ -6,7 +6,7 @@
 	"noMilestonesTooltip": "No tasks have epics. Assign epics to tasks first.",
 	"groupByMilestoneTooltip": "Group tasks by epic",
 	"worktreeView": "Work areas",
-	"hereLane": "Here",
+	"hereLane": "Your work area",
 	"noWorktreesTooltip": "No other work areas right now. Add one with git worktree add.",
 	"groupByWorktreeTooltip": "Group tasks by work area",
 	"boardFilters": "Board filters",
@@ -28,7 +28,7 @@
 	"dropTaskHere": "Drop task here to change status",
 	"cleanUpOldTasks": "Clean Up Old Tasks",
 	"cleanUpOldTasksTooltip": "Clean up old completed tasks",
-	"switchBranchToMove": "Switch to that work area ({{branch}}) to move this task",
+	"switchBranchToMove": "This task is being worked on in a parallel work area ({{branch}}) — view only here",
 	"fromBranch": "From a parallel work area ({{branch}})",
 	"needsInput": "Waiting on you",
 	"failedToUpdateTask": "Failed to update task",
@@ -46,5 +46,6 @@
 		"archiveConfirm": "Are you sure you want to archive \"{{title}}\"?",
 		"failedToArchiveTask": "Failed to archive task",
 		"failedToCopy": "Copy failed"
-	}
+	},
+	"parallelLane": "Parallel work area ({{branch}})"
 }

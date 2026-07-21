@@ -10,8 +10,8 @@
 	"markAsCompleted": "Done",
 	"markAsCompletedTooltip": "Move to completed folder (removes from board)",
 	"edit": "Edit",
-	"readOnlyLabel": "Read-only:",
-	"readOnlyBranchNotice": "This task exists in the {{branch}} branch. Switch to that branch to edit it.",
+	"readOnlyLabel": "View only:",
+	"readOnlyBranchNotice": "This state comes from a parallel work area ({{branch}}) and is shown here for overview only.",
 	"fields": {
 		"title": "Title",
 		"titlePlaceholder": "What needs to be done?",
