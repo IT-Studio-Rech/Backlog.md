@@ -52,7 +52,7 @@ export default function BoardPage({
 			if (value === 'none') return 'none';
 			return null;
 		};
-		const nextLane = parseLane(paramLane) ?? parseLane(storedLane) ?? 'none';
+		const nextLane = parseLane(paramLane) ?? parseLane(storedLane) ?? 'milestone';
 		setLaneMode((current) => (current === nextLane ? current : nextLane));
 		setMilestoneFilter(paramMilestone);
 		if (typeof window !== 'undefined') {
