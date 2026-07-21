@@ -28,6 +28,7 @@ import {
 	type SearchResult,
 	type Task,
 	type TaskSearchResult,
+	type WorktreeSummary,
 } from '../types';
 import { apiClient } from './lib/api';
 import type { DuplicateGroup } from '../utils/duplicate-detection';
@@ -177,6 +178,7 @@ function App() {
   const [milestones, setMilestones] = useState<string[]>([]);
   const [milestoneEntities, setMilestoneEntities] = useState<Milestone[]>([]);
   const [archivedMilestones, setArchivedMilestones] = useState<Milestone[]>([]);
+  const [worktrees, setWorktrees] = useState<WorktreeSummary[]>([]);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [taskConfirmation, setTaskConfirmation] = useState<{task: Task, isDraft: boolean} | null>(null);
   
@@ -266,13 +268,14 @@ function App() {
   const loadAllData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const [statusesData, configData, searchResults, milestonesData, archivedMilestonesData, duplicates] = await Promise.all([
+      const [statusesData, configData, searchResults, milestonesData, archivedMilestonesData, duplicates, worktreesData] = await Promise.all([
         apiClient.fetchStatuses(),
         apiClient.fetchConfig(),
         apiClient.search(),
         apiClient.fetchMilestones(),
         apiClient.fetchArchivedMilestones(),
         apiClient.fetchDuplicateTasks(),
+        apiClient.fetchWorktrees(),
       ]);
 
       const archivedKeys = new Set(collectArchivedMilestoneKeys(archivedMilestonesData, milestonesData));
@@ -286,6 +289,7 @@ function App() {
       setConfig(configData);
       setMilestoneEntities(milestonesData);
       setArchivedMilestones(archivedMilestonesData);
+      setWorktrees(worktreesData);
       setMilestones(
         collectMilestoneIds(tasksList, milestonesData, archivedMilestonesData).filter(
           (milestone) => !archivedKeys.has(milestoneKey(milestone)),
@@ -311,16 +315,18 @@ function App() {
       // Connection restored, reload data
       const loadData = async () => {
         try {
-          const [results, milestonesData, archivedMilestonesData] = await Promise.all([
+          const [results, milestonesData, archivedMilestonesData, worktreesData] = await Promise.all([
             apiClient.search(),
             apiClient.fetchMilestones(),
             apiClient.fetchArchivedMilestones(),
+            apiClient.fetchWorktrees(),
           ]);
           const archivedKeys = new Set(collectArchivedMilestoneKeys(archivedMilestonesData, milestonesData));
           const milestoneAliases = buildMilestoneAliasMap(milestonesData, archivedMilestonesData);
           const { tasks: tasksList } = applySearchResults(results, archivedKeys, milestoneAliases);
           setMilestoneEntities(milestonesData);
           setArchivedMilestones(archivedMilestonesData);
+          setWorktrees(worktreesData);
           setMilestones(
             collectMilestoneIds(tasksList, milestonesData, archivedMilestonesData).filter(
               (milestone) => !archivedKeys.has(milestoneKey(milestone)),
@@ -533,6 +539,7 @@ function App() {
                 availableLabels={availableLabels}
                 milestoneEntities={milestoneEntities}
                 archivedMilestones={archivedMilestones}
+                worktrees={worktrees}
                 isLoading={isLoading}
                 hideEmptyColumns={config?.hideEmptyColumns ?? false}
                 dateFormat={config?.dateFormat}

@@ -1,17 +1,24 @@
-import type { Milestone, Task } from "../../types";
+import type { Milestone, Task, WorktreeSummary } from "../../types";
 import { getMilestoneLabel, milestoneKey, normalizeMilestoneName } from "../utils/milestones";
 
-export type LaneMode = "none" | "milestone";
+export type LaneMode = "none" | "milestone" | "worktree";
 
 export interface LaneDefinition {
 	key: string;
 	label: string;
 	milestone?: string;
 	isNoMilestone?: boolean;
+	/** Set on worktree lanes (task-18): the sibling worktree's absolute path. */
+	worktreePath?: string;
+	/** Set on the "Hier"/"Here" lane in worktree mode - tasks not tied to any sibling worktree. */
+	isHereLane?: boolean;
 }
 
 export const DEFAULT_LANE_KEY = "lane:none";
 export const NO_MILESTONE_LABEL = "No milestone";
+export const HERE_LANE_KEY = "lane:worktree:__here";
+
+export const laneKeyFromWorktreePath = (path: string): string => `lane:worktree:${path}`;
 
 export const laneKeyFromMilestone = (milestone?: string | null): string => {
 	const key = milestoneKey(milestone);
@@ -154,8 +161,20 @@ export function buildLanes(
 	tasks: Task[],
 	configMilestones: string[],
 	milestoneEntities: Milestone[] = [],
-	options?: { archivedMilestoneIds?: string[]; archivedMilestones?: Milestone[] },
+	options?: { archivedMilestoneIds?: string[]; archivedMilestones?: Milestone[]; worktrees?: WorktreeSummary[] },
 ): LaneDefinition[] {
+	if (mode === "worktree") {
+		const worktrees = options?.worktrees ?? [];
+		return [
+			{ key: HERE_LANE_KEY, label: "Here", isHereLane: true },
+			...worktrees.map((worktree) => ({
+				key: laneKeyFromWorktreePath(worktree.path),
+				label: worktree.branch ?? worktree.path,
+				worktreePath: worktree.path,
+			})),
+		];
+	}
+
 	if (mode !== "milestone") {
 		return [
 			{
@@ -333,6 +352,49 @@ export function groupTasksByLaneAndStatus(
 	options?: { archivedMilestoneIds?: string[]; milestoneEntities?: Milestone[]; archivedMilestones?: Milestone[] },
 ): Map<string, Map<string, Task[]>> {
 	const result = new Map<string, Map<string, Task[]>>();
+
+	const ensureStatusMapEarly = (laneKey: string): Map<string, Task[]> => {
+		const existing = result.get(laneKey);
+		if (existing) return existing;
+		const statusMap = new Map<string, Task[]>();
+		for (const status of statuses) {
+			statusMap.set(status, []);
+		}
+		result.set(laneKey, statusMap);
+		return statusMap;
+	};
+
+	if (mode === "worktree") {
+		for (const lane of lanes) {
+			ensureStatusMapEarly(lane.key);
+		}
+		const worktreeLaneKeys = new Set(lanes.map((lane) => lane.key));
+
+		for (const task of tasks) {
+			const statusKey = task.status ?? "";
+			const candidateKey =
+				task.source === "worktree" && task.worktreePath ? laneKeyFromWorktreePath(task.worktreePath) : HERE_LANE_KEY;
+			// Fall back to "Here" if the task references a worktree lane we don't currently
+			// know about (e.g. the worktree list just refreshed) - never drop a task from view.
+			const laneKey = worktreeLaneKeys.has(candidateKey) ? candidateKey : HERE_LANE_KEY;
+			const statusMap = ensureStatusMapEarly(laneKey);
+			let bucket = statusMap.get(statusKey);
+			if (!bucket) {
+				bucket = [];
+				statusMap.set(statusKey, bucket);
+			}
+			bucket.push(task);
+		}
+
+		for (const [, statusMap] of result) {
+			for (const [status, list] of statusMap) {
+				statusMap.set(status, sortTasksForStatus(list, status));
+			}
+		}
+
+		return result;
+	}
+
 	const archivedKeys = new Set((options?.archivedMilestoneIds ?? []).map((id) => milestoneKey(id)));
 	const aliasMap = buildMilestoneAliasMap(options?.milestoneEntities ?? [], options?.archivedMilestones ?? []);
 	const normalizedTasks = tasks.map((task) => {

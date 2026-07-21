@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Board from './Board';
-import { type Milestone, type Task } from '../../types';
+import { type Milestone, type Task, type WorktreeSummary } from '../../types';
 import { type LaneMode } from '../lib/lanes';
 
 interface BoardPageProps {
@@ -14,6 +14,7 @@ interface BoardPageProps {
 	availableLabels: string[];
 	milestoneEntities: Milestone[];
 	archivedMilestones: Milestone[];
+	worktrees?: WorktreeSummary[];
 	isLoading: boolean;
 	hideEmptyColumns?: boolean;
 	dateFormat?: string;
@@ -31,6 +32,7 @@ export default function BoardPage({
 	availableLabels,
 	milestoneEntities,
 	archivedMilestones,
+	worktrees,
 	isLoading,
 	hideEmptyColumns,
 	dateFormat,
@@ -49,6 +51,7 @@ export default function BoardPage({
 		const paramMilestone = searchParams.get('milestone');
 		const parseLane = (value: string | null): LaneMode | null => {
 			if (value === 'milestone') return 'milestone';
+			if (value === 'worktree') return 'worktree';
 			if (value === 'none') return 'none';
 			return null;
 		};
@@ -138,6 +141,7 @@ export default function BoardPage({
 				milestones={milestones}
 				milestoneEntities={milestoneEntities}
 				archivedMilestones={archivedMilestones}
+				worktrees={worktrees}
 				isLoading={isLoading}
 				availableLabels={availableLabels}
 				laneMode={laneMode}

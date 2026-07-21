@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { type Milestone, type Task } from '../../types';
+import { type Milestone, type Task, type WorktreeSummary } from '../../types';
 import { apiClient, type ReorderTaskPayload } from '../lib/api';
 import { buildLanes, DEFAULT_LANE_KEY, groupTasksByLaneAndStatus, type LaneMode } from '../lib/lanes';
 import { collectAvailableLabels, labelsToLower } from '../../utils/label-filter';
@@ -27,6 +27,7 @@ interface BoardProps {
   availableLabels: string[];
   milestoneEntities: Milestone[];
   archivedMilestones: Milestone[];
+  worktrees?: WorktreeSummary[];
   laneMode: LaneMode;
   onLaneChange: (mode: LaneMode) => void;
   milestoneFilter?: string | null;
@@ -56,6 +57,7 @@ const Board: React.FC<BoardProps> = ({
   availableLabels,
   milestoneEntities,
   archivedMilestones,
+  worktrees = [],
   laneMode,
   onLaneChange,
   milestoneFilter,
@@ -385,9 +387,12 @@ const Board: React.FC<BoardProps> = ({
     () => buildLanes(laneMode, tasks, milestoneEntities.map((milestone) => milestone.id), milestoneEntities, {
       archivedMilestoneIds,
       archivedMilestones,
+      worktrees,
     }),
-    [laneMode, tasks, milestoneEntities, archivedMilestoneIds, archivedMilestones]
+    [laneMode, tasks, milestoneEntities, archivedMilestoneIds, archivedMilestones, worktrees]
   );
+
+  const hasWorktrees = worktrees.length > 0;
 
   // Check if any tasks actually have milestones assigned
   const hasTasksWithMilestones = useMemo(() => {
@@ -483,7 +488,7 @@ const Board: React.FC<BoardProps> = ({
 
   // Only show lane headers when multiple lanes exist
   const shouldShowLaneHeaders = useMemo(() => {
-    if (laneMode !== 'milestone') return false;
+    if (laneMode !== 'milestone' && laneMode !== 'worktree') return false;
     return visibleLanes.length > 1;
   }, [laneMode, visibleLanes]);
 
@@ -501,6 +506,9 @@ const Board: React.FC<BoardProps> = ({
   };
 
   const getLaneLabel = (lane: typeof lanes[0]): string => {
+    if (laneMode === 'worktree') {
+      return lane.isHereLane ? t('board:hereLane') : lane.label;
+    }
     if (lane.isNoMilestone || !lane.milestone) {
       return t('board:unassigned');
     }
@@ -566,6 +574,22 @@ const Board: React.FC<BoardProps> = ({
               >
                 {t('board:milestoneView')}
               </button>
+              <button
+                type="button"
+                onClick={() => onLaneChange('worktree')}
+                disabled={!hasWorktrees}
+                data-tooltip-id="app-tooltip"
+                data-tooltip-content={!hasWorktrees ? t('board:noWorktreesTooltip') : t('board:groupByWorktreeTooltip')}
+                className={`px-2.5 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
+                  !hasWorktrees
+                    ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-50'
+                    : laneMode === 'worktree'
+                      ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-gray-100 shadow-sm dark:shadow-none'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                {t('board:worktreeView')}
+              </button>
             </div>
             {onFiltersChange && (
               <div className="flex flex-wrap items-center gap-3 pl-3 border-l border-gray-200 dark:border-white/10" aria-label={t('board:boardFilters')}>
@@ -626,7 +650,7 @@ const Board: React.FC<BoardProps> = ({
         </button>
       </div>
 
-      {laneMode === 'milestone' ? (
+      {laneMode === 'milestone' || laneMode === 'worktree' ? (
         <div className="space-y-6">
           {visibleLanes.map((lane) => {
             const taskCount = laneTaskCount(lane.key);
@@ -689,7 +713,7 @@ const Board: React.FC<BoardProps> = ({
                             dragSourceStatus={dragSourceStatus}
                             dragSourceLane={dragSourceLane}
                             laneId={lane.key}
-                            targetMilestone={lane.milestone ?? null}
+                            targetMilestone={laneMode === 'milestone' ? (lane.milestone ?? null) : undefined}
                             taskTitleById={taskTitleById}
                             labelColors={labelColors}
                             onCardContextMenu={(task, x, y) => setContextMenuTarget({ task, x, y })}

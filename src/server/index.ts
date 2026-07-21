@@ -1,3 +1,4 @@
+import { realpath } from "node:fs/promises";
 import net from "node:net";
 import { dirname, join } from "node:path";
 import type { Server, ServerWebSocket } from "bun";
@@ -17,6 +18,7 @@ import {
 	type SearchResultType,
 	type Task,
 	type TaskUpdateInput,
+	type WorktreeSummary,
 } from "../types/index.ts";
 import { watchConfig } from "../utils/config-watcher.ts";
 import { detectDuplicateTaskIds } from "../utils/duplicate-detection.ts";
@@ -409,6 +411,9 @@ export class BacklogServer {
 					},
 					"/api/drafts/:id/promote": {
 						POST: async (req: Request & { params: { id: string } }) => await this.handlePromoteDraft(req.params.id),
+					},
+					"/api/worktrees": {
+						GET: async () => await this.handleListWorktrees(),
 					},
 					"/api/milestones": {
 						GET: async () => await this.handleListMilestones(),
@@ -1355,6 +1360,26 @@ export class BacklogServer {
 			{ error: message, code: error instanceof BacklogToolError ? error.code : "INTERNAL_ERROR" },
 			{ status },
 		);
+	}
+
+	private async handleListWorktrees(): Promise<Response> {
+		try {
+			const worktrees = await this.core.git.listWorktrees();
+			const selfRoot = await realpath(this.core.filesystem.rootDir).catch(() => this.core.filesystem.rootDir);
+			const others = await Promise.all(
+				worktrees.map(async (worktree) => ({
+					worktree,
+					resolvedPath: await realpath(worktree.path).catch(() => worktree.path),
+				})),
+			);
+			const result: WorktreeSummary[] = others
+				.filter(({ resolvedPath }) => resolvedPath !== selfRoot)
+				.map(({ worktree }) => ({ path: worktree.path, branch: worktree.branch }));
+			return Response.json(result);
+		} catch (error) {
+			console.error("Error listing worktrees:", error);
+			return Response.json([]);
+		}
 	}
 
 	private async handleListMilestones(): Promise<Response> {

@@ -10,6 +10,7 @@ import type {
 	SearchResultType,
 	Task,
 	TaskStatus,
+	WorktreeSummary,
 } from "../../types/index.ts";
 import type { DuplicateGroup } from "../../utils/duplicate-detection.ts";
 
@@ -457,6 +458,14 @@ export class ApiClient {
 		});
 		if (!response.ok) {
 			throw new Error("Failed to create decision");
+		}
+		return response.json();
+	}
+
+	async fetchWorktrees(): Promise<WorktreeSummary[]> {
+		const response = await fetch(`${API_BASE}/worktrees`);
+		if (!response.ok) {
+			throw new Error("Failed to fetch worktrees");
 		}
 		return response.json();
 	}
