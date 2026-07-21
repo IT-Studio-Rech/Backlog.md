@@ -2,10 +2,13 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import ThemeToggle from './ThemeToggle';
 import RechLogo from './RechLogo';
+import LoopStatusPill from './LoopStatusPill';
 import { useLanguage } from '../contexts/LanguageContext';
+import type { LoopProgress } from '../../types';
 
 interface NavigationProps {
     projectName: string;
+    loopProgress?: LoopProgress | null;
 }
 
 const LanguageToggle: React.FC = () => {
@@ -24,7 +27,7 @@ const LanguageToggle: React.FC = () => {
     );
 };
 
-const Navigation: React.FC<NavigationProps> = ({projectName}) => {
+const Navigation: React.FC<NavigationProps> = ({projectName, loopProgress}) => {
     const { t } = useTranslation(['nav', 'common']);
 
     return (
@@ -43,7 +46,8 @@ const Navigation: React.FC<NavigationProps> = ({projectName}) => {
                         <RechLogo className="h-4 w-auto" />
                     </a>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
+                    <LoopStatusPill progress={loopProgress ?? null} />
                     <LanguageToggle />
                     <ThemeToggle />
                 </div>

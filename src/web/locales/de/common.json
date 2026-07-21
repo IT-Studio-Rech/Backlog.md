@@ -111,6 +111,18 @@
 		"serverDisconnected": "Server-Verbindung getrennt",
 		"connectionRestored": "Verbindung wiederhergestellt!"
 	},
+	"loopStatus": {
+		"runningOn": "Bau-Loop läuft auf {{issue}}",
+		"calm": "kannst du in Ruhe lassen",
+		"needsYou": "braucht dich",
+		"stale": "keine Rückmeldung seit {{duration}}",
+		"tooltipFresh": "Heartbeat frisch — der Loop arbeitet weiter, ohne dass du eingreifen musst.",
+		"tooltipStale": "Seit {{duration}} kein Lebenszeichen — kurz nachsehen, ob der Loop noch läuft.",
+		"durationSeconds_one": "{{count}} Sekunde",
+		"durationSeconds_other": "{{count}} Sekunden",
+		"durationMinutes_one": "{{count}} Minute",
+		"durationMinutes_other": "{{count}} Minuten"
+	},
 	"acceptanceCriteriaProgress": "Akzeptanzkriterien",
 	"dependenciesCount_one": "{{count}} Abhängigkeit",
 	"dependenciesCount_other": "{{count}} Abhängigkeiten"

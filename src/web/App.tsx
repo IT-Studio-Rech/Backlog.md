@@ -23,6 +23,7 @@ import {
 	type Document,
 	type DocumentSearchResult,
 	type BacklogConfig,
+	type LoopProgress,
 	type Milestone,
 	type SearchResult,
 	type Task,
@@ -188,7 +189,8 @@ function App() {
   const [decisions, setDecisions] = useState<Decision[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [duplicateGroups, setDuplicateGroups] = useState<DuplicateGroup[]>([]);
-  
+  const [loopProgress, setLoopProgress] = useState<LoopProgress | null>(null);
+
   const { isOnline } = useHealthCheckContext();
   const previousOnlineRef = useRef<boolean | null>(null);
   const hasBeenRunningRef = useRef(false);
@@ -393,6 +395,19 @@ function App() {
     await loadAllData();
   }, [loadAllData]);
 
+  const refreshProgress = useCallback(async () => {
+    try {
+      const progress = await apiClient.fetchProgress();
+      setLoopProgress(progress);
+    } catch {
+      setLoopProgress(null);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    refreshProgress();
+  }, [refreshProgress]);
+
   // Sync editingTask with refreshed tasks data to prevent stale state
   // This fixes the bug where acceptance criteria disappears after save (GitHub #467)
   useEffect(() => {
@@ -413,10 +428,12 @@ function App() {
       } else if (event.data === "config-updated") {
         // Reload statuses when config changes
         loadAllData();
+      } else if (event.data === "progress-updated") {
+        refreshProgress();
       }
     };
     return () => ws.close();
-  }, [refreshData, loadAllData]);
+  }, [refreshData, loadAllData, refreshProgress]);
 
   const handleSubmitTask = async (taskData: Partial<Task>) => {
     // Don't catch errors here - let TaskDetailsModal handle them
@@ -499,6 +516,7 @@ function App() {
                 isLoading={isLoading}
                 onRefreshData={refreshData}
                 duplicateGroups={duplicateGroups}
+                loopProgress={loopProgress}
               />
             }
           >

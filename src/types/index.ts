@@ -355,3 +355,15 @@ export interface ParsedMarkdown {
 	frontmatter: Record<string, unknown>;
 	content: string;
 }
+
+// Live status of a shipcraft build loop, mirrored from .shipcraft/progress.json (which in
+// turn mirrors .shipcraft/loop.lock). Deliberately loose: shipcraft may add fields
+// (station, iteration, phase, wartetAuf, ...) without a change here — unknown fields are
+// carried through the hook/watcher as-is, consumers just read what they need.
+export interface LoopProgress {
+	active: boolean;
+	issue?: string;
+	gestartet?: string;
+	heartbeat?: string;
+	[key: string]: unknown;
+}

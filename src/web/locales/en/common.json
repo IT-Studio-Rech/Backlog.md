@@ -111,6 +111,18 @@
 		"serverDisconnected": "Server disconnected",
 		"connectionRestored": "Connection restored!"
 	},
+	"loopStatus": {
+		"runningOn": "Build loop running on {{issue}}",
+		"calm": "safe to leave alone",
+		"needsYou": "needs you",
+		"stale": "no heartbeat for {{duration}}",
+		"tooltipFresh": "Heartbeat is fresh — the loop keeps working without you.",
+		"tooltipStale": "No sign of life for {{duration}} — worth checking whether the loop is still running.",
+		"durationSeconds_one": "{{count}} second",
+		"durationSeconds_other": "{{count}} seconds",
+		"durationMinutes_one": "{{count}} minute",
+		"durationMinutes_other": "{{count}} minutes"
+	},
 	"acceptanceCriteriaProgress": "Acceptance criteria",
 	"dependenciesCount_one": "{{count}} dependency",
 	"dependenciesCount_other": "{{count}} dependencies"

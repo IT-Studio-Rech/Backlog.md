@@ -3,7 +3,7 @@ import SideNavigation from './SideNavigation';
 import Navigation from './Navigation';
 import { HealthIndicator, HealthSuccessToast } from './HealthIndicator';
 import { DuplicateIdWarning } from './DuplicateIdWarning';
-import { type Task, type Document, type Decision } from '../../types';
+import { type Task, type Document, type Decision, type LoopProgress } from '../../types';
 import type { DuplicateGroup } from '../../utils/duplicate-detection';
 
 interface LayoutProps {
@@ -16,6 +16,7 @@ interface LayoutProps {
 	isLoading: boolean;
 	onRefreshData: () => Promise<void>;
 	duplicateGroups?: DuplicateGroup[];
+	loopProgress?: LoopProgress | null;
 }
 
 export default function Layout({
@@ -28,6 +29,7 @@ export default function Layout({
 	isLoading,
 	onRefreshData,
 	duplicateGroups = [],
+	loopProgress = null,
 }: LayoutProps) {
 	return (
 		<div className="h-screen bg-gray-50 dark:bg-gray-900 flex overflow-hidden transition-colors duration-200">
@@ -40,7 +42,7 @@ export default function Layout({
 				onRefreshData={onRefreshData}
 			/>
 			<div className="flex-1 flex flex-col min-h-0 min-w-0">
-				<Navigation projectName={projectName} />
+				<Navigation projectName={projectName} loopProgress={loopProgress} />
 				<DuplicateIdWarning groups={duplicateGroups} />
 				<main className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden">
 					<Outlet context={{ tasks, docs, decisions, isLoading, onRefreshData }} />

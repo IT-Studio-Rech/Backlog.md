@@ -21,6 +21,7 @@ import {
 import { watchConfig } from "../utils/config-watcher.ts";
 import { detectDuplicateTaskIds } from "../utils/duplicate-detection.ts";
 import { resolveMilestoneInputForStorage } from "../utils/milestone-storage.ts";
+import { readCurrentProgress, watchProgress } from "../utils/progress-watcher.ts";
 import { getVersion } from "../utils/version.ts";
 
 // Regex pattern to match any prefix (letters followed by dash)
@@ -221,9 +222,14 @@ export class BacklogServer {
 	private unsubscribeContentStore?: () => void;
 	private storeReadyBroadcasted = false;
 	private configWatcher: { stop: () => void } | null = null;
+	private progressWatcher: { stop: () => void } | null = null;
 
 	constructor(projectPath: string) {
 		this.core = new Core(projectPath, { enableWatchers: true });
+	}
+
+	private getProgressPath(): string {
+		return join(this.core.filesystem.rootDir, ".shipcraft", "progress.json");
 	}
 
 	private async resolveMilestoneInput(milestone: string): Promise<string> {
@@ -295,6 +301,14 @@ export class BacklogServer {
 		}
 	}
 
+	private broadcastProgressUpdated() {
+		for (const ws of this.sockets) {
+			try {
+				ws.send("progress-updated");
+			} catch {}
+		}
+	}
+
 	async start(port?: number, openBrowser = true): Promise<void> {
 		// Prevent duplicate starts (e.g., accidental re-entry)
 		if (this.server) {
@@ -316,6 +330,14 @@ export class BacklogServer {
 		this.configWatcher = watchConfig(this.core, {
 			onConfigChanged: () => {
 				this.broadcastConfigUpdated();
+			},
+		});
+
+		// Watch shipcraft's live loop status (.shipcraft/progress.json, written by its
+		// PostToolUse hook) and broadcast changes the same way as config/tasks.
+		this.progressWatcher = watchProgress(this.getProgressPath(), {
+			onProgressChanged: () => {
+				this.broadcastProgressUpdated();
 			},
 		});
 
@@ -426,6 +448,9 @@ export class BacklogServer {
 					"/api/status": {
 						GET: async () => await this.handleGetStatus(),
 					},
+					"/api/progress": {
+						GET: async () => await this.handleGetProgress(),
+					},
 					"/api/init": {
 						POST: async (req: Request) => await this.handleInit(req),
 					},
@@ -506,6 +531,12 @@ export class BacklogServer {
 		try {
 			this.configWatcher?.stop();
 			this.configWatcher = null;
+		} catch {}
+
+		// Stop progress watcher
+		try {
+			this.progressWatcher?.stop();
+			this.progressWatcher = null;
 		} catch {}
 
 		this.core.disposeSearchService();
@@ -1686,6 +1717,16 @@ export class BacklogServer {
 				configLocation: null,
 				rootConfigPath: null,
 			});
+		}
+	}
+
+	private async handleGetProgress(): Promise<Response> {
+		try {
+			const progress = readCurrentProgress(this.getProgressPath());
+			return Response.json(progress ?? { active: false });
+		} catch (error) {
+			console.error("Error getting progress:", error);
+			return Response.json({ active: false });
 		}
 	}
 

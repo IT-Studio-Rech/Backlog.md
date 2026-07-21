@@ -3,6 +3,7 @@ import type {
 	BacklogConfig,
 	Decision,
 	Document,
+	LoopProgress,
 	Milestone,
 	SearchPriorityFilter,
 	SearchResult,
@@ -317,6 +318,14 @@ export class ApiClient {
 			throw new Error("Failed to fetch statuses");
 		}
 		return response.json();
+	}
+
+	async fetchProgress(): Promise<LoopProgress> {
+		try {
+			return await this.fetchJson<LoopProgress>(`${API_BASE}/progress`);
+		} catch {
+			return { active: false };
+		}
 	}
 
 	async fetchConfig(): Promise<BacklogConfig> {
