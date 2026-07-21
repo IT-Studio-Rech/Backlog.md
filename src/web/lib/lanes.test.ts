@@ -191,11 +191,12 @@ describe("groupTasksByLaneAndStatus", () => {
 		expect((grouped.get(laneKeyFromMilestone("m-2"))?.get("To Do") ?? []).map((task) => task.id) ?? []).toHaveLength(0);
 	});
 
-	it("groups worktree-sourced tasks under their own lane and everything else under Here (task-18)", () => {
+	it("groups worktree- and branch-sourced tasks under their work area lane, the rest under Here (task-18/24)", () => {
 		const worktreeTasks = [
 			makeTask({ id: "task-1", status: "To Do" }),
 			makeTask({ id: "task-2", status: "To Do", source: "worktree", worktreePath: "/repo-feature", branch: "feature" }),
-			makeTask({ id: "task-3", status: "In Progress", source: "local-branch", branch: "other" }),
+			makeTask({ id: "task-3", status: "In Progress", source: "local-branch", branch: "feature" }),
+			makeTask({ id: "task-4", status: "In Progress", source: "local-branch", branch: "no-worktree-branch" }),
 		];
 		const lanes = buildLanes("worktree", worktreeTasks, [], [], {
 			worktrees: [{ path: "/repo-feature", branch: "feature" }],
@@ -203,9 +204,14 @@ describe("groupTasksByLaneAndStatus", () => {
 		const grouped = groupTasksByLaneAndStatus("worktree", lanes, ["To Do", "In Progress"], worktreeTasks);
 
 		expect((grouped.get(HERE_LANE_KEY)?.get("To Do") ?? []).map((t) => t.id)).toEqual(["task-1"]);
-		expect((grouped.get(HERE_LANE_KEY)?.get("In Progress") ?? []).map((t) => t.id)).toEqual(["task-3"]);
+		// Branch-sourced task with a matching worktree lands in that lane (lane and banner agree);
+		// a branch without any checked-out worktree stays under Here.
+		expect((grouped.get(HERE_LANE_KEY)?.get("In Progress") ?? []).map((t) => t.id)).toEqual(["task-4"]);
 		expect((grouped.get(laneKeyFromWorktreePath("/repo-feature"))?.get("To Do") ?? []).map((t) => t.id)).toEqual([
 			"task-2",
+		]);
+		expect((grouped.get(laneKeyFromWorktreePath("/repo-feature"))?.get("In Progress") ?? []).map((t) => t.id)).toEqual([
+			"task-3",
 		]);
 	});
 

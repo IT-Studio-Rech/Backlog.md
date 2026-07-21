@@ -10,6 +10,8 @@ export interface LaneDefinition {
 	isNoMilestone?: boolean;
 	/** Set on worktree lanes (task-18): the sibling worktree's absolute path. */
 	worktreePath?: string;
+	/** Set on worktree lanes when the sibling worktree's checked-out branch is known. */
+	branch?: string;
 	/** Set on the "Hier"/"Here" lane in worktree mode - tasks not tied to any sibling worktree. */
 	isHereLane?: boolean;
 }
@@ -171,6 +173,7 @@ export function buildLanes(
 				key: laneKeyFromWorktreePath(worktree.path),
 				label: worktree.branch ?? worktree.path,
 				worktreePath: worktree.path,
+				branch: worktree.branch,
 			})),
 		];
 	}
@@ -369,11 +372,20 @@ export function groupTasksByLaneAndStatus(
 			ensureStatusMapEarly(lane.key);
 		}
 		const worktreeLaneKeys = new Set(lanes.map((lane) => lane.key));
+		// Tasks loaded via the branch reader carry only a branch name, no worktree
+		// path - map them onto the lane of the worktree that has that branch
+		// checked out, so lane and origin banner tell the same story.
+		const laneKeyByBranch = new Map<string, string>();
+		for (const lane of lanes) {
+			if (lane.branch) laneKeyByBranch.set(lane.branch, lane.key);
+		}
 
 		for (const task of tasks) {
 			const statusKey = task.status ?? "";
 			const candidateKey =
-				task.source === "worktree" && task.worktreePath ? laneKeyFromWorktreePath(task.worktreePath) : HERE_LANE_KEY;
+				task.source === "worktree" && task.worktreePath
+					? laneKeyFromWorktreePath(task.worktreePath)
+					: (task.source === "local-branch" && task.branch && laneKeyByBranch.get(task.branch)) || HERE_LANE_KEY;
 			// Fall back to "Here" if the task references a worktree lane we don't currently
 			// know about (e.g. the worktree list just refreshed) - never drop a task from view.
 			const laneKey = worktreeLaneKeys.has(candidateKey) ? candidateKey : HERE_LANE_KEY;
