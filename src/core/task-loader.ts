@@ -8,6 +8,8 @@
  * - Remote branch tasks
  */
 
+import { readdir, realpath, stat } from "node:fs/promises";
+import { isAbsolute, join, relative } from "node:path";
 import { DEFAULT_DIRECTORIES } from "../constants/index.ts";
 import type { GitOperations } from "../git/operations.ts";
 import { parseTask } from "../markdown/parser.ts";
@@ -754,6 +756,128 @@ export async function loadLocalBranchTasks(
 	} catch (error) {
 		if (process.env.DEBUG) {
 			console.error("Failed to load local branch tasks:", error);
+		}
+		return [];
+	}
+}
+
+/**
+ * Load tasks directly from the filesystem of other worktrees registered for this
+ * repository (git's own `.git/worktrees/` registry, via `git worktree list`).
+ *
+ * Unlike loadLocalBranchTasks (which reads a branch's last COMMITTED tree via
+ * `git show`), this reads each worktree's actual files on disk, so uncommitted
+ * edits made in a sibling worktree are visible immediately - no commit required.
+ * Only the "tasks" (and optionally "completed") directories are read, matching
+ * loadWorktreeTaskStateEntries in backlog.ts (used for cross-worktree ID allocation).
+ */
+export async function loadWorktreeTasks(
+	gitOps: GitOperations,
+	projectRoot: string,
+	backlogDir: string = DEFAULT_DIRECTORIES.BACKLOG,
+	prefix = DEFAULT_TASK_PREFIX,
+	includeCompleted = false,
+	stateCollector?: BranchTaskStateEntry[],
+): Promise<Task[]> {
+	try {
+		const [repoRoot, worktrees] = await Promise.all([gitOps.getRepositoryRoot(), gitOps.listWorktrees()]);
+		if (!repoRoot || worktrees.length === 0) {
+			return [];
+		}
+
+		const projectRelativePath = relative(repoRoot, projectRoot);
+		if (projectRelativePath.startsWith("..") || isAbsolute(projectRelativePath)) {
+			return [];
+		}
+
+		// Resolve symlinks (e.g. macOS /tmp -> /private/tmp) so comparing against worktree
+		// paths reported by git reliably identifies "this is the worktree we're already in".
+		const selfRoot = await realpath(projectRoot).catch(() => projectRoot);
+
+		const idRegex = buildPathIdRegex(prefix);
+		const directories: Array<{ dirName: string; type: TaskDirectoryType }> = [
+			{ dirName: DEFAULT_DIRECTORIES.TASKS, type: "task" },
+			...(includeCompleted ? [{ dirName: DEFAULT_DIRECTORIES.COMPLETED, type: "completed" as TaskDirectoryType }] : []),
+		];
+
+		// Latest-wins across worktrees for the same task id, mirroring cross-branch-tasks.ts.
+		const winners = new Map<string, { task: Task; type: TaskDirectoryType; path: string; lastModified: Date }>();
+
+		for (const worktree of worktrees) {
+			const worktreeProjectRoot = projectRelativePath ? join(worktree.path, projectRelativePath) : worktree.path;
+			const resolvedRoot = await realpath(worktreeProjectRoot).catch(() => worktreeProjectRoot);
+			if (resolvedRoot === selfRoot) {
+				continue; // our own worktree - already covered by the local filesystem tasks
+			}
+
+			for (const { dirName, type } of directories) {
+				const dirPath = join(worktreeProjectRoot, backlogDir, dirName);
+				let filenames: string[];
+				try {
+					filenames = await readdir(dirPath);
+				} catch {
+					continue; // directory doesn't exist in this worktree (yet) - skip silently
+				}
+
+				for (const filename of filenames) {
+					if (!filename.endsWith(".md")) continue;
+					const match = filename.match(idRegex);
+					if (!match?.[1]) continue;
+
+					const filePath = join(dirPath, filename);
+					let content: string;
+					let mtime: Date;
+					try {
+						const [fileText, stats] = await Promise.all([Bun.file(filePath).text(), stat(filePath)]);
+						content = fileText;
+						mtime = stats.mtime;
+					} catch {
+						continue; // file disappeared or is mid-write - the next watcher tick retries
+					}
+
+					let task: Task | null;
+					try {
+						task = normalizeTaskIdentity(parseTask(content));
+					} catch {
+						continue; // half-written/malformed frontmatter - the next watcher tick retries
+					}
+					if (!task) continue;
+
+					const id = normalizeId(match[1], prefix);
+					task.id = id;
+					task.source = "worktree";
+					task.branch = worktree.branch ?? task.branch;
+					task.worktreePath = worktree.path;
+					task.lastModified = mtime;
+
+					const existing = winners.get(id);
+					if (!existing || mtime > existing.lastModified) {
+						winners.set(id, { task, type, path: filePath, lastModified: mtime });
+					}
+				}
+			}
+		}
+
+		const tasks: Task[] = [];
+		for (const [id, winner] of winners) {
+			if (stateCollector) {
+				stateCollector.push({
+					id,
+					type: winner.type,
+					branch: winner.task.branch ?? `worktree:${winner.task.worktreePath}`,
+					path: winner.path,
+					lastModified: winner.lastModified,
+				});
+			}
+			if (winner.type === "task" || (includeCompleted && winner.type === "completed")) {
+				tasks.push(winner.task);
+			}
+		}
+
+		return tasks;
+	} catch (error) {
+		if (process.env.DEBUG) {
+			console.error("Failed to load worktree tasks:", error);
 		}
 		return [];
 	}

@@ -70,6 +70,7 @@ import {
 	getTaskLoadingMessage,
 	loadLocalBranchTasks,
 	loadRemoteTasks,
+	loadWorktreeTasks,
 	resolveTaskConflict,
 } from "./task-loader.ts";
 
@@ -270,7 +271,7 @@ export class Core {
 	async getContentStore(): Promise<ContentStore> {
 		if (!this.contentStore) {
 			// Use loadTasks as the task loader to include cross-branch tasks
-			this.contentStore = new ContentStore(this.fs, () => this.loadTasks(), this.enableWatchers);
+			this.contentStore = new ContentStore(this.fs, () => this.loadTasks(), this.enableWatchers, this.git);
 		}
 		await this.contentStore.ensureInitialized();
 		return this.contentStore;
@@ -2983,13 +2984,15 @@ export class Core {
 		// Skip entirely when cross-branch scanning is disabled
 		let remoteTasks: Task[] = [];
 		let localBranchTasks: Task[] = [];
+		let worktreeTasks: Task[] = [];
 		let branchStateEntries: BranchTaskStateEntry[] | undefined;
 
 		if (config?.checkActiveBranches !== false) {
 			progressCallback?.(getTaskLoadingMessage(config));
 			branchStateEntries = [];
 			const backlogDir = await this.getBacklogDirectoryName();
-			[remoteTasks, localBranchTasks] = await Promise.all([
+			const taskPrefix = config?.prefixes?.task ?? "task";
+			[remoteTasks, localBranchTasks, worktreeTasks] = await Promise.all([
 				loadRemoteTasks(
 					this.git,
 					config,
@@ -3008,6 +3011,9 @@ export class Core {
 					includeCompleted,
 					backlogDir,
 				),
+				// Direct filesystem read of sibling worktrees' backlog/tasks (not their last commit),
+				// so uncommitted edits made there show up here live.
+				loadWorktreeTasks(this.git, this.fs.rootDir, backlogDir, taskPrefix, includeCompleted, branchStateEntries),
 			]);
 		}
 
@@ -3038,6 +3044,23 @@ export class Core {
 			} else {
 				const resolved = resolveTaskConflict(existing, branchTask, statuses, resolutionStrategy);
 				tasksById.set(branchTask.id, resolved);
+			}
+		}
+
+		// Merge live filesystem state from sibling worktrees. Their file mtimes are fresh
+		// (uncommitted edits included), so resolveTaskConflict naturally prefers them over a
+		// stale committed version of the same branch from loadLocalBranchTasks above.
+		for (const worktreeTask of worktreeTasks) {
+			if (abortSignal?.aborted) {
+				throw new Error("Loading cancelled");
+			}
+
+			const existing = tasksById.get(worktreeTask.id);
+			if (!existing) {
+				tasksById.set(worktreeTask.id, worktreeTask);
+			} else {
+				const resolved = resolveTaskConflict(existing, worktreeTask, statuses, resolutionStrategy);
+				tasksById.set(worktreeTask.id, resolved);
 			}
 		}
 

@@ -2,11 +2,13 @@ import { type FSWatcher, watch } from "node:fs";
 import { readdir, stat } from "node:fs/promises";
 import { basename, join, relative, sep } from "node:path";
 import type { FileSystem } from "../file-system/operations.ts";
+import type { GitOperations } from "../git/operations.ts";
 import { parseDecision, parseDocument, parseTask } from "../markdown/parser.ts";
 import type { Decision, Document, Task, TaskListFilter } from "../types/index.ts";
 import { normalizeDocumentRelativePath } from "../utils/document-path.ts";
 import { normalizeTaskId, normalizeTaskIdentity, taskIdsEqual } from "../utils/task-path.ts";
 import { sortByTaskId } from "../utils/task-sorting.ts";
+import { watchWorktreeTasks } from "./worktree-watcher.ts";
 
 interface ContentSnapshot {
 	tasks: Task[];
@@ -60,6 +62,7 @@ export class ContentStore {
 		private readonly filesystem: FileSystem,
 		private readonly taskLoader?: () => Promise<Task[]>,
 		private readonly enableWatchers = false,
+		private readonly git?: GitOperations,
 	) {
 		this.patchFilesystem();
 	}
@@ -265,6 +268,34 @@ export class ContentStore {
 				console.error("Failed to initialize config watcher", error);
 			}
 		}
+
+		try {
+			const worktreeWatcher = this.createWorktreeWatcher();
+			if (worktreeWatcher) {
+				this.watchers.push(worktreeWatcher);
+			}
+		} catch (error) {
+			if (process.env.DEBUG) {
+				console.error("Failed to initialize worktree watcher", error);
+			}
+		}
+	}
+
+	private createWorktreeWatcher(): WatchHandle | null {
+		if (!this.git) {
+			return null;
+		}
+		const handle = watchWorktreeTasks({
+			git: this.git,
+			projectRoot: this.filesystem.rootDir,
+			backlogDirName: this.filesystem.backlogDirName,
+			onChange: () => {
+				this.enqueue(async () => {
+					await this.refreshTasksFromDisk();
+				});
+			},
+		});
+		return handle;
 	}
 
 	/**

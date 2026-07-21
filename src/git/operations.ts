@@ -10,6 +10,68 @@ type GitPathContext = {
 
 type GitConfigLoader = () => Promise<BacklogConfig | null>;
 
+export interface WorktreeInfo {
+	path: string;
+	/** Local branch checked out in this worktree (refs/heads/ prefix stripped). Null when detached. */
+	branch: string | null;
+	head: string | null;
+	detached: boolean;
+	locked: boolean;
+	prunable: boolean;
+}
+
+/**
+ * Parse `git worktree list --porcelain` output into structured entries.
+ * Blocks are separated by a blank line; each block starts with a `worktree <path>`
+ * line followed by optional `HEAD`, `branch`, `detached`, `locked`, `prunable` lines.
+ */
+function parseWorktreePorcelain(output: string): WorktreeInfo[] {
+	const worktrees: WorktreeInfo[] = [];
+	let current: WorktreeInfo | null = null;
+
+	const flush = () => {
+		if (current) {
+			worktrees.push(current);
+			current = null;
+		}
+	};
+
+	for (const rawLine of output.split("\n")) {
+		const line = rawLine.trimEnd();
+		if (!line) {
+			flush();
+			continue;
+		}
+		if (line.startsWith("worktree ")) {
+			flush();
+			current = {
+				path: line.slice("worktree ".length),
+				branch: null,
+				head: null,
+				detached: false,
+				locked: false,
+				prunable: false,
+			};
+			continue;
+		}
+		if (!current) continue;
+		if (line.startsWith("HEAD ")) {
+			current.head = line.slice("HEAD ".length);
+		} else if (line.startsWith("branch ")) {
+			current.branch = line.slice("branch ".length).replace(/^refs\/heads\//, "");
+		} else if (line === "detached") {
+			current.detached = true;
+		} else if (line.startsWith("locked")) {
+			current.locked = true;
+		} else if (line.startsWith("prunable")) {
+			current.prunable = true;
+		}
+	}
+	flush();
+
+	return worktrees;
+}
+
 export class GitOperations {
 	private projectRoot: string;
 	private config: BacklogConfig | null = null;
@@ -238,19 +300,43 @@ export class GitOperations {
 	}
 
 	async listWorktreePaths(): Promise<string[]> {
+		return (await this.listWorktrees()).map((worktree) => worktree.path);
+	}
+
+	/**
+	 * List all worktrees registered for this repository (including the one we're
+	 * currently in), parsed from git's own registry via `git worktree list --porcelain`.
+	 * This is the authoritative, location-independent source of truth for "which
+	 * worktrees exist" - no convention about where worktrees live is assumed.
+	 */
+	async listWorktrees(): Promise<WorktreeInfo[]> {
 		if (!(await this.isRepository())) {
 			return [];
 		}
 		try {
 			const { stdout } = await this.execGit(["worktree", "list", "--porcelain"], { readOnly: true });
-			return stdout
-				.split("\n")
-				.map((line) => line.trimEnd())
-				.filter((line) => line.startsWith("worktree "))
-				.map((line) => line.slice("worktree ".length))
-				.filter(Boolean);
+			return parseWorktreePorcelain(stdout);
 		} catch {
 			return [];
+		}
+	}
+
+	/**
+	 * Resolve the shared `.git` directory for this repository. From a linked worktree
+	 * this differs from the local `.git` file (which just points here) - it's the
+	 * common directory that holds `worktrees/`, git's own registry of linked worktrees.
+	 */
+	async getGitCommonDir(): Promise<string | null> {
+		if (!(await this.isRepository())) {
+			return null;
+		}
+		try {
+			const { stdout } = await this.execGit(["rev-parse", "--git-common-dir"], { readOnly: true });
+			const dir = stdout.trim();
+			if (!dir) return null;
+			return isAbsolute(dir) ? dir : join(this.projectRoot, dir);
+		} catch {
+			return null;
 		}
 	}
 

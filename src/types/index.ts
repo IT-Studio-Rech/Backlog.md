@@ -72,7 +72,9 @@ export interface Task {
 	filePath?: string;
 	// Metadata fields
 	lastModified?: Date;
-	source?: "local" | "remote" | "completed" | "local-branch";
+	source?: "local" | "remote" | "completed" | "local-branch" | "worktree";
+	/** Absolute path of the worktree this task was read from live (set when source is "worktree"). */
+	worktreePath?: string;
 	/** Optional per-task callback command to run on status change (overrides global config) */
 	onStatusChange?: string;
 }
@@ -93,6 +95,12 @@ export interface MilestoneBucket {
 export interface MilestoneSummary {
 	milestones: string[];
 	buckets: MilestoneBucket[];
+}
+
+/** A sibling git worktree, as surfaced by GET /api/worktrees (excludes the one the server itself runs in). */
+export interface WorktreeSummary {
+	path: string;
+	branch: string | null;
 }
 
 /**
