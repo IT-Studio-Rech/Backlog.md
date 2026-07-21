@@ -1,6 +1,6 @@
 {
   "name": "@rechstudio/backlog.md",
-  "version": "1.47.1-rechstudio.2",
+  "version": "1.47.1-rechstudio.3",
   "type": "module",
   "module": "src/cli.ts",
   "files": [
