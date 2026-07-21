@@ -190,7 +190,7 @@ const expectBoardFiltersInHeader = (container: HTMLElement) => {
 	const toolbar = container.querySelector("[aria-label='Board view controls']");
 	expect(toolbar).toBeTruthy();
 	expect(toolbar?.textContent).toContain("All Tasks");
-	expect(toolbar?.textContent).toContain("Milestone");
+	expect(toolbar?.textContent).toContain("Epic");
 
 	const boardFilters = toolbar?.querySelector("[aria-label='Board filters']");
 	expect(boardFilters).toBeTruthy();

@@ -18,7 +18,7 @@
 	"tasksCount": "Aufgaben ({{count}})",
 	"kanbanBoard": "Board",
 	"allTasks": "Alle Aufgaben",
-	"milestones": "Meilensteine",
+	"milestones": "Epics",
 	"drafts": "Entwürfe",
 	"statistics": "Statistiken",
 	"documentsCount": "Dokumente ({{count}})",

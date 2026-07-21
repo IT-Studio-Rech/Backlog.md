@@ -122,7 +122,7 @@ const renderPage = (
 };
 
 const getSearchInput = (container: HTMLElement): HTMLInputElement => {
-	const input = container.querySelector("input[aria-label='Search milestones']");
+	const input = container.querySelector("input[aria-label='Search epics']");
 	expect(input).toBeTruthy();
 	return input as HTMLInputElement;
 };
@@ -178,7 +178,7 @@ afterEach(() => {
 describe("Web milestones page search", () => {
 	it("renders a keyboard-focusable search input near the header", () => {
 		const container = renderPage();
-		expect(container.textContent).toContain("Milestones");
+		expect(container.textContent).toContain("Epics");
 
 		const input = getSearchInput(container);
 		expect(input.disabled).toBe(false);
@@ -223,7 +223,7 @@ describe("Web milestones page search", () => {
 		expect(filteredText).toContain("No matching unassigned tasks.");
 		expect(filteredText).not.toContain("Draft release notes");
 
-		const clearSearchButton = container.querySelector("button[aria-label='Clear milestone search']");
+		const clearSearchButton = container.querySelector("button[aria-label='Clear epic search']");
 		expect(clearSearchButton).toBeTruthy();
 		clickElement(clearSearchButton as HTMLButtonElement);
 
@@ -238,7 +238,7 @@ describe("Web milestones page search", () => {
 
 		setSearchValue(container, "zzzz-no-match");
 		const noMatchText = container.textContent ?? "";
-		expect(noMatchText).toContain('No milestones or tasks match "zzzz-no-match".');
+		expect(noMatchText).toContain('No epics or tasks match "zzzz-no-match".');
 		expect(noMatchText).toContain("Release 1");
 		expect(noMatchText).toContain("Release 2");
 		expect(noMatchText).toContain("Unassigned tasks");
@@ -253,7 +253,7 @@ describe("Web milestones page search", () => {
 
 		clickElement(editButtons[0] as HTMLButtonElement);
 
-		expect(container.textContent).toContain("Edit milestone");
+		expect(container.textContent).toContain("Edit epic");
 		const input = container.querySelector("#edit-milestone-name") as HTMLInputElement | null;
 		expect(input).toBeTruthy();
 		expect(input?.value).toBe("Release 1");
@@ -269,7 +269,7 @@ describe("Web milestones page search", () => {
 		clickElement(removeButtons[0] as HTMLButtonElement);
 
 		const text = container.textContent ?? "";
-		expect(text).toContain("Remove milestone");
+		expect(text).toContain("Remove epic");
 		expect(text).toContain("Leave tasks unassigned");
 		expect(text).toContain("Reassign tasks");
 
@@ -351,7 +351,7 @@ describe("Web milestones page search", () => {
 		expect(reassignOption).toBeTruthy();
 		clickElement(reassignOption as Element);
 		const submitButton = Array.from(container.querySelectorAll("button")).find(
-			(button) => button.textContent === "Remove milestone",
+			(button) => button.textContent === "Remove epic",
 		);
 		expect(submitButton).toBeTruthy();
 		await clickElementAsync(submitButton as HTMLButtonElement);
