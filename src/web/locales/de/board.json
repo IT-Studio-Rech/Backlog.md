@@ -9,6 +9,10 @@
 	"hereLane": "Dein Arbeitsbereich",
 	"noWorktreesTooltip": "Gerade keine weiteren Arbeitsbereiche. Lege einen mit git worktree add an.",
 	"groupByWorktreeTooltip": "Aufgaben nach Arbeitsbereich gruppieren",
+	"density": {
+		"comfortable": "Komfortabel",
+		"compact": "Kompakt"
+	},
 	"boardFilters": "Board-Filter",
 	"filterByAssignee": "Board nach Zuständige/r filtern",
 	"filterByPriority": "Board nach Priorität filtern",

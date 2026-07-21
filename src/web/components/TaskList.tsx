@@ -16,6 +16,7 @@ import { formatStoredUtcDateForCompactDisplay, parseStoredUtcDate } from "../uti
 import CleanupModal from "./CleanupModal";
 import LabelFilterDropdown from "./LabelFilterDropdown";
 import Select from "./Select";
+import StatusFilterDropdown from "./StatusFilterDropdown";
 import { SuccessToast } from "./SuccessToast";
 
 interface TaskListProps {
@@ -63,6 +64,17 @@ function sortTasksByIdDescending(list: Task[]): Task[] {
 	return [...list].sort((a, b) => compareTaskIdsAscending(b, a));
 }
 
+function normalizeStatusParams(values: string[]): string[] {
+	return values.map((value) => value.trim()).filter((value) => value.length > 0);
+}
+
+function areStatusSelectionsEqual(a: string[], b: string[]): boolean {
+	if (a.length !== b.length) return false;
+	const sortedA = [...a].sort();
+	const sortedB = [...b].sort();
+	return sortedA.every((value, index) => value === sortedB[index]);
+}
+
 function getAssigneeInitials(value: string): string {
 	const cleaned = value.replace(/^@/, "").trim();
 	if (!cleaned) return "?";
@@ -101,7 +113,9 @@ const TaskList: React.FC<TaskListProps> = ({
 		[t],
 	);
 	const [searchParams, setSearchParams] = useSearchParams();
-	const [statusFilter, setStatusFilter] = useState(() => searchParams.get("status") ?? "");
+	const [statusFilter, setStatusFilter] = useState<string[]>(() =>
+		normalizeStatusParams(searchParams.getAll("status")),
+	);
 	const [priorityFilter, setPriorityFilter] = useState<"" | SearchPriorityFilter>(
 		() => (searchParams.get("priority") as SearchPriorityFilter | null) ?? "",
 	);
@@ -122,7 +136,12 @@ const TaskList: React.FC<TaskListProps> = ({
 	const tableHeaderScrollRef = useRef<HTMLDivElement | null>(null);
 	const tableBodyScrollRef = useRef<HTMLDivElement | null>(null);
 	const isSyncingTableScrollRef = useRef(false);
-	const isFilteringTerminalStatus = isTerminalStatus(statusFilter, availableStatuses);
+	const singleSelectedStatus = statusFilter.length === 1 ? statusFilter[0] : undefined;
+	// The cleanup button only makes sense when the filter narrows down to
+	// exactly the terminal status — with several statuses selected (e.g. via
+	// "Offen") it would be ambiguous which of them is "done", so it stays hidden.
+	const isFilteringTerminalStatus =
+		singleSelectedStatus !== undefined && isTerminalStatus(singleSelectedStatus, availableStatuses);
 	const milestoneAliasToCanonical = useMemo(() => {
 		const aliasMap = new Map<string, string>();
 		const collectIdAliasKeys = (value: string): string[] => {
@@ -266,12 +285,12 @@ const TaskList: React.FC<TaskListProps> = ({
 		return uniqueMilestones;
 	}, [availableMilestones]);
 	const hasActiveFilters = Boolean(
-		statusFilter || priorityFilter || labelFilter.length > 0 || milestoneFilter,
+		statusFilter.length > 0 || priorityFilter || labelFilter.length > 0 || milestoneFilter,
 	);
 	const totalTasks = sortedBaseTasks.length;
 
 	useEffect(() => {
-		const paramStatus = searchParams.get("status") ?? "";
+		const paramStatuses = normalizeStatusParams(searchParams.getAll("status"));
 		const paramPriority = (searchParams.get("priority") as SearchPriorityFilter | null) ?? "";
 		const paramMilestone = searchParams.get("milestone") ?? "";
 		const paramLabels = [...searchParams.getAll("label"), ...searchParams.getAll("labels")];
@@ -281,8 +300,8 @@ const TaskList: React.FC<TaskListProps> = ({
 		}
 		const normalizedLabels = paramLabels.map((label) => label.trim()).filter((label) => label.length > 0);
 
-		if (paramStatus !== statusFilter) {
-			setStatusFilter(paramStatus);
+		if (!areStatusSelectionsEqual(paramStatuses, statusFilter)) {
+			setStatusFilter(paramStatuses);
 		}
 		if (paramPriority !== priorityFilter) {
 			setPriorityFilter(paramPriority);
@@ -318,7 +337,7 @@ const TaskList: React.FC<TaskListProps> = ({
 		};
 
 		const shouldUseApi =
-			Boolean(statusFilter) || Boolean(priorityFilter) || labelFilter.length > 0;
+			statusFilter.length > 0 || Boolean(priorityFilter) || labelFilter.length > 0;
 
 		if (!hasActiveFilters) {
 			return;
@@ -336,7 +355,7 @@ const TaskList: React.FC<TaskListProps> = ({
 			try {
 				const results = await apiClient.search({
 					types: ["task"],
-					status: statusFilter || undefined,
+					status: statusFilter.length > 0 ? statusFilter : undefined,
 					priority: (priorityFilter || undefined) as SearchPriorityFilter | undefined,
 					labels: labelFilter.length > 0 ? labelFilter : undefined,
 				});
@@ -374,14 +393,16 @@ const TaskList: React.FC<TaskListProps> = ({
 	]);
 
 	const syncUrl = (
-		nextStatus: string,
+		nextStatus: string[],
 		nextPriority: "" | SearchPriorityFilter,
 		nextLabels: string[],
 		nextMilestone: string,
 	) => {
 		const params = new URLSearchParams();
-		if (nextStatus) {
-			params.set("status", nextStatus);
+		if (nextStatus.length > 0) {
+			for (const status of nextStatus) {
+				params.append("status", status);
+			}
 		}
 		if (nextPriority) {
 			params.set("priority", nextPriority);
@@ -397,7 +418,7 @@ const TaskList: React.FC<TaskListProps> = ({
 		setSearchParams(params, { replace: true });
 	};
 
-	const handleStatusChange = (value: string) => {
+	const handleStatusChange = (value: string[]) => {
 		setStatusFilter(value);
 		syncUrl(value, priorityFilter, labelFilter, milestoneFilter);
 	};
@@ -419,11 +440,11 @@ const TaskList: React.FC<TaskListProps> = ({
 	};
 
 	const handleClearFilters = () => {
-		setStatusFilter("");
+		setStatusFilter([]);
 		setPriorityFilter("");
 		setLabelFilter([]);
 		setMilestoneFilter("");
-		syncUrl("", "", [], "");
+		syncUrl([], "", [], "");
 		setDisplayTasks(sortedBaseTasks);
 		setError(null);
 	};
@@ -635,18 +656,13 @@ const TaskList: React.FC<TaskListProps> = ({
 
 				<div className="flex flex-wrap items-center gap-3 justify-between">
 					<div className="flex flex-wrap items-center gap-3 flex-1 min-w-0">
-						<Select
-							value={statusFilter}
-							onChange={(event) => handleStatusChange(event.target.value)}
-							wrapperClassName="min-w-[140px]"
-						>
-							<option value="">{t("tasks:allStatuses")}</option>
-							{availableStatuses.map((status) => (
-								<option key={status} value={status}>
-									{status}
-								</option>
-							))}
-						</Select>
+						<StatusFilterDropdown
+							availableStatuses={availableStatuses}
+							selected={statusFilter}
+							onChange={handleStatusChange}
+							menuId="task-list-status-menu"
+							className="min-w-[140px]"
+						/>
 
 						<Select
 							value={priorityFilter}

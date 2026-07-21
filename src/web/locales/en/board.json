@@ -9,6 +9,10 @@
 	"hereLane": "Your work area",
 	"noWorktreesTooltip": "No other work areas right now. Add one with git worktree add.",
 	"groupByWorktreeTooltip": "Group tasks by work area",
+	"density": {
+		"comfortable": "Comfortable",
+		"compact": "Compact"
+	},
 	"boardFilters": "Board filters",
 	"filterByAssignee": "Filter board by assignee",
 	"filterByPriority": "Filter board by priority",

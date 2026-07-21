@@ -109,23 +109,21 @@ const clickElement = async (element: Element) => {
 	});
 };
 
-// Der Statusfilter nutzt die eigene Select-Komponente: der Trigger-Button zeigt
-// das Label der aktuellen Auswahl, die Optionen erscheinen als role='option'.
-const getSelectTriggerByLabel = (container: HTMLElement, selectedLabel: string): HTMLButtonElement => {
-	const trigger = Array.from(container.querySelectorAll("button[aria-haspopup='listbox']")).find(
-		(element) => element.textContent?.trim() === selectedLabel,
-	);
+// Der Statusfilter ist ein Multiselect-Dropdown (StatusFilterDropdown): Trigger
+// per aria-controls öffnen, dann die Checkbox-Zeile mit dem Status-Text anhaken.
+// Status-Namen sind Kundendaten, keine übersetzten Strings — bleibt sprachneutral.
+const chooseStatusFilter = async (container: HTMLElement, status: string) => {
+	const trigger = container.querySelector("button[aria-controls='task-list-status-menu']");
 	expect(trigger).toBeTruthy();
-	return trigger as HTMLButtonElement;
-};
-
-const chooseSelectOption = async (container: HTMLElement, currentLabel: string, optionText: string) => {
-	await clickElement(getSelectTriggerByLabel(container, currentLabel));
-	const option = Array.from(container.querySelectorAll("[role='option']")).find(
-		(element) => element.textContent?.trim() === optionText,
+	await clickElement(trigger as HTMLButtonElement);
+	const menu = container.querySelector("#task-list-status-menu");
+	expect(menu).toBeTruthy();
+	const row = Array.from((menu as HTMLElement).querySelectorAll("label")).find(
+		(label) => label.textContent?.trim() === status,
 	);
-	expect(option).toBeTruthy();
-	await clickElement(option as Element);
+	expect(row).toBeTruthy();
+	await clickElement(row as HTMLElement);
+	await clickElement(trigger as HTMLButtonElement);
 };
 
 const waitFor = async (predicate: () => boolean) => {
@@ -270,7 +268,7 @@ describe("TaskList labels filter menu", () => {
 			tasks: [closedTask],
 			availableStatuses: ["To Do", "Review", "Closed"],
 		});
-		await chooseSelectOption(container, "All statuses", "Closed");
+		await chooseStatusFilter(container, "Closed");
 		await waitFor(() => fetchCalls.length === 1 && (container.textContent ?? "").includes("Clean Up"));
 
 		expect(container.textContent).toContain("Clean Up");
@@ -296,7 +294,7 @@ describe("TaskList labels filter menu", () => {
 			tasks: [reviewTask],
 			availableStatuses: ["To Do", "Review", "Closed"],
 		});
-		await chooseSelectOption(container, "All statuses", "Review");
+		await chooseStatusFilter(container, "Review");
 		await waitFor(() => fetchCalls.length === 1 && (container.textContent ?? "").includes("Review task"));
 
 		expect(container.textContent).not.toContain("Clean Up");

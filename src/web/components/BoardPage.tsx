@@ -4,6 +4,8 @@ import Board from './Board';
 import { type Milestone, type Task, type WorktreeSummary } from '../../types';
 import { type LaneMode } from '../lib/lanes';
 
+type BoardDensity = 'comfortable' | 'compact';
+
 interface BoardPageProps {
 	onEditTask: (task: Task) => void;
 	onNewTask: () => void;
@@ -43,7 +45,9 @@ export default function BoardPage({
 	const [highlightTaskId, setHighlightTaskId] = useState<string | null>(null);
 	const [laneMode, setLaneMode] = useState<LaneMode>('none');
 	const [milestoneFilter, setMilestoneFilter] = useState<string | null>(null);
+	const [density, setDensity] = useState<BoardDensity>('comfortable');
 	const laneStorageKey = 'backlog.board.lane';
+	const densityStorageKey = 'backlog.board.density';
 
 	useEffect(() => {
 		const storedLane = typeof window !== 'undefined' ? window.localStorage.getItem(laneStorageKey) : null;
@@ -62,6 +66,19 @@ export default function BoardPage({
 			window.localStorage.setItem(laneStorageKey, nextLane);
 		}
 	}, [searchParams]);
+
+	// Density is a per-device display preference only (no URL/query-param
+	// representation, unlike lane mode) — read once on mount.
+	useEffect(() => {
+		const storedDensity = typeof window !== 'undefined' ? window.localStorage.getItem(densityStorageKey) : null;
+		const parseDensity = (value: string | null): BoardDensity | null => {
+			if (value === 'compact') return 'compact';
+			if (value === 'comfortable') return 'comfortable';
+			return null;
+		};
+		const nextDensity = parseDensity(storedDensity) ?? 'comfortable';
+		setDensity((current) => (current === nextDensity ? current : nextDensity));
+	}, []);
 
 	useEffect(() => {
 		const highlight = searchParams.get('highlight');
@@ -96,6 +113,13 @@ export default function BoardPage({
 			params.delete('milestone'); // Clear milestone param when switching
 			return params;
 		}, { replace: true });
+	};
+
+	const handleDensityChange = (nextDensity: BoardDensity) => {
+		setDensity(nextDensity);
+		if (typeof window !== 'undefined') {
+			window.localStorage.setItem(densityStorageKey, nextDensity);
+		}
 	};
 
 	const handleFiltersChange = (filters: { assignee: string; labels: string[]; priority: string }) => {
@@ -146,6 +170,8 @@ export default function BoardPage({
 				availableLabels={availableLabels}
 				laneMode={laneMode}
 				onLaneChange={handleLaneChange}
+				density={density}
+				onDensityChange={handleDensityChange}
 				milestoneFilter={milestoneFilter}
 				filterAssignee={filterAssignee}
 				filterLabels={filterLabels}

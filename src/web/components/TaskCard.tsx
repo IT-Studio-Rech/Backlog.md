@@ -4,6 +4,8 @@ import { type Task } from '../../types';
 import { NEEDS_INPUT_LABEL } from '../../constants';
 import { getLabelChipStyle, resolveLabelColor } from '../utils/labelColors';
 
+type BoardDensity = 'comfortable' | 'compact';
+
 interface TaskCardProps {
   task: Task;
   onUpdate: (taskId: string, updates: Partial<Task>) => void;
@@ -16,6 +18,7 @@ interface TaskCardProps {
   taskTitleById?: Record<string, string>;
   onContextMenu?: (task: Task, x: number, y: number) => void;
   labelColors?: Record<string, string>;
+  density?: BoardDensity;
 }
 
 // Deterministic per-person color so the same assignee reads consistently across
@@ -37,7 +40,7 @@ const getAvatarColor = (name: string) => {
   return AVATAR_PALETTE[hash % AVATAR_PALETTE.length] ?? AVATAR_PALETTE[0]!;
 };
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEnd, status, laneId, taskTitleById, onContextMenu, labelColors }) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEnd, status, laneId, taskTitleById, onContextMenu, labelColors, density = 'comfortable' }) => {
   const { t } = useTranslation(['board', 'common']);
   const [isDragging, setIsDragging] = React.useState(false);
   const [showBranchTooltip, setShowBranchTooltip] = React.useState(false);
@@ -141,7 +144,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
       )}
 
       <div
-        className={`bg-white dark:bg-gray-700 border border-gray-200 dark:border-white/10 rounded-lg p-4 mb-2 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:focus-visible:ring-stone-400 ${
+        className={`bg-white dark:bg-gray-700 border border-gray-200 dark:border-white/10 rounded-lg ${density === 'compact' ? 'p-2.5' : 'p-4'} mb-2 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 dark:focus-visible:ring-stone-400 ${
           isFromOtherBranch
             ? 'opacity-75 cursor-not-allowed border-dashed'
             : 'cursor-pointer hover:shadow-md dark:hover:shadow-none hover:border-stone-500 dark:hover:border-white/20 dark:hover:bg-white/[0.04]'
@@ -217,7 +220,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
         </div>
 
         {/* Title */}
-        <h4 className={`font-semibold text-[15px] leading-snug line-clamp-2 transition-colors duration-200 ${
+        <h4 className={`font-semibold ${density === 'compact' ? 'text-[13px]' : 'text-[15px]'} leading-snug line-clamp-2 transition-colors duration-200 ${
           isFromOtherBranch
             ? 'text-gray-600 dark:text-gray-400'
             : 'text-gray-900 dark:text-gray-100'
@@ -305,7 +308,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDragStart, onDragEn
         )}
 
         {/* Footer with date and assignee */}
-        <div className="flex items-center justify-between gap-2 text-[10px] text-gray-400 dark:text-gray-500 mt-2 pt-2 border-t border-gray-100 dark:border-white/10 transition-colors duration-200">
+        <div className={`flex items-center justify-between gap-2 text-[10px] text-gray-400 dark:text-gray-500 ${density === 'compact' ? 'mt-1 pt-1' : 'mt-2 pt-2'} border-t border-gray-100 dark:border-white/10 transition-colors duration-200`}>
           <span className="shrink-0">{formatRelativeDate(task.createdDate)}</span>
           {task.assignee.length > 0 ? (() => {
             const name = task.assignee[0] ?? '';

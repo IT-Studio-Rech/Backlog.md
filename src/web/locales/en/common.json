@@ -20,6 +20,14 @@
 		"noLabels": "No labels",
 		"clear": "Clear label filter"
 	},
+	"statusFilter": {
+		"all": "All statuses",
+		"selectedCount": "{{count}} selected",
+		"noStatuses": "No statuses",
+		"clear": "Clear status filter",
+		"openQuickOption": "Open",
+		"ariaLabel": "Filter by status"
+	},
 	"acceptanceCriteriaEditor": {
 		"newItemPlaceholder": "New criterion"
 	},
