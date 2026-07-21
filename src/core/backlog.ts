@@ -351,8 +351,28 @@ export class Core {
 		return result;
 	}
 
-	private filterLocalEditableTasks(tasks: Task[]): Task[] {
-		return tasks.filter(isLocalEditableTask);
+	private async filterLocalEditableTasks(tasks: Task[]): Promise<Task[]> {
+		// Local view: a task whose merged winner lives on another branch/worktree
+		// falls back to its local file version; only tasks with no local copy at
+		// all are excluded. Dropping the merged winner outright would make the
+		// task invisible to local-only consumers such as `task list --plain`.
+		const result: Task[] = [];
+		let localById: Map<string, Task> | undefined;
+		for (const task of tasks) {
+			if (isLocalEditableTask(task)) {
+				result.push(task);
+				continue;
+			}
+			if (!localById) {
+				const localTasks = await this.fs.listTasks();
+				localById = new Map(localTasks.map((t) => [t.id, t]));
+			}
+			const local = localById.get(task.id);
+			if (local) {
+				result.push({ ...local, source: "local" });
+			}
+		}
+		return result;
 	}
 
 	private async requireCanonicalStatus(status: string): Promise<string> {
@@ -449,7 +469,7 @@ export class Core {
 			const resolveMilestoneFilterValue = milestoneResolverPromise ? await milestoneResolverPromise : undefined;
 			let filtered = this.applyTaskFilters(collection, filters, resolveMilestoneFilterValue);
 			if (!includeCrossBranch) {
-				filtered = this.filterLocalEditableTasks(filtered);
+				filtered = await this.filterLocalEditableTasks(filtered);
 			}
 			if (typeof limit === "number" && limit >= 0) {
 				return filtered.slice(0, limit);
